@@ -1,0 +1,5 @@
+classes= 80
+train  = /scratch/yang/aws_data/coco/trainvalno5k.txt
+valid = /scratch/yang/aws_data/coco/5k.txt
+names = /home/yang/darknet/data/coco.names
+backup = /scratch/yang/aws_data/coco_lisa/backup

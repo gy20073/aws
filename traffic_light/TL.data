@@ -1,0 +1,5 @@
+classes= 3
+train  = /scratch/yang/aws_data/bdd100k/yolo_format/filtered_train.txt
+valid  = /scratch/yang/aws_data/bdd100k/yolo_format/filtered_val.txt
+names = /data/yang/code/aws/traffic_light/TL.names
+backup = /scratch/yang/aws_data/bdd100k/yolo_format/backup

@@ -1,0 +1,5 @@
+classes= 2
+train  = /scratch/yang/aws_data/coco_lisa/merged.txt
+valid  = /scratch/yang/aws_data/coco/filtered_val2014.txt
+names = /data/yang/code/aws/traffic_sign/CL.names
+backup = /scratch/yang/aws_data/coco_lisa/backup
