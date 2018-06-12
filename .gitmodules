@@ -1,0 +1,6 @@
+[submodule "LinkNet"]
+	path = LinkNet
+	url = https://github.com/gy20073/LinkNet.git
+[submodule "CIL"]
+	path = CIL
+	url = https://github.com/gy20073/CIL.git

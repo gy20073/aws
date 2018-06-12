@@ -184,6 +184,21 @@ if __name__ == "__main__":
     use_07_metric = False
     all_gt = read_yolo_gt(gt_base, len(classes))
 
+    if len(sys.argv) > 4:
+        optional_val_index = sys.argv[4]
+        # using the validation index files to have all validation images
+        with open(optional_val_index, "r") as f:
+            lines = f.readlines()
+        new_gt = [{} for _ in range(len(classes))]
+        for val_img_name in lines:
+            path = val_img_name.strip()
+            if len(path)>0:
+                file = path.split("/")[-1]
+                id = file[:-4]
+                for ic in range(len(classes)):
+                    new_gt[ic][id] = all_gt[ic][id]
+        all_gt = new_gt
+
     aps = []
     for i, cls in enumerate(classes):
         filename = os.path.join(prediction_base, "comp4_det_test_"+cls+".txt")

@@ -90,15 +90,15 @@ for line in csv:
     with open(os.path.join(saveLabelPath, imid+".txt"), 'a') as out_file:
         out_file.write(str(clsid) + " " + " ".join([str(a) for a in std]) + '\n')
 
-    imids[imname] = 1
+    imids[imid] = 1
 
 train_portion = 0.8
 random.seed(1)
 
 with open(os.path.join(basePath, "train.txt"), "w") as ftrain:
     with open(os.path.join(basePath, "val.txt"), "w") as fval:
-        for imname in sorted(imids.keys()):
-            tpath = os.path.join(savePath, imname+".jpg")
+        for imid in sorted(imids.keys()):
+            tpath = os.path.join(savePath, imid+".jpg")
 
             if random.random() < train_portion:
                 ftrain.write(tpath+"\n")

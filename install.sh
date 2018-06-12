@@ -68,3 +68,45 @@ make
 cd $DATA_BASE
 wget https://pjreddie.com/media/files/yolov3.weights
 
+
+
+############################Setup Carla################################
+# download carla
+wget --load-cookies /tmp/cookies.txt "https://docs.google.com/uc?export=download&confirm=$(wget --quiet --save-cookies /tmp/cookies.txt --keep-session-cookies --no-check-certificate 'https://docs.google.com/uc?export=download&id=1ZtVt1AqdyGxgyTm69nzuwrOYoPUn_Dsm' -O- | sed -rn 's/.*confirm=([0-9A-Za-z_]+).*/\1\n/p')&id=1ZtVt1AqdyGxgyTm69nzuwrOYoPUn_Dsm" -O carla_0.8.2.tar.gz && rm -rf /tmp/cookies.txt
+mkdir carla
+mv carla_0.8.2.tar.gz ./carla
+cd carla
+tar -xzvf carla_0.8.2.tar.gz
+mv carla_0.8.2.tar.gz ../
+
+# install python side requirement
+pip install -r PythonClient/requirements.txt
+
+# some testing command to make sure that carla works headlessly
+SDL_VIDEODRIVER=offscreen SDL_HINT_CUDA_DEVICE=0 ./CarlaUE4.sh -carla-server
+./client_example.py --autopilot --images-to-disk
+
+
+####################Abandoned because easier approach exists, Carla Headless Setup#############################
+sudo apt-get install freeglut3-dev mesa-utils
+mkdir ~/carla_install
+cd ~/carla_install
+
+# install VirtualGL
+wget https://cytranet.dl.sourceforge.net/project/virtualgl/2.5.2/virtualgl_2.5.2_amd64.deb
+sudo dpkg -r VirtualGL
+sudo dpkg -i virtualgl_2.5.2_amd64.deb
+
+# install turboVNC
+wget https://newcontinuum.dl.sourceforge.net/project/turbovnc/2.1.2/turbovnc_2.1.2_amd64.deb
+sudo dpkg -i turbovnc_2.1.2_amd64.deb
+
+# extra packages for VNC
+sudo apt install x11-xserver-utils libxrandr-dev
+
+# configure nvidia to be X compatible
+sudo nvidia-xconfig -a --use-display-device=None --virtual=1280x1024
+
+# install Xorg, which is missing in the tutorial
+sudo apt-get install xserver-xorg-core
+

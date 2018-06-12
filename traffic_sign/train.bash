@@ -5,4 +5,4 @@
     CL.data \
     yolov3-CL.cfg \
     /data/yang/code/aws/data/darknet53.conv.74 \
-    -gpus 6,7
+    -gpus 7

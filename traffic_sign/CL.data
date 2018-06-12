@@ -1,5 +1,6 @@
 classes= 2
-train  = /scratch/yang/aws_data/coco_lisa/merged.txt
+train  = /scratch/yang/aws_data/coco_lisa_v2/merged.txt
 valid  = /scratch/yang/aws_data/coco/filtered_val2014.txt
+# valid  = /scratch/yang/aws_data/LISA_EXT/val.txt
 names = /data/yang/code/aws/traffic_sign/CL.names
-backup = /scratch/yang/aws_data/coco_lisa/backup
+backup = /scratch/yang/aws_data/coco_lisa_v2/backup
