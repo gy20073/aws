@@ -1,18 +1,12 @@
 <launch>
     <arg name="use_fake_image" default="true" />
     <arg name="use_real_image" default="false" />
-    <arg name="use_iphone_image" default="false" />
 
     <arg name="fake_tfrecord_path" default="None" />
 
     <arg name="driving_model_path" default="None" />
-    <arg name="config_name" default="None" />
-    <arg name="is_lstm" default="None" />
-    <arg name="post_config_name" default="common_config_MKZ" />
 
     <arg name="viz_output_path" default="/home/yang/test2.avi" />
-
-    <arg name="iphone_address" default="None" />
 
     <arg name="prediction_hz" default="None" />
     <arg name="stop_future_frames" default="None" />
@@ -20,7 +14,7 @@
     <group ns="vehicle">
 
         <node name="run_drive_MKZ" pkg="MKZ" type="drive_MKZ.py" output="screen"
-              args="$(arg driving_model_path) $(arg config_name) $(arg is_lstm) $(arg post_config_name) $(arg prediction_hz) $(arg stop_future_frames)"> </node>
+              args="$(arg driving_model_path) $(arg prediction_hz) $(arg stop_future_frames)"> </node>
 
         <node name="run_keyboard_reader" pkg="MKZ" type="keyboard_input.py" output="screen"> </node>
 
@@ -32,10 +26,6 @@
 
         <node name="run_real_image" pkg="MKZ" type="real_image_publisher.py" output="screen"
               if="$(arg use_real_image)" args="$(arg prediction_hz)"> </node>
-
-        <node name="run_iphone_image" pkg="MKZ" type="iphone_image_publisher.py" output="screen"
-              if="$(arg use_iphone_image)"
-              args="$(arg iphone_address)"> </node>
 
         <node name="record_visualizations" pkg="image_view" type="video_recorder" output="screen">
             <remap to="vis_continuous_full" from="image"/>
