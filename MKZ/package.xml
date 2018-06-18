@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <package>
-  <name>MKZ</name>
+  <name>mkz_intel</name>
   <version>0.0.0</version>
   <description>The MKZ with BDD driving model package</description>
 
