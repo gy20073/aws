@@ -4,3 +4,6 @@
 [submodule "CIL"]
 	path = CIL
 	url = https://github.com/gy20073/CIL.git
+[submodule "CIL_modular"]
+	path = CIL_modular
+	url = https://github.com/gy20073/CIL_modular.git
