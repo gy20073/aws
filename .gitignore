@@ -106,3 +106,4 @@ venv.bak/
 .DS_Store
 drivable_area/data_bdd
 drivable_area/data_mkz
+*DS_Store*
