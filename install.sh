@@ -63,7 +63,9 @@ cd ~/
 # darknet install
 git clone https://github.com/pjreddie/darknet
 cd darknet
-make
+# change makefile
+apt install libopencv-dev
+make -j
 # download the pretrained weight
 cd $DATA_BASE
 wget https://pjreddie.com/media/files/yolov3.weights

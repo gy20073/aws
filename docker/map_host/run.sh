@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 docker run \
     -it \
-    --rm \
     --volume="/tmp/.X11-unix:/tmp/.X11-unix:rw" \
+    --volume="/usr/local/cuda:/usr/local/cuda" \
     --runtime=nvidia \
-    -e NVIDIA_VISIBLE_DEVICES=7 \
-    --name machine0 \
+    -e NVIDIA_VISIBLE_DEVICES=1 \
+    --name machine5 \
     --network tnet \
-    gy20073/ros \
+    ubuntu:16.04 \
     /bin/bash
