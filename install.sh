@@ -112,3 +112,5 @@ sudo nvidia-xconfig -a --use-display-device=None --virtual=1280x1024
 # install Xorg, which is missing in the tutorial
 sudo apt-get install xserver-xorg-core
 
+########## the single image depth estimation ##############
+#just clone the repo
