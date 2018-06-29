@@ -43,19 +43,23 @@ if __name__ == "__main__":
     os.environ["CUDA_VISIBLE_DEVICES"] = "0"
     video_path = "/scratch/yang/aws_data/mkz/video_highqual.mp4"
 
-    if False:
+    if True:
         # segmentation interface
-        from LinkNet.interface import Segmenter
-        segmentor=Segmenter()
-        segmentor.init()
+        from LinkNet.interface_segmentation import Segmenter
 
-        loop_over_video(video_path, lambda x: segment(x, segmentor))
+        seg = Segmenter(model_path="/scratch/yang/aws_data/mapillary/linknet_output2/model-last.net",
+                        mean_path="/scratch/yang/aws_data/mapillary/cache/576_768/stat.t7",
+                        GPU="1")
+
+        loop_over_video(video_path,
+                        lambda x: seg.visualize(seg.compute(x)),
+                        temp_down_factor=1)
 
     if False:
         # downsample
         loop_over_video(video_path, lambda x: x[::4,::4,])
 
-    if True:
+    if False:
         # depth prediction
         from monodepth.interface_depth import Depth
         depth_estimator = Depth("/home/yang/monodepth/models/model_city2eigen/model_city2eigen",
