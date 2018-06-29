@@ -65,4 +65,4 @@ if __name__ == "__main__":
 
         loop_over_video(video_path,
                         lambda x: depth_estimator.visualize(depth_estimator.compute(x)),
-                        temp_down_factor=30)
+                        temp_down_factor=1)
