@@ -4,3 +4,9 @@
 [submodule "CIL_modular"]
 	path = CIL_modular
 	url = https://github.com/gy20073/CIL_modular.git
+[submodule "pydarknet/pydarknet"]
+	path = pydarknet/pydarknet
+	url = https://github.com/gy20073/pydarknet.git
+[submodule "pydarknet/darknet"]
+	path = pydarknet/darknet
+	url = https://github.com/gy20073/darknet.git

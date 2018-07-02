@@ -114,3 +114,18 @@ sudo apt-get install xserver-xorg-core
 
 ########## the single image depth estimation ##############
 #just clone the repo
+
+###########the darknet python binding dependencies#########
+#install my version of darknet
+#make it!
+
+# no export won't work!!!
+export DARKNET_HOME="/data/yang/code/aws/pydarknet/darknet"
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$DARKNET_HOME
+
+pip3 install cython
+git clone https://github.com/gy20073/pydarknet.git
+export GPU=1
+export OPENCV=0
+cd pydarknet
+pip install .
