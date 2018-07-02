@@ -40,7 +40,6 @@ class YoloDetector:
     def visualize(self, pred):
         return getattr(self, self.viz_method)(pred)
 
-    @profile
     def _combine_logits(self, logits):
         # The shape of each logit is: (batch[i], n[i], classp5[i], h[i], w[i])
         # reshape them into H*W*C
@@ -63,7 +62,6 @@ class YoloDetector:
         concat = np.concatenate(resized, axis=2)
         return concat
 
-    @profile
     def compute_logits(self, image):
         image = scipy.misc.imresize(image, [self.height, self.width], interp='bilinear')
         dark_frame = Image(image)
@@ -78,7 +76,6 @@ class YoloDetector:
 
     # Note that the visualize function is a stateful function
     # in the sense that it needs the state of self.net, and self.image
-    @profile
     def visualize_logits_general(self, pred, thresh=.5, nms=.45):
         image = self.current_image
         detections = self.net.get_boxes(thresh=thresh,
@@ -101,10 +98,21 @@ class YoloDetector:
 
 if __name__ == "__main__":
     im = cv2.imread("/scratch/yang/aws_data/mapillary/validation/images/0daE8mWxlKFT8kLBE5f12w.jpg")
-    detector = YoloDetector(path_cfg="/data/yang/code/aws/coco_original/yolov3.cfg",
-                            path_weights="/data/yang/code/aws/data/yolov3.weights",
-                            path_meta="/data/yang/code/aws/coco_original/coco.data")
+    if False:
+        detector = YoloDetector(path_cfg="/data/yang/code/aws/coco_original/yolov3.cfg",
+                                path_weights="/data/yang/code/aws/data/yolov3.weights",
+                                path_meta="/data/yang/code/aws/coco_original/coco.data")
+
+    if False:
+        detector = YoloDetector(path_cfg="/data/yang/code/aws/traffic_light/yolov3-TL.cfg.test",
+                                path_weights="/scratch/yang/aws_data/bdd100k/yolo_format/backup/yolov3-TL.backup",
+                                path_meta="/data/yang/code/aws/traffic_light/TL.data")
+
+    if True:
+        detector = YoloDetector(path_cfg="/data/yang/code/aws/traffic_sign/yolov3-CL.cfg.test",
+                                path_weights="/scratch/yang/aws_data/coco_lisa_v2/backup/yolov3-CL.backup",
+                                path_meta="/data/yang/code/aws/traffic_sign/CL.data")
 
     pred = detector.compute(im)
-    viz = detector.visualize_logits_low_thresh(pred)
+    viz = detector.visualize_logits_general(pred, thresh=0.01)
     cv2.imwrite("output.png", viz)
