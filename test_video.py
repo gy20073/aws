@@ -43,7 +43,7 @@ if __name__ == "__main__":
     os.environ["CUDA_VISIBLE_DEVICES"] = "0"
     video_path = "/scratch/yang/aws_data/mkz/video_highqual.mp4"
 
-    if True:
+    if False:
         # segmentation interface
         from LinkNet.interface_segmentation import Segmenter
 
@@ -70,3 +70,15 @@ if __name__ == "__main__":
         loop_over_video(video_path,
                         lambda x: depth_estimator.visualize(depth_estimator.compute(x)),
                         temp_down_factor=1)
+
+    if True:
+        from yolo.interface_darknet import YoloDetector
+        detector = YoloDetector(path_cfg="/data/yang/code/aws/coco_original/yolov3.cfg",
+                                path_weights="/data/yang/code/aws/data/yolov3.weights",
+                                path_meta="/data/yang/code/aws/coco_original/coco.data",
+                                GPU="1")
+
+        loop_over_video(video_path,
+                        lambda x: detector.visualize(detector.compute(x)),
+                        temp_down_factor=1)
+
