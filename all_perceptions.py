@@ -1,6 +1,7 @@
 import numpy as np
-import copy, scipy.misc, math, time
+import copy, math, time, cv2
 from multiprocessing import Process, Pipe
+from common import resize_images
 
 class Perceptions:
     @staticmethod
@@ -18,7 +19,12 @@ class Perceptions:
                 conn.send(logit)
                 print("end compute on ", initializer, time.time())
             elif cmd == "visualize":
-                viz = instance.visualize(data)
+                # pred, ibatch
+                viz = instance.visualize(data[0], data[1])
+                conn.send(viz)
+            elif cmd == "visualize_low_thresh":
+                # pred, ibatch
+                viz = instance.visualize_logits_low_thresh(data[0], data[1])
                 conn.send(viz)
             else:
                 print("wrong command")
@@ -29,15 +35,15 @@ class Perceptions:
                  det_TS=True,
                  seg=True,
                  depth=True,
-                 two_gpu=[0, 1],
+                 batch_size=1,
+                 gpu_assignment=[0,1],
                  compute_methods={},
+                 viz_methods={},
                  path_config="path_jormungandr"):
         '''
+        :param gpu_assignment: could be a list, where use round robin method, or could be a dict, that directly assign
         :param compute_methods: could change the default compute methods, with a dict
         '''
-        assert (len(two_gpu) == 2)
-        two_gpu = [str(x) for x in two_gpu]
-
         getattr(self, path_config)()
 
         modalities = {"det_COCO": det_COCO,
@@ -45,6 +51,17 @@ class Perceptions:
                       "det_TS": det_TS,
                       "seg": seg,
                       "depth": depth}
+
+        if isinstance(gpu_assignment, list):
+            out = {}
+            i = 0
+            for mode in sorted(modalities.keys()):
+                if modalities[mode]:
+                    out[mode] = gpu_assignment[i % len(gpu_assignment)]
+                    i += 1
+            gpu_assignment = out
+        for key in gpu_assignment:
+            gpu_assignment[key] = str(gpu_assignment[key])
 
         from LinkNet.interface_segmentation import Segmenter
         from monodepth.interface_depth import Depth
@@ -57,28 +74,26 @@ class Perceptions:
 
         self.instances = {}
 
-        num_models = det_COCO + det_TL + det_TS + seg + depth
-        i_model = 0
         for mode in sorted(modalities.keys()):
             if modalities[mode]:
                 # select which GPU to use
                 initializer = interfaces[mode]
 
-                gpu = two_gpu[i_model // (num_models // 2+1)]
+                gpu = gpu_assignment[mode]
                 print("Model ", mode, " is using GPU ", gpu)
                 params = copy.deepcopy(self.paths[mode])
                 params.update({"GPU": gpu})
+                params.update({"batch_size": batch_size})
                 if mode in compute_methods:
                     params.update({"compute_method": compute_methods[mode]})
-                # TODO: allow flexible viz_method as well
+                if mode in viz_methods:
+                    params.update({"viz_method": viz_methods[mode]})
 
                 parent_conn, child_conn = Pipe()
                 p = Process(target=self.worker, args=(initializer, params, child_conn))
                 p.start()
 
                 self.instances[mode] = parent_conn
-
-                i_model += 1
 
     def path_jormungandr(self):
         self.paths = {}
@@ -108,45 +123,50 @@ class Perceptions:
 
         for i, key in enumerate(sorted(viz_dict.keys())):
             image = viz_dict[key]
-            image = scipy.misc.imresize(image, new_size, interp='bilinear')
+            image = cv2.resize(image,
+                       dsize=(new_size[1], new_size[0]),
+                       interpolation=cv2.INTER_LINEAR)
+
             irow = i // sqrt_n
             icol = i % sqrt_n
             output[irow*new_size[0]:(irow+1)*new_size[0],
                    icol*new_size[1]:(icol+1)*new_size[1], :] = image
         return output
 
-    def compute(self, image, intermediate_size=(576, 768)):
-        # depth 256*512, seg: 576*768, yolo 416*416
+    def compute(self, images, intermediate_size=(576, 768)):
+        # depth 256*512, seg: 576*768, yolo 312*416
         if intermediate_size is not None:
-            image = scipy.misc.imresize(image, intermediate_size, interp='bilinear')
-        self.image = image
+            images = resize_images(images, intermediate_size)
+
+        self.images = images
 
         for mode in self.instances.keys():
             conn = self.instances[mode]
-            conn.send(("compute", image))
+            conn.send(("compute", images))
 
         out_logits = {}
 
         for mode in self.instances.keys():
             conn = self.instances[mode]
-            res = conn.recv()
-            out_logits[mode] = res
+            out_logits[mode] = conn.recv()
 
         return out_logits
 
-    def visualize(self, logits_dict, subplot_size=(576, 768)):
-        return np.zeros((4,4, 3), dtype=np.uint8)
+    def visualize(self, logits_dict, ibatch, subplot_size=(312, 416)):
+        #return np.zeros((4,4, 3), dtype=np.uint8)
 
         for mode in self.instances.keys():
             conn = self.instances[mode]
-            conn.send(("visualize", logits_dict[mode]))
+            conn.send(("visualize", (logits_dict[mode], ibatch)))
+            #if "det" in mode:
+            #    conn.send(("visualize_low_thresh", (logits_dict[mode], ibatch)))
 
-        out_viz = {"0_original": self.image}
+        out_viz = {"0_original": self.images[ibatch]}
 
         for mode in self.instances.keys():
             conn = self.instances[mode]
-            res = conn.recv()
-            out_viz[mode] = res
+            out_viz[mode] = conn.recv()
+            #if "det" in mode:
+            #    out_viz[mode+"_lowThres"] = conn.recv()
 
         return self.merge_images(out_viz, subplot_size)
-

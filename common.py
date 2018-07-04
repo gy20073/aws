@@ -1,19 +1,27 @@
 import numpy as np
-import scipy.misc, multiprocessing, time, cv2
+import scipy.misc, multiprocessing, time, cv2, skimage.transform
+from skimage import img_as_ubyte
+
 
 def resize_images(images, new_size):
     if images.shape[1] != new_size[0] or images.shape[2] != new_size[1]:
         output = np.zeros((images.shape[0], new_size[0], new_size[1], images.shape[3]), dtype=np.uint8)
 
         for i in range(images.shape[0]):
-            if True:
+            method = 0
+            if method==0:
                 cv2.resize(images[i, :, :, :],
                            dsize=(new_size[1], new_size[0]),
                            dst=output[i, :, :, :],
-                           interpolation=cv2.INTER_LINEAR)
-            else:
+                           interpolation=cv2.INTER_AREA)
+            elif method==1:
                 # do not use scipy image resize, it's too slow
                 output[i, :, :, :] = scipy.misc.imresize(images[i, :, :, :], new_size, interp='bilinear')
+            elif method==2:
+                output[i,:,:,:]=img_as_ubyte(
+                                skimage.transform.resize(images[i,:,:,:],
+                                                         new_size,
+                                                         order=1))
         return output
     else:
         return images

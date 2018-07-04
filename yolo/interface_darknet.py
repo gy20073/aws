@@ -1,4 +1,4 @@
-import cv2, os, scipy.misc, scipy.ndimage
+import cv2, os, math
 import numpy as np
 from pydarknet import Detector, Image
 from common import resize_images
@@ -14,7 +14,7 @@ class YoloDetector:
                  path_weights,
                  path_meta,
                  GPU="0",
-                 compute_method="compute_logits",
+                 compute_method="compute_logit_list",
                  viz_method="visualize_logits",
                  batch_size=1):
 
@@ -26,8 +26,6 @@ class YoloDetector:
         self.compute_method = compute_method
         self.viz_method = viz_method
 
-        self.width = 555
-        self.height = 416
         self.batch_size=batch_size
 
         # has to replace the batch size
@@ -95,7 +93,7 @@ class YoloDetector:
         concat = np.concatenate(out, axis=2)
         # H W cp5 B
         concat = np.transpose(concat, axes=(3, 0, 1, 2))
-        print(concat.shape)
+
         return concat
 
 
@@ -105,17 +103,10 @@ class YoloDetector:
 
     def darknet_preprocess(self, images):
         # resize the images to shorter edge be neth
-        neth = netw = 416
-        im_h = images.shape[1]
-        im_w = images.shape[2]
+        self.height = 416
+        self.width = 555
 
-        if (1.0*netw / im_w) < (1.0*neth / im_h):
-            new_w = netw
-            new_h = (im_h * netw) // im_w
-        else:
-            new_h = neth
-            new_w = (im_w * neth) // im_h
-        images = resize_images(images, [new_h, new_w])
+        images = resize_images(images, [self.height, self.width])
         resized = images
 
         # BCHW format
@@ -126,7 +117,6 @@ class YoloDetector:
         images = images / 255.0
         # as continuous memory
         images = np.ascontiguousarray(images, dtype=np.float32)
-        print(images.shape)
         dark_frames = Image(images)
         return dark_frames, resized
 
@@ -151,8 +141,11 @@ class YoloDetector:
         output = np.copy(image)
         for cat, score, bounds in detections:
             x, y, w, h = bounds
+            if math.isinf(w) or math.isinf(h):
+                print(bounds, "inf encountered, continue")
+                continue
             cv2.rectangle(output, (int(x - w / 2), int(y - h / 2)), (int(x + w / 2), int(y + h / 2)), (255, 0, 0))
-            cv2.putText(output, str(cat.decode("utf-8")), (int(x), int(y)), cv2.FONT_HERSHEY_COMPLEX, 0.4, (255, 255, 0))
+            cv2.putText(output, str(cat.decode("utf-8")), (int(x), int(y)), cv2.FONT_HERSHEY_COMPLEX, 0.3, (255, 255, 0))
 
         return output
 

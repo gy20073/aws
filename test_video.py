@@ -61,7 +61,7 @@ def vis_all(x, wrapper):
 if __name__ == "__main__":
     os.environ["CUDA_VISIBLE_DEVICES"] = "0"
     video_path = "/scratch/yang/aws_data/mkz/video_highqual.mp4"
-    batch_size=8
+    batch_size=1
 
     if False:
         # segmentation interface
@@ -112,17 +112,20 @@ if __name__ == "__main__":
                         batch_size=batch_size)
 
     if False:
+        batch_size = 1
         from all_perceptions import Perceptions
         perceptions = Perceptions(det_COCO=True,
                                  det_TL=True,
                                  det_TS=True,
                                  seg=True,
                                  depth=True,
-                                 two_gpu=[1, 2],
+                                 batch_size=batch_size,
+                                 gpu_assignment=[1, 2],
                                  compute_methods={},
+                                 viz_methods={},
                                  path_config="path_jormungandr")
 
         loop_over_video(video_path,
-                        lambda x: perceptions.visualize(perceptions.compute(x)),
-                        temp_down_factor=1)
-
+                        lambda x: vis_all(x, perceptions),
+                        temp_down_factor=1,
+                        batch_size=batch_size)
