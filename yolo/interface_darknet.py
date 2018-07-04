@@ -73,20 +73,74 @@ class YoloDetector:
         concat = np.concatenate(resized, axis=3)
         return concat
 
+    def _combine_logits2(self, logits):
+        # The shape of each logit is: (batch[i], n[i], classp5[i], h[i], w[i])
+        # reshape them into batch*H*W*C
+        max_h = -1
+        max_w = -1
+        out = []
+        for l in logits:
+            l = np.reshape(l, (l.shape[0], l.shape[1]*l.shape[2], l.shape[3], l.shape[4]))
+            max_h = max(max_h, l.shape[2])
+            max_w = max(max_w, l.shape[3])
+            l = np.transpose(l, (2, 3, 1, 0))
+            # shape is H*W*cp5*B
+            out.append(l)
+        logits = out
+        out = []
+        for l in logits:
+            l = np.repeat(l, max_w // l.shape[1], axis=1)
+            l = np.repeat(l, max_h // l.shape[0], axis=0)
+            out.append(l)
+        concat = np.concatenate(out, axis=2)
+        # H W cp5 B
+        concat = np.transpose(concat, axes=(3, 0, 1, 2))
+        print(concat.shape)
+        return concat
+
+
     def compute_logits(self, images):
-        images = resize_images(images, [self.height, self.width])
+        logits = self.compute_logit_list(images)
+        return self._combine_logits(logits)
+
+    def darknet_preprocess(self, images):
+        # resize the images to shorter edge be neth
+        neth = netw = 416
+        im_h = images.shape[1]
+        im_w = images.shape[2]
+
+        if (1.0*netw / im_w) < (1.0*neth / im_h):
+            new_w = netw
+            new_h = (im_h * netw) // im_w
+        else:
+            new_h = neth
+            new_w = (im_w * neth) // im_h
+        images = resize_images(images, [new_h, new_w])
+        resized = images
+
+        # BCHW format
+        images = np.transpose(images, (0, 3, 1, 2))
+        # RGB to BGR
+        images = images[:, ::-1, :, :]
+        # to float and to 0-1
+        images = images / 255.0
+        # as continuous memory
+        images = np.ascontiguousarray(images, dtype=np.float32)
+        print(images.shape)
         dark_frames = Image(images)
-        self.net.forward(dark_frames, images.shape[0])
-        del dark_frames
+        return dark_frames, resized
+
+    def compute_logit_list(self, images):
+        dark_frames, self.current_images = self.darknet_preprocess(images)
+        self.net.forward(dark_frames, self.current_images.shape[0])
 
         logits = self.net.get_logits()
-        concat = self._combine_logits(logits)
 
-        self.current_images = images
-        return concat
+        return logits
 
     # Note that the visualize function is a stateful function
     # in the sense that it needs the state of self.net, and self.image
+
     def visualize_logits_general(self, pred, ibatch, thresh=.5, nms=.45):
         image = self.current_images[ibatch]
         detections = self.net.get_boxes(ibatch,

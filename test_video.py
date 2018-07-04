@@ -103,7 +103,8 @@ if __name__ == "__main__":
                                 path_weights="/data/yang/code/aws/data/yolov3.weights",
                                 path_meta="/data/yang/code/aws/coco_original/coco.data",
                                 GPU="1",
-                                batch_size=batch_size)
+                                batch_size=batch_size,
+                                compute_method="compute_logit_list")
 
         loop_over_video(video_path,
                         lambda x: vis_all(x, detector),

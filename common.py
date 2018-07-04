@@ -58,9 +58,27 @@ if __name__ == "__main__":
     print(output)
     print(time.time() - start)
     '''
+
+    '''
     images = np.ones((32, 256, 512, 3), dtype=np.uint8)
     print(images.size/1024/1024)
     start = time.time()
     for i in range(100):
         t = images.astype(np.float32) * (1.0/255)
+    print(time.time() - start)
+    '''
+
+    images = np.ones((8, 26, 26, 255), dtype=np.float32)
+    images2 = np.zeros((8, 13, 13, 255), dtype=np.float32)
+    print(images.size / 1024 / 1024)
+    start = time.time()
+    for i in range(10):
+        t = np.repeat(images, 52 // images.shape[1], axis=1)
+        t = np.repeat(t     , 52 // images.shape[2], axis=2)
+
+        p = np.repeat(images2, 52 // images2.shape[1], axis=1)
+        p = np.repeat(p      , 52 // images2.shape[2], axis=2)
+
+        out = np.concatenate((t, p), axis=3)
+
     print(time.time() - start)
