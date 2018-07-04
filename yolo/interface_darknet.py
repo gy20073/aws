@@ -103,10 +103,17 @@ class YoloDetector:
 
     def darknet_preprocess(self, images):
         # resize the images to shorter edge be neth
-        self.height = 416
-        self.width = 555
+        neth = netw = 416
+        im_h = images.shape[1]
+        im_w = images.shape[2]
 
-        images = resize_images(images, [self.height, self.width])
+        if (1.0 * netw / im_w) < (1.0 * neth / im_h):
+            new_w = netw
+            new_h = (im_h * netw) // im_w
+        else:
+            new_h = neth
+            new_w = (im_w * neth) // im_h
+        images = resize_images(images, [new_h, new_w])
         resized = images
 
         # BCHW format
@@ -118,11 +125,14 @@ class YoloDetector:
         # as continuous memory
         images = np.ascontiguousarray(images, dtype=np.float32)
         dark_frames = Image(images)
-        return dark_frames, resized
+        return dark_frames, resized, images
 
     def compute_logit_list(self, images):
-        dark_frames, self.current_images = self.darknet_preprocess(images)
+        dark_frames, self.current_images, images = self.darknet_preprocess(images)
         self.net.forward(dark_frames, self.current_images.shape[0])
+        if False:
+            # has to keep this images pointer, otherwise it's recycled
+            self.current_images = images
 
         logits = self.net.get_logits()
 
@@ -143,6 +153,7 @@ class YoloDetector:
             x, y, w, h = bounds
             if math.isinf(w) or math.isinf(h):
                 print(bounds, "inf encountered, continue")
+                raise
                 continue
             cv2.rectangle(output, (int(x - w / 2), int(y - h / 2)), (int(x + w / 2), int(y + h / 2)), (255, 0, 0))
             cv2.putText(output, str(cat.decode("utf-8")), (int(x), int(y)), cv2.FONT_HERSHEY_COMPLEX, 0.3, (255, 255, 0))

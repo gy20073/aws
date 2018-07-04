@@ -102,7 +102,7 @@ if __name__ == "__main__":
         detector = YoloDetector(path_cfg="/data/yang/code/aws/coco_original/yolov3.cfg",
                                 path_weights="/data/yang/code/aws/data/yolov3.weights",
                                 path_meta="/data/yang/code/aws/coco_original/coco.data",
-                                GPU="1",
+                                GPU="2",
                                 batch_size=batch_size,
                                 compute_method="compute_logit_list")
 
