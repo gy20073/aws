@@ -61,7 +61,7 @@ def vis_all(x, wrapper):
 if __name__ == "__main__":
     os.environ["CUDA_VISIBLE_DEVICES"] = "0"
     video_path = "/scratch/yang/aws_data/mkz/video_highqual.mp4"
-    batch_size=1
+    batch_size=8
 
     if False:
         # segmentation interface
@@ -97,7 +97,7 @@ if __name__ == "__main__":
                         temp_down_factor=1,
                         batch_size=batch_size)
 
-    if True:
+    if False:
         from yolo.interface_darknet import YoloDetector
         detector = YoloDetector(path_cfg="/data/yang/code/aws/coco_original/yolov3.cfg",
                                 path_weights="/data/yang/code/aws/data/yolov3.weights",
@@ -111,8 +111,8 @@ if __name__ == "__main__":
                         temp_down_factor=1,
                         batch_size=batch_size)
 
-    if False:
-        batch_size = 1
+    if True:
+        batch_size = 4
         from all_perceptions import Perceptions
         perceptions = Perceptions(det_COCO=True,
                                  det_TL=True,

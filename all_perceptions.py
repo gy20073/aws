@@ -155,18 +155,27 @@ class Perceptions:
     def visualize(self, logits_dict, ibatch, subplot_size=(312, 416)):
         #return np.zeros((4,4, 3), dtype=np.uint8)
 
+        out_viz = {"0_original": self.images[ibatch]}
         for mode in self.instances.keys():
             conn = self.instances[mode]
             conn.send(("visualize", (logits_dict[mode], ibatch)))
             #if "det" in mode:
             #    conn.send(("visualize_low_thresh", (logits_dict[mode], ibatch)))
 
-        out_viz = {"0_original": self.images[ibatch]}
-
         for mode in self.instances.keys():
             conn = self.instances[mode]
             out_viz[mode] = conn.recv()
             #if "det" in mode:
             #    out_viz[mode+"_lowThres"] = conn.recv()
+
+        for mode in self.instances.keys():
+            conn = self.instances[mode]
+            if "det" in mode:
+                conn.send(("visualize_low_thresh", (logits_dict[mode], ibatch)))
+
+        for mode in self.instances.keys():
+            conn = self.instances[mode]
+            if "det" in mode:
+                out_viz[mode+"_lowThres"] = conn.recv()
 
         return self.merge_images(out_viz, subplot_size)
