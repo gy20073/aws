@@ -10,3 +10,6 @@
 [submodule "yolo/darknet"]
 	path = yolo/darknet
 	url = https://github.com/gy20073/darknet.git
+[submodule "pytorch-linknet"]
+	path = pytorch-linknet
+	url = https://github.com/gy20073/pytorch-linknet.git

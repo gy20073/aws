@@ -63,7 +63,7 @@ if __name__ == "__main__":
     video_path = "/scratch/yang/aws_data/mkz/video_highqual.mp4"
     batch_size=8
 
-    if False:
+    if True:
         # segmentation interface
         from LinkNet.interface_segmentation import Segmenter
 
@@ -111,7 +111,7 @@ if __name__ == "__main__":
                         temp_down_factor=1,
                         batch_size=batch_size)
 
-    if True:
+    if False:
         batch_size = 4
         from all_perceptions import Perceptions
         perceptions = Perceptions(det_COCO=True,

@@ -129,3 +129,9 @@ export GPU=1
 export OPENCV=0
 cd pydarknet
 pip install .
+
+# linknet pytorch version
+# git clone into my repo already
+# install pytorch
+pip3 install http://download.pytorch.org/whl/cu90/torch-0.4.0-cp36-cp36m-linux_x86_64.whl
+pip3 install torchvision

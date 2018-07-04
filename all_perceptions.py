@@ -153,8 +153,6 @@ class Perceptions:
         return out_logits
 
     def visualize(self, logits_dict, ibatch, subplot_size=(312, 416)):
-        #return np.zeros((4,4, 3), dtype=np.uint8)
-
         out_viz = {"0_original": self.images[ibatch]}
         for mode in self.instances.keys():
             conn = self.instances[mode]
