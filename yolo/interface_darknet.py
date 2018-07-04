@@ -1,6 +1,8 @@
 import cv2, os, scipy.misc, scipy.ndimage
 import numpy as np
 from pydarknet import Detector, Image
+from common import resize_images
+from subprocess import call
 
 
 class YoloDetector:
@@ -13,7 +15,8 @@ class YoloDetector:
                  path_meta,
                  GPU="0",
                  compute_method="compute_logits",
-                 viz_method="visualize_logits"):
+                 viz_method="visualize_logits",
+                 batch_size=1):
 
         self.path_cfg = path_cfg
         self.path_weights = path_weights
@@ -25,60 +28,69 @@ class YoloDetector:
 
         self.width = 555
         self.height = 416
+        self.batch_size=batch_size
 
-        self.net = Detector(bytes(self.path_cfg, encoding="utf-8"),
+        # has to replace the batch size
+        self.path_cfg_batch = self.path_cfg + ".batch_temp" + str(batch_size)
+        cmd = "sed 's/batch=1/batch="+str(batch_size)+"/g' < " + self.path_cfg + " > " + self.path_cfg_batch
+        print(cmd)
+        call(cmd, shell=True)
+
+        self.net = Detector(bytes(self.path_cfg_batch, encoding="utf-8"),
                             bytes(self.path_weights, encoding="utf-8"),
                             0,
                             bytes(self.path_meta, encoding="utf-8"))
 
-        self.current_image = None
+        self.current_images = None
 
 
     def compute(self, image):
         return getattr(self, self.compute_method)(image)
 
-    def visualize(self, pred):
-        return getattr(self, self.viz_method)(pred)
+    def visualize(self, pred, ibatch):
+        return getattr(self, self.viz_method)(pred, ibatch)
 
     def _combine_logits(self, logits):
         # The shape of each logit is: (batch[i], n[i], classp5[i], h[i], w[i])
-        # reshape them into H*W*C
+        # reshape them into batch*H*W*C
         max_h = -1
         max_w = -1
         transposed = []
         for l in logits:
-            l = np.transpose(l, axes=(3, 4, 0, 1, 2))
-            l = np.reshape(l, (l.shape[0], l.shape[1], -1))
-            max_h = max(max_h, l.shape[0])
-            max_w = max(max_w, l.shape[1])
+            l = np.transpose(l, axes=(0, 3, 4, 1, 2))
+            # has shape B*H*W*N*Cp5
+            l = np.reshape(l, (l.shape[0], l.shape[1], l.shape[2], -1))
+            max_h = max(max_h, l.shape[1])
+            max_w = max(max_w, l.shape[2])
             transposed.append(l)
 
         resized = []
         for l in transposed:
             #out = scipy.ndimage.zoom(l, (max_h // l.shape[0], max_w // l.shape[1], 1), order=0)
-            l = np.repeat(l, max_h // l.shape[0], axis=0)
-            l = np.repeat(l, max_w // l.shape[1], axis=1)
+            l = np.repeat(l, max_h // l.shape[1], axis=1)
+            l = np.repeat(l, max_w // l.shape[2], axis=2)
             resized.append(l)
-        concat = np.concatenate(resized, axis=2)
+        concat = np.concatenate(resized, axis=3)
         return concat
 
-    def compute_logits(self, image):
-        image = scipy.misc.imresize(image, [self.height, self.width], interp='bilinear')
-        dark_frame = Image(image)
-        self.net.forward(dark_frame)
-        del dark_frame
+    def compute_logits(self, images):
+        images = resize_images(images, [self.height, self.width])
+        dark_frames = Image(images)
+        self.net.forward(dark_frames, images.shape[0])
+        del dark_frames
 
         logits = self.net.get_logits()
         concat = self._combine_logits(logits)
 
-        self.current_image = image
+        self.current_images = images
         return concat
 
     # Note that the visualize function is a stateful function
     # in the sense that it needs the state of self.net, and self.image
-    def visualize_logits_general(self, pred, thresh=.5, nms=.45):
-        image = self.current_image
-        detections = self.net.get_boxes(thresh=thresh,
+    def visualize_logits_general(self, pred, ibatch, thresh=.5, nms=.45):
+        image = self.current_images[ibatch]
+        detections = self.net.get_boxes(ibatch,
+                                        thresh=thresh,
                                         hier_thresh=.5, # This value is not used for Yolo
                                         nms=nms)
 
@@ -90,11 +102,11 @@ class YoloDetector:
 
         return output
 
-    def visualize_logits(self, pred):
-        return self.visualize_logits_general(pred)
+    def visualize_logits(self, pred, ibatch):
+        return self.visualize_logits_general(pred, ibatch)
 
-    def visualize_logits_low_thresh(self, pred):
-        return self.visualize_logits_general(pred, thresh=0.1)
+    def visualize_logits_low_thresh(self, pred, ibatch):
+        return self.visualize_logits_general(pred, ibatch, thresh=0.1)
 
 if __name__ == "__main__":
     im = cv2.imread("/scratch/yang/aws_data/mapillary/validation/images/0daE8mWxlKFT8kLBE5f12w.jpg")

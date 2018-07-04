@@ -116,11 +116,11 @@ sudo apt-get install xserver-xorg-core
 #just clone the repo
 
 ###########the darknet python binding dependencies#########
-#install my version of darknet
+#install my version of darknet, modify the original version
 #make it!
 
 # no export won't work!!!
-export DARKNET_HOME="/data/yang/code/aws/pydarknet/darknet"
+export DARKNET_HOME="/data/yang/code/aws/yolo/darknet"
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$DARKNET_HOME
 
 pip3 install cython
