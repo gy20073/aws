@@ -106,19 +106,27 @@ WORKDIR /root/lutorpy
 RUN python3.6 setup.py install
 WORKDIR /root/
 
-
-####################DarkNet##################
-RUN git clone https://github.com/pjreddie/darknet
-WORKDIR /root/darknet
-# change makefile
-RUN sed -i -e 's/GPU=0/GPU=1/g' Makefile
-RUN sed -i -e 's/CUDNN=0/CUDNN=1/g' Makefile
-RUN sed -i -e 's/OPENCV=0/OPENCV=1/g' Makefile
-RUN apt-get install -yqq libopencv-dev
-RUN make -j
-WORKDIR /root/
-
 # Fix the opencv and ROS conflict
 RUN pip install opencv-python
 RUN echo "export PYTHONPATH=/usr/local/lib/python3.6/dist-packages:\$PYTHONPATH/" >> ~/.bashrc
-# TODO: Carla, single image depth, the training code
+
+# monocular depth estimation
+RUN git clone https://github.com/mrharicot/monodepth.git
+
+RUN git clone --recursive https://github.com/gy20073/aws.git
+###darknet####
+RUN apt-get install -yqq libopencv-dev
+WORKDIR /root/aws/yolo/darknet
+RUN make -j
+###pydarknet###
+WORKDIR /root/aws/yolo/pydarknet
+ENV DARKNET_HOME "/root/aws/yolo/darknet"
+ENV LD_LIBRARY_PATH $LD_LIBRARY_PATH:$DARKNET_HOME
+RUN apt-get install -yqq pkg-config python3-dev
+RUN pip install cython
+ENV GPU 1
+ENV OPENCV 0
+RUN pip install .
+WORKDIR /root/
+
+# TODO: Carla, the training code

@@ -114,6 +114,7 @@ sudo apt-get install xserver-xorg-core
 
 ########## the single image depth estimation ##############
 #just clone the repo
+https://github.com/mrharicot/monodepth.git
 
 ###########the darknet python binding dependencies#########
 #install my version of darknet, modify the original version
