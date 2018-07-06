@@ -111,6 +111,23 @@ class Perceptions:
         self.paths["depth"] = {"model_path": "/home/yang/monodepth/models/model_city2eigen/model_city2eigen",
                                "python_path": "/home/yang/monodepth"}
 
+    def path_docker(self):
+        self.paths = {}
+        codebase = "/root/aws/"
+        self.paths["det_COCO"] = {"path_cfg": codebase+"coco_original/yolov3.cfg",
+                                  "path_weights": "/root/models/COCO-yolov3.weights",
+                                  "path_meta": codebase+"coco_original/coco.data.docker"}
+        self.paths["det_TL"] = {"path_cfg": codebase+"traffic_light/yolov3-TL.cfg.test",
+                                "path_weights": "/root/models/TrafficLight-yolov3-TL.backup",
+                                "path_meta": codebase+"traffic_light/TL.data.docker"}
+        self.paths["det_TS"] = {"path_cfg": codebase+"traffic_sign/yolov3-CL.cfg.test",
+                                "path_weights": "/root/models/TrafficSign-yolov3-CL.backup",
+                                "path_meta": codebase+"traffic_sign/CL.data.docker"}
+        self.paths["seg"] = {"model_path": "/root/models/Segmentation-LinkNet-model-152.net",
+                             "mean_path": "/root/models/Segmentation_LinkNet_576_768.stat.t7"}
+        self.paths["depth"] = {"model_path": "/root/models/model_city2eigen",
+                               "python_path": codebase+"monodepth"}
+
     @staticmethod
     def merge_images(viz_dict, new_size):
         nimage = len(viz_dict)

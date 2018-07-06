@@ -129,4 +129,8 @@ ENV OPENCV 0
 RUN pip install .
 WORKDIR /root/
 
+
+# Download the models from GDrive
+RUN git clone https://github.com/circulosmeos/gdown.pl.git
+RUN bash /root/aws/download_models.sh
 # TODO: Carla, the training code

@@ -61,9 +61,9 @@ def vis_all(x, wrapper):
 if __name__ == "__main__":
     os.environ["CUDA_VISIBLE_DEVICES"] = "0"
     video_path = "/scratch/yang/aws_data/mkz/video_highqual.mp4"
-    batch_size=8
+    batch_size=1
 
-    if True:
+    if False:
         # segmentation interface
         from LinkNet.interface_segmentation import Segmenter
 
@@ -111,8 +111,8 @@ if __name__ == "__main__":
                         temp_down_factor=1,
                         batch_size=batch_size)
 
-    if False:
-        batch_size = 4
+    if True:
+        batch_size = 1
         from all_perceptions import Perceptions
         perceptions = Perceptions(det_COCO=True,
                                  det_TL=True,
