@@ -11,4 +11,5 @@ docker run \
     gy20073/ros \
     /bin/bash
 
-# sudo docker run -it --rm --runtime=nvidia -e NVIDIA_VISIBLE_DEVICES="0,1" gy20073/ros /bin/bash
+    # docker run -it --rm --net=host --name=yang_main --runtime=nvidia -e NVIDIA_VISIBLE_DEVICES="0,1" -e ROS_MASTER_URI=$ROS_MASTER_URI -v "/:/root/mount:rw" -v "/dev:/dev:rw" gy20073/ros /bin/bash
+    #docker run -it --rm --net=host --runtime=nvidia -e NVIDIA_VISIBLE_DEVICES="0,1" -e ROS_MASTER_URI=$ROS_MASTER_URI -v "/:/root/mount:rw" -v "/dev:/dev:rw" gy20073/ros /bin/bash
