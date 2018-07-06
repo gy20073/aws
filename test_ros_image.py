@@ -38,6 +38,6 @@ def on_image_received(data):
 if __name__ == "__main__":
     rospy.init_node('test_ros_image')
 
-    rospy.Subscriber("temp_image_topic", Image, on_image_received, queue_size=10)
+    rospy.Subscriber("/image_sender_0", Image, on_image_received, queue_size=10)
 
     rospy.spin()
