@@ -10,3 +10,5 @@ docker run \
     --network tnet \
     gy20073/ros \
     /bin/bash
+
+# sudo docker run -it --rm --runtime=nvidia -e NVIDIA_VISIBLE_DEVICES="0,1" gy20073/ros /bin/bash
