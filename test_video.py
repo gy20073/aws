@@ -111,7 +111,7 @@ if __name__ == "__main__":
                         temp_down_factor=1,
                         batch_size=batch_size)
 
-    if True:
+    if False:
         batch_size = 1
         from all_perceptions import Perceptions
         perceptions = Perceptions(det_COCO=True,
@@ -124,6 +124,29 @@ if __name__ == "__main__":
                                  compute_methods={},
                                  viz_methods={},
                                  path_config="path_jormungandr")
+
+        loop_over_video(video_path,
+                        lambda x: vis_all(x, perceptions),
+                        temp_down_factor=1,
+                        batch_size=batch_size)
+
+    if True:
+        # test within the docker
+        batch_size = 1
+        video_path = "/root/mount/mkz/video_highqual.mp4"
+
+        from all_perceptions import Perceptions
+
+        perceptions = Perceptions(det_COCO=True,
+                                  det_TL=True,
+                                  det_TS=True,
+                                  seg=False,
+                                  depth=True,
+                                  batch_size=batch_size,
+                                  gpu_assignment=[0, 1],
+                                  compute_methods={},
+                                  viz_methods={},
+                                  path_config="path_docker")
 
         loop_over_video(video_path,
                         lambda x: vis_all(x, perceptions),

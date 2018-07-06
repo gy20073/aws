@@ -131,6 +131,9 @@ WORKDIR /root/
 
 
 # Download the models from GDrive
+WORKDIR /root/aws
+RUN git pull
+WORKDIR /root
 RUN git clone https://github.com/circulosmeos/gdown.pl.git
 RUN bash /root/aws/download_models.sh
 # TODO: Carla, the training code
