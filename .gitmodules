@@ -13,3 +13,6 @@
 [submodule "pytorch-linknet"]
 	path = pytorch-linknet
 	url = https://github.com/gy20073/pytorch-linknet.git
+[submodule "camera_driver_yucong"]
+	path = camera_driver_yucong
+	url = https://github.com/gy20073/camera_driver_yucong.git

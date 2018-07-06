@@ -143,4 +143,8 @@ RUN apt-get install python3.6-tk
 
 # ship it with a sample video
 RUN /root/gdown.pl/gdown.pl https://drive.google.com/file/d/1SxXW-7ACUq3n9An_OwqHwGVhCP9TCOKu/view video_lowres.mkv
+
 # TODO: Carla, the training code
+COPY ./deps/spinnaker_1_5_0_27_amd64.tar.gz /root/spinnaker_1_5_0_27_amd64.tar.gz
+RUN tar -xzvf spinnaker_1_5_0_27_amd64.tar.gz
+RUN echo "export LD_LIBRARY_PATH=/root/spinnaker_1_5_0_27_amd64/lib:\$LD_LIBRARY_PATH" >> ~/.bashrc
