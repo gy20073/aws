@@ -133,7 +133,7 @@ if __name__ == "__main__":
     if True:
         # test within the docker
         batch_size = 1
-        video_path = "/root/mount/mkz/video_highqual.mp4"
+        video_path = "/root/video_lowres.mkv"
 
         from all_perceptions import Perceptions
 

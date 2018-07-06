@@ -140,4 +140,7 @@ RUN bash /root/aws/download_models.sh
 RUN pip install scipy scikit-image
 RUN apt-get update
 RUN apt-get install python3.6-tk
+
+# ship it with a sample video
+RUN /root/gdown.pl/gdown.pl https://drive.google.com/file/d/1SxXW-7ACUq3n9An_OwqHwGVhCP9TCOKu/view video_lowres.mkv
 # TODO: Carla, the training code
