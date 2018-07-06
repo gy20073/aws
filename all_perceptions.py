@@ -126,7 +126,7 @@ class Perceptions:
         self.paths["seg"] = {"model_path": "/root/models/Segmentation-LinkNet-model-152.net",
                              "mean_path": "/root/models/Segmentation_LinkNet_576_768.stat.t7"}
         self.paths["depth"] = {"model_path": "/root/models/model_city2eigen",
-                               "python_path": codebase+"monodepth"}
+                               "python_path": "/root/monodepth"}
 
     @staticmethod
     def merge_images(viz_dict, new_size):

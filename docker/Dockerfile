@@ -136,4 +136,8 @@ RUN git pull
 WORKDIR /root
 RUN git clone https://github.com/circulosmeos/gdown.pl.git
 RUN bash /root/aws/download_models.sh
+
+RUN pip install scipy scikit-image
+RUN apt-get update
+RUN apt-get install python3.6-tk
 # TODO: Carla, the training code
