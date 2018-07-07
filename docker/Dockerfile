@@ -144,23 +144,14 @@ RUN apt-get install python3.6-tk
 # ship it with a sample video
 RUN /root/gdown.pl/gdown.pl https://drive.google.com/file/d/1SxXW-7ACUq3n9An_OwqHwGVhCP9TCOKu/view video_lowres.mkv
 
-# TODO: Carla, the training code
-COPY ./deps/spinnaker_1_5_0_27_amd64.tar.gz /root/spinnaker_1_5_0_27_amd64.tar.gz
-RUN tar -xzvf spinnaker_1_5_0_27_amd64.tar.gz
-RUN echo "export LD_LIBRARY_PATH=/root/spinnaker_1_5_0_27_amd64/lib:\$LD_LIBRARY_PATH" >> ~/.bashrc
-
-WORKDIR /root/aws
-RUN git pull
-RUN git submodule init
-RUN git submodule update
+# Decided to run all camera related driver from the host machine, thus disable the spinaker integration
+#COPY ./deps/spinnaker_1_5_0_27_amd64.tar.gz /root/spinnaker_1_5_0_27_amd64.tar.gz
+#RUN tar -xzvf spinnaker_1_5_0_27_amd64.tar.gz
+#RUN echo "export LD_LIBRARY_PATH=/root/spinnaker_1_5_0_27_amd64/lib:\$LD_LIBRARY_PATH" >> ~/.bashrc
 
 RUN git config --global user.email "gy20073@gmail.com"
 RUN git config --global user.name "Yang Gao"
 
-# /root/aws/camera_driver_yucong/devel/setup.sh
-# roscore
- # run camera driver from the host and publish a topic
- #rosrun bfsdriver_1_1 bfsdriver_1_1_trigger_publisher
 RUN pip install rospkg catkin_pkg
 
-# convert everything to python2.7
+# TODO: Carla, the training code
