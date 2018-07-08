@@ -144,3 +144,5 @@ RUN git config --global user.name "Yang Gao"
 # old version of cv2 does not have videocapture
 #pip install --upgrade  opencv-python
 #pip install  --upgrade dask
+
+RUN apt-get install ros-kinetic-image-view
