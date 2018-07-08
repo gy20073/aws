@@ -17,7 +17,7 @@ from all_perceptions import Perceptions
 perceptions = Perceptions(det_COCO=True,
                           det_TL=True,
                           det_TS=True,
-                          seg=True,
+                          seg=False,
                           depth=True,
                           batch_size=1,
                           gpu_assignment=[0, 1],
