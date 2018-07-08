@@ -136,13 +136,6 @@ RUN /root/gdown.pl/gdown.pl https://drive.google.com/file/d/1SxXW-7ACUq3n9An_Owq
 RUN git config --global user.email "gy20073@gmail.com"
 RUN git config --global user.name "Yang Gao"
 
-# TODO: Carla, the training code
-
-# migrating to python2
-# change all python3 to python in this docker
-# install python2 tensorflow
-# old version of cv2 does not have videocapture
-#pip install --upgrade  opencv-python
-#pip install  --upgrade dask
-
 RUN apt-get install ros-kinetic-image-view
+
+# TODO: Carla, the training code

@@ -14,9 +14,10 @@ class YoloDetector:
                  path_weights,
                  path_meta,
                  GPU="0",
-                 compute_method="compute_logit_list",
+                 compute_method="compute_logits",
                  viz_method="visualize_logits",
-                 batch_size=1):
+                 batch_size=1,
+                 prune_coco=False):
 
         self.path_cfg = path_cfg
         self.path_weights = path_weights
@@ -27,6 +28,7 @@ class YoloDetector:
         self.viz_method = viz_method
 
         self.batch_size=batch_size
+        self.prune_coco=prune_coco
 
         # has to replace the batch size
         self.path_cfg_batch = self.path_cfg + ".batch_temp" + str(batch_size)
@@ -105,7 +107,7 @@ class YoloDetector:
 
 
     def compute_logits(self, images):
-        logits = self.compute_logit_list(images)
+        logits = self.compute_logits_list(images)
         return self._combine_logits(logits)
 
     def darknet_preprocess(self, images):
@@ -134,7 +136,19 @@ class YoloDetector:
         dark_frames = Image(images)
         return dark_frames, resized, images
 
-    def compute_logit_list(self, images):
+    def COCO_subsample_logits(self, logits):
+        keep = np.zeros((85,), dtype=np.bool)
+        keep[[0, 1, 2, 3, 4]] = True
+        # keep the traffic related categories of COCO
+        # they are: person, bicycle, car, motorbike, bus, train, truck, boat, traffic_light, stop_sign, parking_meter
+        keep[np.array([0, 1, 2, 3, 5, 6, 7, 8, 9, 11, 12])+5] = True
+        out = []
+        for l in logits:
+            # l has shape of (1, 3, 85, 52, 52)
+            out.append(l[:, :, keep, :, :])
+        return out
+
+    def compute_logits_list(self, images):
         dark_frames, self.current_images, images = self.darknet_preprocess(images)
         self.net.forward(dark_frames, self.current_images.shape[0])
         if False:
@@ -142,6 +156,8 @@ class YoloDetector:
             self.current_images = images
 
         logits = self.net.get_logits()
+        if self.prune_coco:
+            logits = self.COCO_subsample_logits(logits)
 
         return logits
 
@@ -166,6 +182,10 @@ class YoloDetector:
             cv2.putText(output, str(cat.decode("utf-8")), (int(x), int(y)), cv2.FONT_HERSHEY_COMPLEX, 0.3, (255, 255, 0))
 
         return output
+
+    def visualize_class_heatmap(self, pred, ibatch, classid):
+        #TODO
+        pass
 
     def visualize_logits(self, pred, ibatch):
         return self.visualize_logits_general(pred, ibatch)
