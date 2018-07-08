@@ -104,12 +104,13 @@ RUN git clone https://github.com/mrharicot/monodepth.git
 
 RUN git clone --recursive https://github.com/gy20073/aws.git
 ###darknet####
-# TODO: not sure whether this is needed
-#RUN apt-get install -yqq libopencv-dev
+# we need this line below
+RUN apt-get install -yqq libopencv-dev
 WORKDIR /root/aws/yolo/darknet
 RUN make -j
 ###pydarknet###
 WORKDIR /root/aws/yolo/pydarknet
+RUN pip install idna --upgrade
 ENV DARKNET_HOME "/root/aws/yolo/darknet"
 ENV LD_LIBRARY_PATH $LD_LIBRARY_PATH:$DARKNET_HOME
 RUN apt-get install -yqq pkg-config
