@@ -1,19 +1,6 @@
 # start from base
 FROM osrf/ros:kinetic-desktop-xenial
 
-# install system-wide deps for python and node
-RUN apt-get -yqq update
-RUN apt-get -yqq install wget iputils-ping htop software-properties-common python-software-properties git vim-gui-common vim-runtime ffmpeg tmux
-
-# install python3.6 and use it to replace the original python2.7
-RUN add-apt-repository -y ppa:deadsnakes/ppa
-RUN apt-get -yqq update
-RUN apt-get -yqq install python3.6
-# set up pip
-RUN curl https://bootstrap.pypa.io/get-pip.py |  python3.6
-
-RUN pip install --ignore-installed --upgrade https://storage.googleapis.com/tensorflow/linux/gpu/tensorflow_gpu-1.8.0-cp36-cp36m-linux_x86_64.whl
-
 ####################CUDA CUDNN###################
 RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates apt-transport-https gnupg-curl && \
     rm -rf /var/lib/apt/lists/* && \
@@ -82,6 +69,12 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 ##########End of installing cuda related stuff ###############
 
 
+# install system-wide deps for python and node
+RUN apt-get -yqq update
+RUN apt-get -yqq install wget iputils-ping htop software-properties-common python-software-properties git vim-gui-common vim-runtime ffmpeg tmux python-pip
+
+RUN pip install tensorflow-gpu
+
 # install LinkNet dependencies
 # torch
 WORKDIR /root/
@@ -99,30 +92,27 @@ WORKDIR /root/
 RUN bash /root/torch/install/bin/torch-activate && git clone https://github.com/soumith/cudnn.torch.git -b R7 && cd cudnn.torch && /root/torch/install/bin/luarocks make cudnn-scm-1.rockspec
 
 # lutorpy: call lua function from python
-RUN apt-get -yqq install python3.6-dev
+RUN apt-get -yqq install python-dev
 WORKDIR /root/
 RUN git clone https://github.com/imodpasteur/lutorpy.git
 WORKDIR /root/lutorpy
-RUN python3.6 setup.py install
+RUN python setup.py install
 WORKDIR /root/
-
-# Fix the opencv and ROS conflict
-RUN pip install opencv-python
-RUN echo "export PYTHONPATH=/usr/local/lib/python3.6/dist-packages:\$PYTHONPATH/" >> ~/.bashrc
 
 # monocular depth estimation
 RUN git clone https://github.com/mrharicot/monodepth.git
 
 RUN git clone --recursive https://github.com/gy20073/aws.git
 ###darknet####
-RUN apt-get install -yqq libopencv-dev
+# TODO: not sure whether this is needed
+#RUN apt-get install -yqq libopencv-dev
 WORKDIR /root/aws/yolo/darknet
 RUN make -j
 ###pydarknet###
 WORKDIR /root/aws/yolo/pydarknet
 ENV DARKNET_HOME "/root/aws/yolo/darknet"
 ENV LD_LIBRARY_PATH $LD_LIBRARY_PATH:$DARKNET_HOME
-RUN apt-get install -yqq pkg-config python3-dev
+RUN apt-get install -yqq pkg-config
 RUN pip install cython
 ENV GPU 1
 ENV OPENCV 0
@@ -131,27 +121,25 @@ WORKDIR /root/
 
 
 # Download the models from GDrive
-WORKDIR /root/aws
-RUN git pull
 WORKDIR /root
 RUN git clone https://github.com/circulosmeos/gdown.pl.git
 RUN bash /root/aws/download_models.sh
 
 RUN pip install scipy scikit-image
 RUN apt-get update
-RUN apt-get install python3.6-tk
+RUN apt-get install python-tk
 
 # ship it with a sample video
 RUN /root/gdown.pl/gdown.pl https://drive.google.com/file/d/1SxXW-7ACUq3n9An_OwqHwGVhCP9TCOKu/view video_lowres.mkv
 
-# Decided to run all camera related driver from the host machine, thus disable the spinaker integration
-#COPY ./deps/spinnaker_1_5_0_27_amd64.tar.gz /root/spinnaker_1_5_0_27_amd64.tar.gz
-#RUN tar -xzvf spinnaker_1_5_0_27_amd64.tar.gz
-#RUN echo "export LD_LIBRARY_PATH=/root/spinnaker_1_5_0_27_amd64/lib:\$LD_LIBRARY_PATH" >> ~/.bashrc
-
 RUN git config --global user.email "gy20073@gmail.com"
 RUN git config --global user.name "Yang Gao"
 
-RUN pip install rospkg catkin_pkg
-
 # TODO: Carla, the training code
+
+# migrating to python2
+# change all python3 to python in this docker
+# install python2 tensorflow
+# old version of cv2 does not have videocapture
+#pip install --upgrade  opencv-python
+#pip install  --upgrade dask

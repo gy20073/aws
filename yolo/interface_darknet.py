@@ -34,10 +34,17 @@ class YoloDetector:
         print(cmd)
         call(cmd, shell=True)
 
+        '''
+        # python3 syntax
         self.net = Detector(bytes(self.path_cfg_batch, encoding="utf-8"),
                             bytes(self.path_weights, encoding="utf-8"),
                             0,
                             bytes(self.path_meta, encoding="utf-8"))
+        '''
+        self.net = Detector(self.path_cfg_batch,
+                            self.path_weights,
+                            0,
+                            self.path_meta)
 
         self.current_images = None
 
