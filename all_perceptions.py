@@ -26,6 +26,10 @@ class Perceptions:
                 # pred, ibatch
                 viz = instance.visualize_logits_low_thresh(data[0], data[1])
                 conn.send(viz)
+            elif cmd == "general":
+                func = getattr(instance, data[0])
+                output = func(**data[1])
+                conn.send(output)
             else:
                 print("wrong command")
 
@@ -88,6 +92,8 @@ class Perceptions:
                     params.update({"compute_method": compute_methods[mode]})
                 if mode in viz_methods:
                     params.update({"viz_method": viz_methods[mode]})
+                if mode == "det_COCO":
+                    params.update({"prune_coco": True})
 
                 parent_conn, child_conn = Pipe()
                 p = Process(target=self.worker, args=(initializer, params, child_conn))
@@ -169,20 +175,30 @@ class Perceptions:
 
         return out_logits
 
+    def visualize_det_class(self, mode, logits_dict, ibatch, cid):
+        conn = self.instances[mode]
+        conn.send(("general", ("visualize_class_heatmap",
+                              {"pred": logits_dict[mode],
+                               "ibatch": ibatch,
+                               "classid": cid})))
+        return conn.recv()
+
     def visualize(self, logits_dict, ibatch, subplot_size=(312, 416)):
         out_viz = {"0_original": self.images[ibatch]}
         for mode in self.instances.keys():
+            if "det" in mode:
+                # ignores the high threshold detection boxes
+                continue
             conn = self.instances[mode]
             conn.send(("visualize", (logits_dict[mode], ibatch)))
-            #if "det" in mode:
-            #    conn.send(("visualize_low_thresh", (logits_dict[mode], ibatch)))
 
         for mode in self.instances.keys():
+            if "det" in mode:
+                continue
             conn = self.instances[mode]
             out_viz[mode] = conn.recv()
-            #if "det" in mode:
-            #    out_viz[mode+"_lowThres"] = conn.recv()
 
+        # low threshold detection boxes
         for mode in self.instances.keys():
             conn = self.instances[mode]
             if "det" in mode:
@@ -192,5 +208,16 @@ class Perceptions:
             conn = self.instances[mode]
             if "det" in mode:
                 out_viz[mode+"_lowThres"] = conn.recv()
+
+        if "det_COCO" in self.instances.keys():
+            # class 2 is car
+            out_viz["det_COCO_zcar"] = self.visualize_det_class("det_COCO", logits_dict, ibatch, 2)
+
+        if "det_TL" in self.instances.keys():
+            out_viz["det_TL_zgreen"] = self.visualize_det_class("det_TL", logits_dict, ibatch, 1)
+
+        if "det_TS" in self.instances.keys():
+            out_viz["det_TS_zstop"] = self.visualize_det_class("det_TS", logits_dict, ibatch, 0)
+
 
         return self.merge_images(out_viz, subplot_size)

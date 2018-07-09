@@ -3,6 +3,8 @@ import numpy as np
 from pydarknet import Detector, Image
 from common import resize_images
 from subprocess import call
+import matplotlib.pyplot as plt
+from PIL import Image as ImagePIL
 
 
 class YoloDetector:
@@ -29,6 +31,8 @@ class YoloDetector:
 
         self.batch_size=batch_size
         self.prune_coco=prune_coco
+        if prune_coco:
+            print("Warning: pruning logits for COCO activations")
 
         # has to replace the batch size
         self.path_cfg_batch = self.path_cfg + ".batch_temp" + str(batch_size)
@@ -49,6 +53,10 @@ class YoloDetector:
                             self.path_meta)
 
         self.current_images = None
+
+        # some visualization functions
+        self.cm_hot = plt.cm.get_cmap('viridis')
+        self.norm = plt.Normalize()
 
 
     def compute(self, image):
@@ -184,8 +192,34 @@ class YoloDetector:
         return output
 
     def visualize_class_heatmap(self, pred, ibatch, classid):
-        #TODO
-        pass
+        # compute a single averaged heatmap for objects in a particular class
+        pred = pred[ibatch]
+        pred = np.copy(pred)
+        pred = np.reshape(pred, (pred.shape[0], pred.shape[1], 3, 3, -1))
+        # now it has shape of: H*W* 3 scales * 3 anchors * CP5
+        to_average=[]
+        for iscale in range(3):
+            for ianchor in range(3):
+                objectness = pred[:, :, iscale, ianchor, 4]
+                classness  = pred[:, :, iscale, ianchor, 5+classid]
+                to_average.append(objectness * classness)
+        mean = np.mean(np.stack(to_average,axis=0), axis=0)
+
+        # convert it to color map
+        return self.convert_to_cmap(mean)
+
+    def convert_to_cmap(self, pred):
+        pred = self.norm(pred)
+        im = self.cm_hot(pred)
+        im = np.uint8(im * 255)
+
+        # convert RGBA to RGB
+        im = ImagePIL.fromarray(im)
+        background = ImagePIL.new("RGB", im.size, (255, 255, 255))
+        background.paste(im, mask=im.split()[3])  # 3 is the alpha channel
+
+        return np.array(background)
+
 
     def visualize_logits(self, pred, ibatch):
         return self.visualize_logits_general(pred, ibatch)

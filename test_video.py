@@ -102,7 +102,7 @@ if __name__ == "__main__":
                         temp_down_factor=1,
                         batch_size=batch_size)
 
-    if True:
+    if False:
         from yolo.interface_darknet import YoloDetector
 
         detector = YoloDetector(path_cfg="/data/yang/code/aws/coco_original/yolov3.cfg",
@@ -118,7 +118,7 @@ if __name__ == "__main__":
                         temp_down_factor=1,
                         batch_size=batch_size)
 
-    if False:
+    if True:
         batch_size = 1
         from all_perceptions import Perceptions
 
