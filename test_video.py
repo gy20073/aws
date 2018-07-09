@@ -64,7 +64,8 @@ def vis_all(x, wrapper):
 if __name__ == "__main__":
     os.environ["CUDA_VISIBLE_DEVICES"] = "0"
     video_path = "/scratch/yang/aws_data/mkz/video_lowres.mkv"
-    batch_size = 1
+    #video_path = "/scratch/yang/aws_data/carla_haoran/merged_lowqual.mp4"
+    batch_size = 32
 
     if False:
         # segmentation interface
@@ -85,7 +86,9 @@ if __name__ == "__main__":
 
     if False:
         # downsample
-        loop_over_video(video_path, lambda x: x[::4, ::4, ])
+        loop_over_video(video_path,
+                        lambda x: [x[0][::1, ::1, ]],
+                        temp_down_factor=1)
 
     if False:
         # depth prediction
@@ -119,16 +122,15 @@ if __name__ == "__main__":
                         batch_size=batch_size)
 
     if True:
-        batch_size = 1
         from all_perceptions import Perceptions
 
-        perceptions = Perceptions(det_COCO=True,
-                                  det_TL=True,
-                                  det_TS=True,
+        perceptions = Perceptions(det_COCO=False,
+                                  det_TL=False,
+                                  det_TS=False,
                                   seg=True,
                                   depth=True,
                                   batch_size=batch_size,
-                                  gpu_assignment=[1, 2],
+                                  gpu_assignment=[0, 2, 4],
                                   compute_methods={},
                                   viz_methods={},
                                   path_config="path_jormungandr")
@@ -140,7 +142,6 @@ if __name__ == "__main__":
 
     if False:
         # test within the docker
-        batch_size = 1
         video_path = "/root/video_lowres.mkv"
 
         from all_perceptions import Perceptions

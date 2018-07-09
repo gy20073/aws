@@ -14,10 +14,12 @@ class Perceptions:
             cmd, data = conn.recv()
             # have the multiple combinations to avoid extra communications
             if cmd == "compute":
-                print("start compute on ", initializer, time.time())
+                start = time.time()
+                print("start compute on ", initializer, start)
                 logit = instance.compute(data)
                 conn.send(logit)
-                print("end compute on ", initializer, time.time())
+                endtime = time.time()
+                print("end compute on ", initializer, endtime, "using:", (endtime-start)*1000, " ms")
             elif cmd == "visualize":
                 # pred, ibatch
                 viz = instance.visualize(data[0], data[1])
