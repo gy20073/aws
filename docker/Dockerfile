@@ -136,6 +136,6 @@ RUN /root/gdown.pl/gdown.pl https://drive.google.com/file/d/1SxXW-7ACUq3n9An_Owq
 RUN git config --global user.email "gy20073@gmail.com"
 RUN git config --global user.name "Yang Gao"
 
-RUN apt-get install ros-kinetic-image-view
+RUN apt-get install -yqq ros-kinetic-image-view
 
 # TODO: Carla, the training code
