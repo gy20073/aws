@@ -17,7 +17,7 @@ from all_perceptions import Perceptions
 perceptions = Perceptions(det_COCO=True,
                           det_TL=True,
                           det_TS=True,
-                          seg=False,
+                          seg=True,
                           depth=True,
                           batch_size=1,
                           gpu_assignment=[0, 1],
@@ -38,6 +38,6 @@ def on_image_received(data):
 if __name__ == "__main__":
     rospy.init_node('test_ros_image')
 
-    rospy.Subscriber("/image_sender_0", Image, on_image_received, queue_size=10)
+    rospy.Subscriber("/image_sender_0/H576W768", Image, on_image_received, queue_size=10)
 
     rospy.spin()
