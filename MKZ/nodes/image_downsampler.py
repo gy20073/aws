@@ -20,6 +20,7 @@ def on_image_received(data):
                dsize=(768, 576),
                interpolation=cv2.INTER_AREA)
     img = img[::-1, ::-1, :]
+
     img = bridge.cv2_to_imgmsg(img, "rgb8")
     image_pub.publish(img)
 

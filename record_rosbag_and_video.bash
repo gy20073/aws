@@ -30,6 +30,6 @@ rosbag record \
 /xsens/fix /xsens/imu/data /xsens/imu/mag /xsens/imu_data_str /xsens/time_reference \
 $DOWNSAMPLED_IMAGE_TOPIC &
 
-rosrun image_view video_recorder image:=$ORIGINAL_IMAGE_TOPIC _filename:=$OUTPUT_ORIGINAL_VIDEO _codec:="X264" _encoding:="rgb8" &
+rosrun image_view video_recorder image:=$ORIGINAL_IMAGE_TOPIC _filename:=$OUTPUT_ORIGINAL_VIDEO _codec:="X264" _encoding:="bgr8" &
 
-rosrun image_view video_recorder image:=$VIZ_IMAGE_TOPIC _filename:=$OUTPUT_VIZ_VIDEO _codec:="X264" _encoding:="rgb8" &
+rosrun image_view video_recorder image:=$VIZ_IMAGE_TOPIC _filename:=$OUTPUT_VIZ_VIDEO _codec:="X264" _encoding:="bgr8" &
