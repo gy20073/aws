@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
-OUTPUT_PREFIX="/root/mount"
+OUTPUT_PREFIX="/root/mount/media/bdd/ExternalSto/mkz_20180717"
 # we are saving the images into a video
-ORIGINAL_IMAGE_TOPIC="/image_sender_0"
+ORIGINAL_IMAGE_TOPIC="/image_sender_0/flipped"
 OUTPUT_ORIGINAL_VIDEO=$OUTPUT_PREFIX"/original_images.avi"
 # all topics with downsampled images into a rosbag
 DOWNSAMPLED_IMAGE_TOPIC="/image_sender_0/H576W768"
