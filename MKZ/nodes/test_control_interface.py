@@ -13,7 +13,7 @@ class ControlInterface(object):
         self._throttle_pub = rospy.Publisher('/vehicle/throttle_cmd', ThrottleCmd, queue_size=10)
         self._brake = 0.0
         self._brake_pub = rospy.Publisher('/vehicle/brake_cmd', BrakeCmd, queue_size=10)
-        self._steer = 0.0
+        self._steer = -4.0
         self._steer_pub = rospy.Publisher('/vehicle/steering_cmd', SteeringCmd, queue_size=10)
         self.start_loop()
 
@@ -43,6 +43,7 @@ class ControlInterface(object):
         steer_cmd.enable = True
         # rad, range -8.2 to 8.2
         steer_cmd.steering_wheel_angle_cmd = self._steer
+        #steer_cmd.steering_wheel_angle_velocity = self._steer
         self._steer_pub.publish(steer_cmd)
 
     def pub_loop(self):
@@ -50,9 +51,10 @@ class ControlInterface(object):
         while True:
             counter += 1
             self.pub_once()
-            time.sleep(1.0 / 50)
+            time.sleep(1.0 / 75)
             if counter % 100 == 0:
                 print("publishing at 50hz")
+                print("brake",self._brake, "throttle", self._throttle, "steer", self._steer)
 
     def start_loop(self):
         thread = Thread(target=self.pub_loop())
@@ -61,4 +63,5 @@ class ControlInterface(object):
 if __name__ == "__main__":
     rospy.init_node('raw_control_publisher', anonymous=True)
     controller = ControlInterface()
-    controller.set_throttle(0.5)
+    #controller.set_throttle(0.2)
+    controller.set_break(1.0)
