@@ -1,9 +1,6 @@
 #!/usr/bin/env python
 
-# roslib related
-import rospy, time
-from threading import Thread
-
+import rospy, time, threading
 # messages related
 from dbw_mkz_msgs.msg import ThrottleCmd, BrakeCmd, SteeringCmd
 
@@ -13,8 +10,11 @@ class ControlInterface(object):
         self._throttle_pub = rospy.Publisher('/vehicle/throttle_cmd', ThrottleCmd, queue_size=10)
         self._brake = 0.0
         self._brake_pub = rospy.Publisher('/vehicle/brake_cmd', BrakeCmd, queue_size=10)
-        self._steer = -4.0
+        self._steer = 0.0
         self._steer_pub = rospy.Publisher('/vehicle/steering_cmd', SteeringCmd, queue_size=10)
+
+        self.counter = 0
+        self.last_time = time.time()
         self.start_loop()
 
     def set_throttle(self, new_throttle):
@@ -46,19 +46,15 @@ class ControlInterface(object):
         #steer_cmd.steering_wheel_angle_velocity = self._steer
         self._steer_pub.publish(steer_cmd)
 
-    def pub_loop(self):
-        counter = 0
-        while True:
-            counter += 1
-            self.pub_once()
-            time.sleep(1.0 / 75)
-            if counter % 100 == 0:
-                print("publishing at 50hz")
-                print("brake",self._brake, "throttle", self._throttle, "steer", self._steer)
-
     def start_loop(self):
-        thread = Thread(target=self.pub_loop())
-        thread.start()
+        self.counter += 1
+        if self.counter % 75 == 0:
+            #print("time eplapsed is ", time.time() - self.last_time)
+            #self.last_time = time.time()
+            print("brake", self._brake, "throttle", self._throttle, "steer", self._steer)
+        self.pub_once()
+        threading.Timer(1.0 / 75, self.start_loop).start()
+
 
 if __name__ == "__main__":
     rospy.init_node('raw_control_publisher', anonymous=True)
