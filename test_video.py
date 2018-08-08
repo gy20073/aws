@@ -1,4 +1,4 @@
-import os, cv2
+import os, cv2, Queue, time
 import numpy as np
 
 
@@ -60,12 +60,20 @@ def vis_all(x, wrapper):
         viz_output.append(wrapper.visualize(pred, i))
     return viz_output
 
+def vis_async(x, input_queue):
+    batch_size = len(x)
+    x = np.stack(x, axis=0)
+    input_queue.put(x)
+    viz_output = []
+    for i in range(batch_size):
+        viz_output.append(np.zeros((10,10,3), dtype=np.uint8))
+    return viz_output
 
 if __name__ == "__main__":
     os.environ["CUDA_VISIBLE_DEVICES"] = "0"
     video_path = "/scratch/yang/aws_data/mkz/video_lowres.mkv"
     #video_path = "/scratch/yang/aws_data/carla_haoran/merged_lowqual.mp4"
-    batch_size = 32
+    batch_size = 64
 
     if False:
         # segmentation interface
@@ -121,7 +129,7 @@ if __name__ == "__main__":
                         temp_down_factor=1,
                         batch_size=batch_size)
 
-    if True:
+    if False:
         from all_perceptions import Perceptions
 
         perceptions = Perceptions(det_COCO=False,
@@ -161,3 +169,33 @@ if __name__ == "__main__":
                         lambda x: vis_all(x, perceptions),
                         temp_down_factor=1,
                         batch_size=batch_size)
+
+    if True:
+        from all_perceptions import Perceptions
+
+        perceptions = Perceptions(det_COCO=True,
+                                  det_TL=True,
+                                  det_TS=True,
+                                  seg=True,
+                                  depth=True,
+                                  batch_size=4,
+                                  gpu_assignment=[0, 1, 4, 5, 6],
+                                  compute_methods={},
+                                  viz_methods={},
+                                  num_replicates={"det_COCO":3, "det_TL":3, "det_TS":3, "seg":2, "depth":2},
+                                  path_config="path_jormungandr")
+
+        input_queue = Queue.Queue(10000)
+        output_queue = perceptions.compute_async(input_queue)
+
+        loop_over_video(video_path,
+                        lambda x: vis_async(x, input_queue),
+                        temp_down_factor=1,
+                        batch_size=batch_size)
+
+        while True:
+            start = time.time()
+            pred = output_queue.get()
+            duration = time.time() - start
+            print("get one output, at speed ", batch_size / duration, " Hz")
+
