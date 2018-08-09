@@ -48,7 +48,7 @@ class Depth:
         config = tf.ConfigProto(allow_soft_placement=True)
         #config.gpu_options.allow_growth = True
         # If error arises then change the following param
-        config.gpu_options.per_process_gpu_memory_fraction = 0.2 + 0.005*batch_size
+        config.gpu_options.per_process_gpu_memory_fraction = 0.05 + 0.003*batch_size
         sess = tf.Session(config=config)
 
         # SAVER

@@ -73,7 +73,7 @@ if __name__ == "__main__":
     os.environ["CUDA_VISIBLE_DEVICES"] = "0"
     video_path = "/scratch/yang/aws_data/mkz/video_lowres.mkv"
     #video_path = "/scratch/yang/aws_data/carla_haoran/merged_lowqual.mp4"
-    batch_size = 64
+    batch_size = 36
 
     if False:
         # segmentation interface
@@ -175,14 +175,14 @@ if __name__ == "__main__":
 
         perceptions = Perceptions(det_COCO=True,
                                   det_TL=True,
-                                  det_TS=True,
+                                  det_TS=False,
                                   seg=True,
                                   depth=True,
-                                  batch_size=4,
-                                  gpu_assignment=[0, 1, 4, 5, 6],
+                                  batch_size={"det_COCO":3, "det_TL":3, "det_TS":-1, "seg":4, "depth":4},
+                                  gpu_assignment=[0, 1, 4, 5],
                                   compute_methods={},
                                   viz_methods={},
-                                  num_replicates={"det_COCO":3, "det_TL":3, "det_TS":3, "seg":2, "depth":2},
+                                  num_replicates={"det_COCO":6, "det_TL":6, "det_TS":-1, "seg":4, "depth":4},
                                   path_config="path_jormungandr")
 
         input_queue = Queue.Queue(10000)
@@ -193,9 +193,17 @@ if __name__ == "__main__":
                         temp_down_factor=1,
                         batch_size=batch_size)
 
+
+        num_ignore = 50
+        counter = 0
         while True:
+            counter += 1
+            if counter == num_ignore:
+                total_start = time.time()
             start = time.time()
             pred = output_queue.get()
             duration = time.time() - start
             print("get one output, at speed ", batch_size / duration, " Hz")
+            if counter >=num_ignore:
+                print("     accumulated speed is:", batch_size*(counter-num_ignore+1) / (time.time()-total_start), " Hz")
 

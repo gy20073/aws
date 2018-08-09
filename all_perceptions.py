@@ -127,7 +127,7 @@ class Perceptions:
 
                     if "det" in mode:
                         print("sleeping to stable create det models")
-                        time.sleep(3)
+                        time.sleep(1)
 
                     self.instances[mode_name_i] = parent_conn
 
@@ -275,11 +275,11 @@ class Perceptions:
                     second_order.append(i)
             third_order = list(set(range(num_rep)) - set(search_order) - set(second_order))
 
-            ntrails = 0
+            #ntrails = 0
             for i in search_order + second_order + third_order:
                 if current[i] is None:
                     current[i] = self.output_queue_mode[mode][i].get()
-                    ntrails += 1
+                    #ntrails += 1
 
                 if current[i][0] == self.next_ids[mode]:
                     self.next_ids[mode] += 1
@@ -289,7 +289,7 @@ class Perceptions:
                     history.append(i)
                     history = history[1:]
 
-                    print(mode, "used ", ntrails, " get")
+                    #print(mode, "used ", ntrails, " get")
                     break
 
     def _thread_output_merger(self, output_queue):
@@ -297,6 +297,9 @@ class Perceptions:
             res = {}
             ids = []
             for mode in self.output_replicate_merged.keys():
+                if self.output_replicate_merged[mode].empty():
+                    #print("waiting for mode: ", mode)
+                    pass
                 id, res[mode] = self.output_replicate_merged[mode].get()
                 ids.append(id)
             assert(all(np.array(ids)==ids[0]))

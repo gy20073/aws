@@ -19,7 +19,8 @@ class YoloDetector:
                  compute_method="compute_logits",
                  viz_method="visualize_logits",
                  batch_size=1,
-                 prune_coco=False):
+                 prune_coco=False,
+                 resolution=416):
 
         self.path_cfg = path_cfg
         self.path_weights = path_weights
@@ -31,6 +32,8 @@ class YoloDetector:
 
         self.batch_size=batch_size
         self.prune_coco=prune_coco
+        # TODO: explore the lower resolution training, not right now
+        self.resolution = resolution
         if prune_coco:
             print("Warning: pruning logits for COCO activations")
 
@@ -120,7 +123,7 @@ class YoloDetector:
 
     def darknet_preprocess(self, images):
         # resize the images to shorter edge be neth
-        neth = netw = 416
+        neth = netw = self.resolution
         im_h = images.shape[1]
         im_w = images.shape[2]
 
