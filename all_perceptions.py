@@ -215,7 +215,26 @@ class Perceptions:
         p.start()
         return output_queue
 
-    def compute_async_impl(self, input_queue, output_queue):
+    def compute_async_noprocess(self, input_queue):
+        output_queue = Queue.Queue(5)
+        return self.compute_async_impl(input_queue, output_queue, block=False)
+
+    def compute_async_noprocess_queue_only(self, input_queue):
+        output_queue = mQueue(5)
+        def read_out_put_in(input, output):
+            out = {"seg": np.zeros((36, 144, 192, 6), dtype=np.float32),
+                   "depth": np.zeros((36, 256, 512, 1), dtype=np.float32),
+                   "det_COCO": np.zeros((36, 52, 52, 144), dtype=np.float32),
+                   "det_TL": np.zeros((36, 52, 52, 72), dtype=np.float32),}
+            while True:
+                #data = input.get()
+                #output.put(1)
+                output.put(out)
+        t = threading.Thread(target=read_out_put_in, args=(input_queue, output_queue))
+        t.start()
+        return output_queue
+
+    def compute_async_impl(self, input_queue, output_queue, block=True):
         # start multiple threads for each mode
         self.batch_id = 0 # the priority number
         t = threading.Thread(target=self._thread_input_replicater, args=(input_queue,))
@@ -238,6 +257,8 @@ class Perceptions:
 
         t = threading.Thread(target=self._thread_output_merger, args=(output_queue,))
         t.start()
+        if block:
+            t.join() # this will never returns
 
         return output_queue
 
@@ -369,6 +390,7 @@ class Perceptions:
                 id, res[mode] = self.output_replicate_merged[mode].get()
                 ids.append(id)
             assert(all(np.array(ids)==ids[0]))
+            # This function is slow, move it to tensor operations, around 35Hz
             #res = self._merge_logits_all_perception(res)
             output_queue.put(res)
 

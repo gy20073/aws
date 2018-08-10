@@ -1,5 +1,6 @@
 import os, cv2, Queue, time
 from multiprocessing import Queue as mQueue
+from multiprocessing import Process
 import numpy as np
 
 
@@ -174,20 +175,34 @@ if __name__ == "__main__":
     if True:
         from all_perceptions import Perceptions
 
-        perceptions = Perceptions(det_COCO=True,
-                                  det_TL=True,
-                                  det_TS=False,
-                                  seg=True,
-                                  depth=True,
-                                  batch_size={"det_COCO":3, "det_TL":3, "det_TS":-1, "seg":4, "depth":4},
-                                  gpu_assignment=[0, 1, 4, 5],
-                                  compute_methods={},
-                                  viz_methods={},
-                                  num_replicates={"det_COCO":6, "det_TL":6, "det_TS":-1, "seg":4, "depth":4},
-                                  path_config="path_jormungandr")
+        if False:
+            perceptions = Perceptions(det_COCO=True,
+                                      det_TL=True,
+                                      det_TS=False,
+                                      seg=True,
+                                      depth=True,
+                                      batch_size={"det_COCO":3, "det_TL":3, "det_TS":-1, "seg":4, "depth":4},
+                                      gpu_assignment=[0, 1, 4, 5],
+                                      compute_methods={},
+                                      viz_methods={},
+                                      num_replicates={"det_COCO":6, "det_TL":6, "det_TS":-1, "seg":4, "depth":4},
+                                      path_config="path_jormungandr")
+        else:
+            perceptions = Perceptions(det_COCO=False,
+                                      det_TL=False,
+                                      det_TS=False,
+                                      seg=False,
+                                      depth=True,
+                                      batch_size={"det_COCO": 3, "det_TL": 3, "det_TS": -1, "seg": 4, "depth": 4},
+                                      gpu_assignment=[0, 1, 4, 5],
+                                      compute_methods={},
+                                      viz_methods={},
+                                      num_replicates={"det_COCO": 6, "det_TL": 6, "det_TS": -1, "seg": 4, "depth": 1},
+                                      path_config="path_jormungandr")
 
+        #input_queue = Queue.Queue(10000)
         input_queue = mQueue(10000)
-        output_queue = perceptions.compute_async(input_queue)
+        output_queue = perceptions.compute_async_noprocess_queue_only(input_queue)
 
         loop_over_video(video_path,
                         lambda x: vis_async(x, input_queue),
@@ -212,3 +227,19 @@ if __name__ == "__main__":
             if counter >=num_ignore:
                 print("     accumulated speed is:", batch_size*(counter-num_ignore+1) / (time.time()-total_start), " Hz")
 
+    if False:
+        from all_perceptions import Perceptions
+
+        # this does not work
+        p = Process(target=Perceptions.__init__, kwargs={"det_COCO":True,
+                                  "det_TL":True,
+                                  "det_TS":False,
+                                  "seg":True,
+                                  "depth":True,
+                                  "batch_size":{"det_COCO": 3, "det_TL": 3, "det_TS": -1, "seg": 4, "depth": 4},
+                                  "gpu_assignment":[0, 1, 4, 5],
+                                  "compute_methods":{},
+                                  "viz_methods":{},
+                                  "num_replicates":{"det_COCO": 6, "det_TL": 6, "det_TS": -1, "seg": 4, "depth": 4},
+                                  "path_config":"path_jormungandr"})
+        p.start()
