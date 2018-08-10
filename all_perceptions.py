@@ -208,31 +208,18 @@ class Perceptions:
 
         return out_logits
 
-    def compute_async(self, input_queue):
+    def compute_async_process(self, input_queue):
         assert(isinstance(input_queue, type(mQueue())))
         output_queue = mQueue(5)
         p=Process(target=self.compute_async_impl, args=(input_queue, output_queue))
         p.start()
         return output_queue
 
-    def compute_async_noprocess(self, input_queue):
+    def compute_async_thread(self, input_queue):
+        if not isinstance(input_queue, Queue.Queue):
+            print("warning, not using Queue.Queue for the thread interface")
         output_queue = Queue.Queue(5)
         return self.compute_async_impl(input_queue, output_queue, block=False)
-
-    def compute_async_noprocess_queue_only(self, input_queue):
-        output_queue = mQueue(5)
-        def read_out_put_in(input, output):
-            out = {"seg": np.zeros((36, 144, 192, 6), dtype=np.float32),
-                   "depth": np.zeros((36, 256, 512, 1), dtype=np.float32),
-                   "det_COCO": np.zeros((36, 52, 52, 144), dtype=np.float32),
-                   "det_TL": np.zeros((36, 52, 52, 72), dtype=np.float32),}
-            while True:
-                #data = input.get()
-                #output.put(1)
-                output.put(out)
-        t = threading.Thread(target=read_out_put_in, args=(input_queue, output_queue))
-        t.start()
-        return output_queue
 
     def compute_async_impl(self, input_queue, output_queue, block=True):
         # start multiple threads for each mode
@@ -337,22 +324,16 @@ class Perceptions:
         det_sz = (39, 52)
         for key in sorted(logits_dict.keys()):
             if key == "seg":
-                dB, dH, dW, dC = logits_dict[key].shape
                 factor = 3
                 size = (det_sz[0]*factor, det_sz[1]*factor)
-                resized = zoom(logits_dict[key],
-                               zoom=[1.0, 1.0 * size[0] / dH, 1.0 * size[1] / dW, 1.0],
-                               order=0)
+                resized = resize_images(logits_dict[key], size, interpolation=cv2.INTER_NEAREST)
                 resized *= 0.1
                 resized = self._space2depth(resized, factor)
                 res.append(resized)
             elif key == "depth":
-                dB, dH, dW, dC = logits_dict[key].shape
                 factor = 5
                 size = (det_sz[0]*factor, det_sz[1]*factor)
-                resized = zoom(logits_dict[key],
-                               zoom=[1.0, 1.0 * size[0] / dH, 1.0 * size[1] / dW, 1.0],
-                               order=1)
+                resized = resize_images(logits_dict[key], size, interpolation=cv2.INTER_LINEAR)
                 resized *= 50
                 resized = self._space2depth(resized, factor)
                 res.append(resized)
@@ -376,7 +357,9 @@ class Perceptions:
 
                 res.append(cropped)
 
-        return np.concatenate(res, axis=3)
+        concat = np.concatenate(res, axis=3)
+
+        return concat
 
 
     def _thread_output_merger(self, output_queue):
@@ -390,8 +373,8 @@ class Perceptions:
                 id, res[mode] = self.output_replicate_merged[mode].get()
                 ids.append(id)
             assert(all(np.array(ids)==ids[0]))
-            # This function is slow, move it to tensor operations, around 35Hz
-            #res = self._merge_logits_all_perception(res)
+            # this cost 0.28 seconds, which is 120Hz, will not be the bottleneck, however it will add some delay
+            res = self._merge_logits_all_perception(res)
             output_queue.put(res)
 
 
