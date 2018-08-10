@@ -1,4 +1,5 @@
 import os, cv2, Queue, time
+from multiprocessing import Queue as mQueue
 import numpy as np
 
 
@@ -185,7 +186,7 @@ if __name__ == "__main__":
                                   num_replicates={"det_COCO":6, "det_TL":6, "det_TS":-1, "seg":4, "depth":4},
                                   path_config="path_jormungandr")
 
-        input_queue = Queue.Queue(10000)
+        input_queue = mQueue(10000)
         output_queue = perceptions.compute_async(input_queue)
 
         loop_over_video(video_path,

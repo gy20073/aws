@@ -1,6 +1,7 @@
 import numpy as np
 import copy, math, time, cv2, threading, Queue
 from multiprocessing import Process, Pipe
+from multiprocessing import Queue as mQueue
 from common import resize_images
 from collections import defaultdict
 from scipy.ndimage.interpolation import zoom
@@ -208,6 +209,13 @@ class Perceptions:
         return out_logits
 
     def compute_async(self, input_queue):
+        assert(isinstance(input_queue, type(mQueue())))
+        output_queue = mQueue(5)
+        p=Process(target=self.compute_async_impl, args=(input_queue, output_queue))
+        p.start()
+        return output_queue
+
+    def compute_async_impl(self, input_queue, output_queue):
         # start multiple threads for each mode
         self.batch_id = 0 # the priority number
         t = threading.Thread(target=self._thread_input_replicater, args=(input_queue,))
@@ -228,7 +236,6 @@ class Perceptions:
             t = threading.Thread(target=self._thread_replicate_merger, args=(mode,))
             t.start()
 
-        output_queue = Queue.Queue(5)
         t = threading.Thread(target=self._thread_output_merger, args=(output_queue,))
         t.start()
 
