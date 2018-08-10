@@ -202,6 +202,10 @@ if __name__ == "__main__":
                 total_start = time.time()
             start = time.time()
             pred = output_queue.get()
+
+            #import pdb
+            #pdb.set_trace()
+
             duration = time.time() - start
             print("get one output, at speed ", batch_size / duration, " Hz")
             if counter >=num_ignore:

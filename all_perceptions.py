@@ -3,6 +3,7 @@ import copy, math, time, cv2, threading, Queue
 from multiprocessing import Process, Pipe
 from common import resize_images
 from collections import defaultdict
+from scipy.ndimage.interpolation import zoom
 
 class Perceptions:
     @staticmethod
@@ -292,6 +293,48 @@ class Perceptions:
                     #print(mode, "used ", ntrails, " get")
                     break
 
+    def _merge_logits_all_perception(self, logits_dict, size=(144, 192)):
+        res = []
+        for key in sorted(logits_dict.keys()):
+            if key == "seg":
+                dB, dH, dW, dC = logits_dict[key].shape
+                resized = zoom(logits_dict[key],
+                               zoom=[1.0, 1.0 * size[0] / dH, 1.0 * size[1] / dW, 1.0],
+                               order=0)
+                resized *= 0.1
+                res.append(resized)
+            elif key == "depth":
+                dB, dH, dW, dC = logits_dict[key].shape
+                resized = zoom(logits_dict[key],
+                               zoom=[1.0, 1.0*size[0]/dH, 1.0*size[1]/dW, 1.0],
+                               order=1)
+                resized *= 50
+                res.append(resized)
+            elif "det" in key:
+                dB, dH, dW, dC = logits_dict[key].shape
+                # compute the effective height
+                eH = int(1.0 * size[0] / size[1] * dW)
+                # compute the upper margine
+                H_start = (dH - eH) // 2
+                # crop the useful part
+                cropped = logits_dict[key][:, H_start:(H_start+eH), :, :]
+
+                # multiply the amplify factor
+                num_classes = dC // 9 - 5
+                # we amplify the objectness score by 10
+                factor = [1.0] * 4 + [10.0] + [1.0]*num_classes
+                factor = np.array(factor*9)
+                factor = np.reshape(factor, newshape=(1, 1, 1, -1))
+                cropped = cropped * factor
+
+                # resize with NN to the required output size
+                resized = zoom(cropped,
+                               zoom=[1.0, 1.0 * size[0] / eH, 1.0 * size[1] / dW, 1.0],
+                               order=0)
+                res.append(resized)
+
+        return np.concatenate(res, axis=3)
+
     def _thread_output_merger(self, output_queue):
         while True:
             res = {}
@@ -303,6 +346,7 @@ class Perceptions:
                 id, res[mode] = self.output_replicate_merged[mode].get()
                 ids.append(id)
             assert(all(np.array(ids)==ids[0]))
+            res = self._merge_logits_all_perception(res)
             output_queue.put(res)
 
 
