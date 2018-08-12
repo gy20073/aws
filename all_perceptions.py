@@ -95,6 +95,7 @@ class Perceptions:
         self.instances = {}
         self._batch_size = {}
         self.all_modes = {}
+        self.channel_id = 0
 
         for mode in sorted(modalities.keys()):
             if modalities[mode]:
@@ -209,6 +210,8 @@ class Perceptions:
         return out_logits
 
     def compute_async_process(self, input_queue):
+        raise DeprecationWarning()
+
         assert(isinstance(input_queue, type(mQueue())))
         output_queue = mQueue(5)
         p=Process(target=self.compute_async_impl, args=(input_queue, output_queue))
@@ -220,6 +223,40 @@ class Perceptions:
             print("warning, not using Queue.Queue for the thread interface")
         output_queue = Queue.Queue(5)
         return self.compute_async_impl(input_queue, output_queue, block=False)
+
+    def compute_async_thread_channel(self, input_queue):
+        this_channel_id = self.channel_id
+        self.channel_id += 1
+        print("compute async thread channel ", this_channel_id)
+
+        # feed this input_queue to the common input queue
+        if this_channel_id == 0:
+            # if this is the first call, then setup the main computing pipeline
+            self.common_input_queue = Queue.Queue(5)
+            self.common_output_queue = Queue.Queue(5)
+            self.compute_async_impl(self.common_input_queue, self.common_output_queue, block=False)
+            self.list_input_queue = []
+            self.list_output_queue = []
+
+            t = threading.Thread(target=self._thread_channel_output, args=(self.common_output_queue, ))
+            t.start()
+
+        self.list_output_queue.append(Queue.Queue(5))
+
+        t = threading.Thread(target=self._thread_channel_input, args=(input_queue, self.common_input_queue, this_channel_id,))
+        t.start()
+
+        return self.list_output_queue[-1]
+
+    def _thread_channel_input(self, input_queue, common_input, channel_id):
+        while True:
+            data = input_queue.get()
+            common_input.put((channel_id, data))
+
+    def _thread_channel_output(self, common_output_queue):
+        while True:
+            id, data = common_output_queue.get()
+            self.list_output_queue[id].put(data)
 
     def compute_async_impl(self, input_queue, output_queue, block=True):
         # start multiple threads for each mode
@@ -256,7 +293,7 @@ class Perceptions:
             self.input_queue_replicate[mode] = Queue.Queue(5)
         while True:
             data = input_queue.get()
-            self.images = data
+            self.images = data[1]
             for mode in self.input_queue_replicate.keys():
                 self.input_queue_replicate[mode].put((self.batch_id, data))
             self.batch_id += 1
@@ -267,14 +304,15 @@ class Perceptions:
         batch_size = self._batch_size[mode]
         conn = self.instances[self.rep_name(mode, irep)]
         while True:
-            id, images = self.input_queue_replicate[mode].get()
+            id, payload = self.input_queue_replicate[mode].get()
+            ichannel, images = payload
             assert(images.shape[0] % batch_size == 0)
             res = []
             for i in range(images.shape[0] // batch_size):
                 conn.send(("compute", images[i*batch_size : (i+1)*batch_size]))
                 res.append(conn.recv())
             out = np.concatenate(res, 0)
-            output_queue.put((id, out))
+            output_queue.put((id, (ichannel,out)))
 
     def _thread_replicate_merger(self, mode):
         num_rep = self.num_replicates[mode]
@@ -370,12 +408,13 @@ class Perceptions:
                 if self.output_replicate_merged[mode].empty():
                     #print("waiting for mode: ", mode)
                     pass
-                id, res[mode] = self.output_replicate_merged[mode].get()
+                id, payload = self.output_replicate_merged[mode].get()
+                ichannel, res[mode] = payload
                 ids.append(id)
             assert(all(np.array(ids)==ids[0]))
             # this cost 0.28 seconds, which is 120Hz, will not be the bottleneck, however it will add some delay
             res = self._merge_logits_all_perception(res)
-            output_queue.put(res)
+            output_queue.put((ichannel, res))
 
 
     def visualize_det_class(self, mode, logits_dict, ibatch, cid):
