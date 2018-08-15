@@ -182,10 +182,10 @@ if __name__ == "__main__":
                                       seg=True,
                                       depth=True,
                                       batch_size={"det_COCO":3, "det_TL":3, "det_TS":-1, "seg":4, "depth":4},
-                                      gpu_assignment=[0, 1, 4, 5],
+                                      gpu_assignment=[4, 5],
                                       compute_methods={},
                                       viz_methods={},
-                                      num_replicates={"det_COCO":6, "det_TL":6, "det_TS":-1, "seg":4, "depth":4},
+                                      num_replicates={"det_COCO":3, "det_TL":3, "det_TS":-1, "seg":2, "depth":2},
                                       path_config="path_jormungandr")
         else:
             perceptions = Perceptions(det_COCO=False,
@@ -202,7 +202,7 @@ if __name__ == "__main__":
 
         input_queue = Queue.Queue(10000)
         #input_queue = mQueue(10000)
-        output_queue = perceptions.compute_async_thread(input_queue)
+        output_queue = perceptions.compute_async_thread_channel(input_queue)
 
         loop_over_video(video_path,
                         lambda x: vis_async(x, input_queue),

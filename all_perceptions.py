@@ -219,6 +219,8 @@ class Perceptions:
         return output_queue
 
     def compute_async_thread(self, input_queue):
+        raise
+
         if not isinstance(input_queue, Queue.Queue):
             print("warning, not using Queue.Queue for the thread interface")
         output_queue = Queue.Queue(5)
