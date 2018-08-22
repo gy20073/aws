@@ -18,12 +18,15 @@ class ControlInterface(object):
         self.start_loop()
 
     def set_throttle(self, new_throttle):
+        # percentage from 0 to 1
         self._throttle = new_throttle
 
     def set_break(self, new_brake):
+        # percentage, from 0 to 1
         self._brake = new_brake
 
     def set_steer(self, new_steer):
+        # range -8.2 to 8.2
         self._steer = new_steer
 
     def pub_once(self):
@@ -43,17 +46,18 @@ class ControlInterface(object):
         steer_cmd.enable = True
         # rad, range -8.2 to 8.2
         steer_cmd.steering_wheel_angle_cmd = self._steer
-        #steer_cmd.steering_wheel_angle_velocity = self._steer
+        # TODO: safty, from 0 to 8.2 rad/s
+        steer_cmd.steering_wheel_angle_velocity = 1.0
         self._steer_pub.publish(steer_cmd)
 
     def start_loop(self):
         self.counter += 1
-        if self.counter % 75 == 0:
+        if self.counter % 100 == 0:
             #print("time eplapsed is ", time.time() - self.last_time)
             #self.last_time = time.time()
             print("brake", self._brake, "throttle", self._throttle, "steer", self._steer)
         self.pub_once()
-        threading.Timer(1.0 / 75, self.start_loop).start()
+        threading.Timer(1.0 / 100, self.start_loop).start()
 
 
 if __name__ == "__main__":

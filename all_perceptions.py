@@ -356,6 +356,7 @@ class Perceptions:
         input = np.reshape(input, (B, H//downscale_factor, downscale_factor,
                                       W//downscale_factor, downscale_factor, C))
         input = np.transpose(input, (0, 1, 3, 5, 2, 4))
+        # to shape: B H/Down, W/Down, C, Down_h, Down_w
         input = np.reshape(input, (B, H//downscale_factor, W//downscale_factor, -1))
         return input
 
