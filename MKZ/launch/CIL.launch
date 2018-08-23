@@ -1,7 +1,7 @@
 <launch>
     <arg name="use_fake_image" default="true" />
     <arg name="use_real_image" default="false" />
-
+    <!-- TODO: include the camera driver here -->
     <arg name="exp_id" default="mm45_v5_ablate_base" />
 
     <group ns="vehicle">
