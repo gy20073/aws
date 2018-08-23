@@ -2,14 +2,16 @@
 
 OUTPUT_PREFIX="/root/mount/media/bdd/ExternalSto/mkz_20180717"
 # we are saving the images into a video
-ORIGINAL_IMAGE_TOPIC="/image_sender_0/flipped"
+ORIGINAL_IMAGE_TOPIC="/image_sender_0/H576W768"
 OUTPUT_ORIGINAL_VIDEO=$OUTPUT_PREFIX"/original_images.avi"
 # all topics with downsampled images into a rosbag
-DOWNSAMPLED_IMAGE_TOPIC="/image_sender_0/H576W768"
+DOWNSAMPLED_IMAGE_TOPIC="/image_sender_0/H288W384"
 OUTPUT_BAG=$OUTPUT_PREFIX"/recording.bag"
 # also the visualization image with a video
 VIZ_IMAGE_TOPIC="/vis_continuous_full"
 OUTPUT_VIZ_VIDEO=$OUTPUT_PREFIX"/visualization_images.avi"
+
+python ./nodes/image_downsampler.py &
 
 # rosbag command goes here
 rosbag record \

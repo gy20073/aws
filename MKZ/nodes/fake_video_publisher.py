@@ -21,14 +21,11 @@ if __name__ == "__main__":
     cap = cv2.VideoCapture(IN_FILE)
 
     i = 0
-    batch_frames = []
-    video_init = False
-    i = 0
     while (cap.isOpened()):
         ret, frame = cap.read()
         if not ret:
             break
-        image_pub.publish(bridge.cv2_to_imgmsg(frame, "rgb8"))
+        image_pub.publish(bridge.cv2_to_imgmsg(frame[::-1, ::-1, ], "rgb8"))
         time.sleep(1.0/3)
         i += 1
         if i % 15 == 0:

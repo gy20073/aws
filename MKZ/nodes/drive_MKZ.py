@@ -21,24 +21,28 @@ import sys, os, time
 SAFETY_SPEED = 16.0 # in km/h, cap the speed if larger than it
 
 KEYBOARD_TOPIC = "mkz_key_command"
+INPUT_IMAGE_TOPIC = "/image_sender_0"
 
 global bridge, driving_model, vis_pub_full, vehicle_real_speed_kmh, direction, controller
 debug_speed = 0
 vehicle_real_speed_kmh = 0.0
 driving_model = None
 
-from test_control_interface import ControlInterface
+from control_interface import ControlInterface
 
 def on_image_received(data):
+    # this would directly receive the raw image from the driver
     if driving_model is None or vehicle_real_speed_kmh is None:
         return
 
     time0 = time.time()
     global bridge, driving_model, vis_pub_full, controller
 
-    img = bridge.imgmsg_to_cv2(data, "rgb8")
+    img = bridge.imgmsg_to_cv2(data, "bgr8")
+    # flip because the camera is flipped
+    img = img[::-1, ::-1, :]
 
-    control, vis = driving_model.compute_action(img[:,:,::-1], vehicle_real_speed_kmh, direction,
+    control, vis = driving_model.compute_action(img, vehicle_real_speed_kmh, direction,
                                            save_image_to_disk=False, return_vis=True)
 
     # safty guards to guard against dangerous situation
@@ -125,7 +129,7 @@ if __name__ == "__main__":
     driving_model = CarlaMachine("0", exp_id, get_driver_config(), 0.1)
 
     # subscribe to many topics
-    rospy.Subscriber("temp_image_topic", Image, on_image_received, queue_size=1)
+    rospy.Subscriber(INPUT_IMAGE_TOPIC, Image, on_image_received, queue_size=1)
     rospy.Subscriber(KEYBOARD_TOPIC, String, on_key_received, queue_size=10)
     rospy.Subscriber("dbw_mkz_msgs/SteeringReport", SteeringReport, on_speed_received, queue_size=1)
     rospy.spin()
