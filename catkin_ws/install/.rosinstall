@@ -1,0 +1,2 @@
+- setup-file:
+    local-name: /data/yang/code/aws/catkin_ws/install/setup.sh

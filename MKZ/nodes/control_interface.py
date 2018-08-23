@@ -57,7 +57,8 @@ class ControlInterface(object):
             #self.last_time = time.time()
             print("brake", self._brake, "throttle", self._throttle, "steer", self._steer)
         self.pub_once()
-        threading.Timer(1.0 / 100, self.start_loop).start()
+        if not rospy.is_shutdown():
+            threading.Timer(1.0 / 100, self.start_loop).start()
 
 
 if __name__ == "__main__":

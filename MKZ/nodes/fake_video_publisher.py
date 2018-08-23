@@ -13,7 +13,7 @@ from cv_bridge import CvBridge
 if __name__ == "__main__":
     IN_FILE = video_path = "/root/video_lowres.mkv"
 
-    image_pub = rospy.Publisher("image_sender_0", Image)
+    image_pub = rospy.Publisher("/image_sender_0", Image)
     bridge = CvBridge()
 
     rospy.init_node('fake_image_publisher')
@@ -23,10 +23,10 @@ if __name__ == "__main__":
     i = 0
     while (cap.isOpened()):
         ret, frame = cap.read()
-        if not ret:
+        if not ret or rospy.is_shutdown():
             break
         image_pub.publish(bridge.cv2_to_imgmsg(frame[::-1, ::-1, ], "rgb8"))
-        time.sleep(1.0/3)
+        time.sleep(1.0/30)
         i += 1
         if i % 15 == 0:
             print "publishing a fake image at 3Hz"

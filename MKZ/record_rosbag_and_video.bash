@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-OUTPUT_PREFIX="/root/mount/media/bdd/ExternalSto/mkz_20180717"
+OUTPUT_PREFIX=$1
 # we are saving the images into a video
 ORIGINAL_IMAGE_TOPIC="/image_sender_0/H576W768"
 OUTPUT_ORIGINAL_VIDEO=$OUTPUT_PREFIX"/original_images.avi"
@@ -10,8 +10,6 @@ OUTPUT_BAG=$OUTPUT_PREFIX"/recording.bag"
 # also the visualization image with a video
 VIZ_IMAGE_TOPIC="/vis_continuous_full"
 OUTPUT_VIZ_VIDEO=$OUTPUT_PREFIX"/visualization_images.avi"
-
-python ./nodes/image_downsampler.py &
 
 # rosbag command goes here
 rosbag record \
@@ -32,6 +30,6 @@ rosbag record \
 /xsens/fix /xsens/imu/data /xsens/imu/mag /xsens/imu_data_str /xsens/time_reference \
 $DOWNSAMPLED_IMAGE_TOPIC &
 
-rosrun image_view video_recorder image:=$ORIGINAL_IMAGE_TOPIC _filename:=$OUTPUT_ORIGINAL_VIDEO _codec:="X264" _encoding:="bgr8" &
+rosrun image_view video_recorder image:=$ORIGINAL_IMAGE_TOPIC _filename:=$OUTPUT_ORIGINAL_VIDEO _codec:="X264" _encoding:="rgb8" &
 
-rosrun image_view video_recorder image:=$VIZ_IMAGE_TOPIC _filename:=$OUTPUT_VIZ_VIDEO _codec:="X264" _encoding:="bgr8" &
+rosrun image_view video_recorder image:=$VIZ_IMAGE_TOPIC _filename:=$OUTPUT_VIZ_VIDEO _codec:="X264" _encoding:="rgb8" &

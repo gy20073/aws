@@ -1,12 +1,14 @@
 #!/usr/bin/env bash
 
-# fake mode
-exp_id="mm45_v4_perception_straight3constantaug_lessdrop_yangv2net_segonly"
+# TODO: auto download the model
+# TODO: support the real mode
 
-python ./nodes/drive_MKZ.py $exp_id &
+source ../catkin_ws/devel/setup.bash
 
-python ./nodes/keyboard_input.py &
+output_base="/scratch/yang/aws_data/ros_temp/"
+#bash ./record_rosbag_and_video.bash $output_base &
 
-bash ./record_rosbag_and_video.bash
-
-python ./nodes/fake_video_publisher.py &
+roslaunch mkz_intel CIL.launch \
+    exp_id:="mm45_v5_ablate_base" \
+    use_fake_image:="true" \
+    use_real_image:="false"

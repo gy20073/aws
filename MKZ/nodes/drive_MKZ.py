@@ -8,7 +8,7 @@ roslib.load_manifest('dbw_mkz_msgs')
 import rospy, importlib, inspect
 
 # messages related
-from sensor_msgs.msg import Image
+from sensor_msgs.msg import Image as sImage
 from cv_bridge import CvBridge
 from std_msgs.msg import String
 from geometry_msgs.msg import Vector3
@@ -27,6 +27,7 @@ global bridge, driving_model, vis_pub_full, vehicle_real_speed_kmh, direction, c
 debug_speed = 0
 vehicle_real_speed_kmh = 0.0
 driving_model = None
+direction = 2.0
 
 from control_interface import ControlInterface
 
@@ -115,7 +116,7 @@ if __name__ == "__main__":
     bridge = CvBridge()
 
     global vis_pub_full
-    vis_pub_full = rospy.Publisher('vis_continuous_full', Image, queue_size=10)
+    vis_pub_full = rospy.Publisher('/vis_continuous_full', sImage, queue_size=10)
 
     global controller
     controller = ControlInterface()
@@ -129,7 +130,7 @@ if __name__ == "__main__":
     driving_model = CarlaMachine("0", exp_id, get_driver_config(), 0.1)
 
     # subscribe to many topics
-    rospy.Subscriber(INPUT_IMAGE_TOPIC, Image, on_image_received, queue_size=1)
+    rospy.Subscriber(INPUT_IMAGE_TOPIC, sImage, on_image_received, queue_size=1)
     rospy.Subscriber(KEYBOARD_TOPIC, String, on_key_received, queue_size=10)
     rospy.Subscriber("dbw_mkz_msgs/SteeringReport", SteeringReport, on_speed_received, queue_size=1)
     rospy.spin()
