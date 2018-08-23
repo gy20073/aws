@@ -139,4 +139,4 @@ RUN git config --global user.name "Yang Gao"
 RUN apt-get install -yqq ros-kinetic-image-view
 
 # TODO: Carla, the training code
-RUN pip install h5py imgaug
+RUN pip install h5py imgaug pygame
