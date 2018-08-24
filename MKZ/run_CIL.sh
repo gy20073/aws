@@ -12,5 +12,5 @@ output_base="/root/mount/home/bdd/intel/data"
 #bash ./record_rosbag_and_video.bash $output_base &
 
 roslaunch mkz_intel CIL.launch \
-    exp_id:="mm45_v5_ablate_base" \
+    exp_id:="mm45_v4_perception_straight3constantaug_lessdrop_yangv2net_segonly" \
     use_fake_image:="false"
