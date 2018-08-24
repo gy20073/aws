@@ -6,6 +6,7 @@ docker run \
     --volume="/data2/yang/code/aws:/data/yang/code/aws:rw" \
     --runtime=nvidia \
     -e NVIDIA_VISIBLE_DEVICES="0,1,2,3,4,5,6,7" \
+    --net=host \
     gy20073/ros \
     /bin/bash
 

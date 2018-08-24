@@ -146,7 +146,7 @@ class Perceptions:
                                 "path_weights": "/scratch/yang/aws_data/coco_lisa_v2/backup/yolov3-CL.backup",
                                 "path_meta": "/data/yang/code/aws/traffic_sign/CL.data"}
         self.paths["seg"] = {"model_path": "/scratch/yang/aws_data/mapillary/linknet_output2/model-last.net",
-                             "mean_path": "/scratch/yang/aws_data/mapillary/cache/576_768/stat.t7"}
+                             "mean_path": "/scratch/yang/aws_data/mapillary/cache_old/576_768/stat.t7"}
         self.paths["depth"] = {"model_path": "/home/yang/monodepth/models/model_city2eigen/model_city2eigen",
                                "python_path": "/home/yang/monodepth"}
 
