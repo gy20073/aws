@@ -150,29 +150,30 @@ if __name__ == "__main__":
                         temp_down_factor=1,
                         batch_size=batch_size)
 
-    if False:
+    if True:
         # test within the docker
-        video_path = "/root/video_lowres.mkv"
+        video_path = "/scratch/yang/aws_data/carla_collect/straight_3cam_constantaug2/default_ImageSizeX=700_WeatherId=13/data_00008.h5.mp4"
+        batch_size = 1
 
         from all_perceptions import Perceptions
 
         perceptions = Perceptions(det_COCO=True,
                                   det_TL=True,
-                                  det_TS=True,
-                                  seg=False,
+                                  det_TS=False,
+                                  seg=True,
                                   depth=True,
                                   batch_size=batch_size,
-                                  gpu_assignment=[0, 1],
+                                  gpu_assignment=[1],
                                   compute_methods={},
                                   viz_methods={},
-                                  path_config="path_docker")
+                                  path_config="path_jormungandr_newseg")
 
         loop_over_video(video_path,
                         lambda x: vis_all(x, perceptions),
                         temp_down_factor=1,
                         batch_size=batch_size)
 
-    if True:
+    if False:
         from all_perceptions import Perceptions
 
         if True:

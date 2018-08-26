@@ -150,6 +150,11 @@ class Perceptions:
         self.paths["depth"] = {"model_path": "/home/yang/monodepth/models/model_city2eigen/model_city2eigen",
                                "python_path": "/home/yang/monodepth"}
 
+    def path_jormungandr_newseg(self):
+        self.path_jormungandr()
+        self.paths["seg"] = {"model_path": "/scratch/yang/aws_data/mapillary/linknet_output3/model-last.net",
+                             "mean_path": "/scratch/yang/aws_data/mapillary/cache/576_768/stat.t7"}
+
     def path_docker(self):
         self.paths = {}
         codebase = "/root/aws/"
