@@ -1,13 +1,12 @@
 <launch>
+    <remap to="/camera_array/cam0/image_raw" from="/image_sender_0"/>
     <arg name="use_fake_image" default="true" />
-    <arg name="use_real_image" default="false" />
-    <!-- TODO: include the camera driver here -->
     <arg name="exp_id" default="mm45_v5_ablate_base" />
 
     <group ns="vehicle">
 
         <node name="run_drive_MKZ" pkg="mkz_intel" type="drive_MKZ.py" output="screen"
-              args="mm45_v5_ablate_base"> </node>
+              args="$(arg exp_id)"> </node>
 
         <node name="run_keyboard_reader" pkg="mkz_intel" type="keyboard_input.py" output="screen"> </node>
 

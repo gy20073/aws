@@ -52,13 +52,13 @@ class ControlInterface(object):
 
     def start_loop(self):
         self.counter += 1
-        if self.counter % 100 == 0:
+        if self.counter % 300 == 0:
             #print("time eplapsed is ", time.time() - self.last_time)
             #self.last_time = time.time()
             print("brake", self._brake, "throttle", self._throttle, "steer", self._steer)
         self.pub_once()
         if not rospy.is_shutdown():
-            threading.Timer(1.0 / 100, self.start_loop).start()
+            threading.Timer(1.0 / 300, self.start_loop).start()
 
 
 if __name__ == "__main__":
