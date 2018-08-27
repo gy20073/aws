@@ -13,4 +13,5 @@ output_base="/root/mount/home/bdd/intel/data"
 
 roslaunch mkz_intel CIL.launch \
     exp_id:="mm45_v4_perception_straight3constantaug_lessdrop_yangv2net_segonly" \
-    use_fake_image:="false"
+    use_fake_image:="true" \
+    fake_video_path:="/scratch/yang/aws_data/mkz/mkz2/inverted_compress.avi"

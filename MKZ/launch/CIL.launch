@@ -1,6 +1,7 @@
 <launch>
     <remap to="/camera_array/cam0/image_raw" from="/image_sender_0"/>
     <arg name="use_fake_image" default="true" />
+    <arg name="fake_video_path" default="/root/video_lowres.mkv" />
     <arg name="exp_id" default="mm45_v5_ablate_base" />
 
     <group ns="vehicle">
@@ -11,7 +12,7 @@
         <node name="run_keyboard_reader" pkg="mkz_intel" type="keyboard_input.py" output="screen"> </node>
 
         <node name="run_fake_image_pub" pkg="mkz_intel" type="fake_video_publisher.py" output="screen"
-              if="$(arg use_fake_image)"  > </node>
+              if="$(arg use_fake_image)"  args="$(arg fake_video_path)"> </node>
 
         <node name="run_downsample_image" pkg="mkz_intel" type="image_downsampler.py" output="screen"> </node>
 

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 # reading in the videos
-import time, cv2
+import time, cv2, sys
 
 # ros related
 import rospy
@@ -11,7 +11,8 @@ from sensor_msgs.msg import Image
 from cv_bridge import CvBridge
 
 if __name__ == "__main__":
-    IN_FILE = video_path = "/root/video_lowres.mkv"
+    IN_FILE = sys.argv[1]
+    print("publishing fake images with video", IN_FILE)
 
     image_pub = rospy.Publisher("/image_sender_0", Image)
     bridge = CvBridge()
