@@ -96,6 +96,7 @@ class Perceptions:
         self._batch_size = {}
         self.all_modes = {}
         self.channel_id = 0
+        self.processes = {}
 
         for mode in sorted(modalities.keys()):
             if modalities[mode]:
@@ -127,6 +128,8 @@ class Perceptions:
                     parent_conn, child_conn = Pipe()
                     p = Process(target=self.worker, args=(initializer, params, child_conn))
                     p.start()
+
+                    self.processes[mode_name_i] = p
 
                     if "det" in mode:
                         print("sleeping to stable create det models")
@@ -471,3 +474,9 @@ class Perceptions:
 
 
         return self.merge_images(out_viz, subplot_size)
+
+    def destroy(self):
+        for key in self.processes:
+            print("destroying process ", key)
+            p = self.processes[key]
+            p.terminate()
