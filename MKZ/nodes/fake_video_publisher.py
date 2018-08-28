@@ -26,8 +26,8 @@ if __name__ == "__main__":
         ret, frame = cap.read()
         if not ret or rospy.is_shutdown():
             break
-        image_pub.publish(bridge.cv2_to_imgmsg(frame[::-1, ::-1, ], "rgb8"))
-        time.sleep(1.0/3)
+        image_pub.publish(bridge.cv2_to_imgmsg(frame[::-1, ::-1, ], "bgr8"))
+        time.sleep(1.0/30)
         i += 1
         if i % 15 == 0:
             print "publishing a fake image at 3Hz"
