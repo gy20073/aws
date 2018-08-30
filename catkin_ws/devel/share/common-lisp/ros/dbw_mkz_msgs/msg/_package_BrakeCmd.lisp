@@ -7,6 +7,8 @@
           BOO_CMD
           ENABLE-VAL
           ENABLE
+          CLEAR-VAL
+          CLEAR
           IGNORE-VAL
           IGNORE
           COUNT-VAL

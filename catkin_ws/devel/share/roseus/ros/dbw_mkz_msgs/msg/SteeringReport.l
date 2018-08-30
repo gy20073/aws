@@ -16,7 +16,7 @@
 
 (defclass dbw_mkz_msgs::SteeringReport
   :super ros::object
-  :slots (_header _steering_wheel_angle _steering_wheel_angle_cmd _steering_wheel_torque _speed _enabled _override _driver _fault_wdc _fault_bus1 _fault_bus2 _fault_calibration _fault_connector ))
+  :slots (_header _steering_wheel_angle _steering_wheel_angle_cmd _steering_wheel_torque _speed _enabled _override _timeout _fault_wdc _fault_bus1 _fault_bus2 _fault_calibration _fault_power ))
 
 (defmethod dbw_mkz_msgs::SteeringReport
   (:init
@@ -28,12 +28,12 @@
     ((:speed __speed) 0.0)
     ((:enabled __enabled) nil)
     ((:override __override) nil)
-    ((:driver __driver) nil)
+    ((:timeout __timeout) nil)
     ((:fault_wdc __fault_wdc) nil)
     ((:fault_bus1 __fault_bus1) nil)
     ((:fault_bus2 __fault_bus2) nil)
     ((:fault_calibration __fault_calibration) nil)
-    ((:fault_connector __fault_connector) nil)
+    ((:fault_power __fault_power) nil)
     )
    (send-super :init)
    (setq _header __header)
@@ -43,12 +43,12 @@
    (setq _speed (float __speed))
    (setq _enabled __enabled)
    (setq _override __override)
-   (setq _driver __driver)
+   (setq _timeout __timeout)
    (setq _fault_wdc __fault_wdc)
    (setq _fault_bus1 __fault_bus1)
    (setq _fault_bus2 __fault_bus2)
    (setq _fault_calibration __fault_calibration)
-   (setq _fault_connector __fault_connector)
+   (setq _fault_power __fault_power)
    self)
   (:header
    (&rest __header)
@@ -75,9 +75,9 @@
   (:override
    (&optional __override)
    (if __override (setq _override __override)) _override)
-  (:driver
-   (&optional __driver)
-   (if __driver (setq _driver __driver)) _driver)
+  (:timeout
+   (&optional __timeout)
+   (if __timeout (setq _timeout __timeout)) _timeout)
   (:fault_wdc
    (&optional __fault_wdc)
    (if __fault_wdc (setq _fault_wdc __fault_wdc)) _fault_wdc)
@@ -90,9 +90,9 @@
   (:fault_calibration
    (&optional __fault_calibration)
    (if __fault_calibration (setq _fault_calibration __fault_calibration)) _fault_calibration)
-  (:fault_connector
-   (&optional __fault_connector)
-   (if __fault_connector (setq _fault_connector __fault_connector)) _fault_connector)
+  (:fault_power
+   (&optional __fault_power)
+   (if __fault_power (setq _fault_power __fault_power)) _fault_power)
   (:serialization-length
    ()
    (+
@@ -110,7 +110,7 @@
     1
     ;; bool _override
     1
-    ;; bool _driver
+    ;; bool _timeout
     1
     ;; bool _fault_wdc
     1
@@ -120,7 +120,7 @@
     1
     ;; bool _fault_calibration
     1
-    ;; bool _fault_connector
+    ;; bool _fault_power
     1
     ))
   (:serialize
@@ -141,8 +141,8 @@
        (if _enabled (write-byte -1 s) (write-byte 0 s))
      ;; bool _override
        (if _override (write-byte -1 s) (write-byte 0 s))
-     ;; bool _driver
-       (if _driver (write-byte -1 s) (write-byte 0 s))
+     ;; bool _timeout
+       (if _timeout (write-byte -1 s) (write-byte 0 s))
      ;; bool _fault_wdc
        (if _fault_wdc (write-byte -1 s) (write-byte 0 s))
      ;; bool _fault_bus1
@@ -151,8 +151,8 @@
        (if _fault_bus2 (write-byte -1 s) (write-byte 0 s))
      ;; bool _fault_calibration
        (if _fault_calibration (write-byte -1 s) (write-byte 0 s))
-     ;; bool _fault_connector
-       (if _fault_connector (write-byte -1 s) (write-byte 0 s))
+     ;; bool _fault_power
+       (if _fault_power (write-byte -1 s) (write-byte 0 s))
      ;;
      (if (null strm) (get-output-stream-string s))))
   (:deserialize
@@ -171,8 +171,8 @@
      (setq _enabled (not (= 0 (sys::peek buf ptr- :char)))) (incf ptr- 1)
    ;; bool _override
      (setq _override (not (= 0 (sys::peek buf ptr- :char)))) (incf ptr- 1)
-   ;; bool _driver
-     (setq _driver (not (= 0 (sys::peek buf ptr- :char)))) (incf ptr- 1)
+   ;; bool _timeout
+     (setq _timeout (not (= 0 (sys::peek buf ptr- :char)))) (incf ptr- 1)
    ;; bool _fault_wdc
      (setq _fault_wdc (not (= 0 (sys::peek buf ptr- :char)))) (incf ptr- 1)
    ;; bool _fault_bus1
@@ -181,13 +181,13 @@
      (setq _fault_bus2 (not (= 0 (sys::peek buf ptr- :char)))) (incf ptr- 1)
    ;; bool _fault_calibration
      (setq _fault_calibration (not (= 0 (sys::peek buf ptr- :char)))) (incf ptr- 1)
-   ;; bool _fault_connector
-     (setq _fault_connector (not (= 0 (sys::peek buf ptr- :char)))) (incf ptr- 1)
+   ;; bool _fault_power
+     (setq _fault_power (not (= 0 (sys::peek buf ptr- :char)))) (incf ptr- 1)
    ;;
    self)
   )
 
-(setf (get dbw_mkz_msgs::SteeringReport :md5sum-) "25bf2c220d904531d8bc16ab5271325d")
+(setf (get dbw_mkz_msgs::SteeringReport :md5sum-) "6f32c1fc98edaf75e24a770b2ae3abfc")
 (setf (get dbw_mkz_msgs::SteeringReport :datatype-) "dbw_mkz_msgs/SteeringReport")
 (setf (get dbw_mkz_msgs::SteeringReport :definition-)
       "Header header
@@ -203,7 +203,7 @@ float32 speed                     # m/s
 # Status
 bool enabled  # Enabled
 bool override # Driver override
-bool driver   # Driver activity
+bool timeout  # Command timeout
 
 # Watchdog Counter
 bool fault_wdc
@@ -212,7 +212,7 @@ bool fault_wdc
 bool fault_bus1
 bool fault_bus2
 bool fault_calibration
-bool fault_connector # This fault can be ignored
+bool fault_power
 
 ================================================================================
 MSG: std_msgs/Header
@@ -236,6 +236,6 @@ string frame_id
 
 
 
-(provide :dbw_mkz_msgs/SteeringReport "25bf2c220d904531d8bc16ab5271325d")
+(provide :dbw_mkz_msgs/SteeringReport "6f32c1fc98edaf75e24a770b2ae3abfc")
 
 

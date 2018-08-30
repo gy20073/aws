@@ -21,6 +21,7 @@ class ThrottleCmd {
       this.pedal_cmd = null;
       this.pedal_cmd_type = null;
       this.enable = null;
+      this.clear = null;
       this.ignore = null;
       this.count = null;
     }
@@ -42,6 +43,12 @@ class ThrottleCmd {
       }
       else {
         this.enable = false;
+      }
+      if (initObj.hasOwnProperty('clear')) {
+        this.clear = initObj.clear
+      }
+      else {
+        this.clear = false;
       }
       if (initObj.hasOwnProperty('ignore')) {
         this.ignore = initObj.ignore
@@ -66,6 +73,8 @@ class ThrottleCmd {
     bufferOffset = _serializer.uint8(obj.pedal_cmd_type, buffer, bufferOffset);
     // Serialize message field [enable]
     bufferOffset = _serializer.bool(obj.enable, buffer, bufferOffset);
+    // Serialize message field [clear]
+    bufferOffset = _serializer.bool(obj.clear, buffer, bufferOffset);
     // Serialize message field [ignore]
     bufferOffset = _serializer.bool(obj.ignore, buffer, bufferOffset);
     // Serialize message field [count]
@@ -83,6 +92,8 @@ class ThrottleCmd {
     data.pedal_cmd_type = _deserializer.uint8(buffer, bufferOffset);
     // Deserialize message field [enable]
     data.enable = _deserializer.bool(buffer, bufferOffset);
+    // Deserialize message field [clear]
+    data.clear = _deserializer.bool(buffer, bufferOffset);
     // Deserialize message field [ignore]
     data.ignore = _deserializer.bool(buffer, bufferOffset);
     // Deserialize message field [count]
@@ -91,7 +102,7 @@ class ThrottleCmd {
   }
 
   static getMessageSize(object) {
-    return 8;
+    return 9;
   }
 
   static datatype() {
@@ -101,7 +112,7 @@ class ThrottleCmd {
 
   static md5sum() {
     //Returns md5sum for a message object
-    return 'dbda92d4b5ebb3cb2a081198c88bc62f';
+    return 'd75259a1444adebea30e45b37542c415';
   }
 
   static messageDefinition() {
@@ -114,6 +125,9 @@ class ThrottleCmd {
     
     # Enable
     bool enable
+    
+    # Clear driver overrides
+    bool clear
     
     # Ignore driver overrides
     bool ignore
@@ -153,6 +167,13 @@ class ThrottleCmd {
     }
     else {
       resolved.enable = false
+    }
+
+    if (msg.clear !== undefined) {
+      resolved.clear = msg.clear;
+    }
+    else {
+      resolved.clear = false
     }
 
     if (msg.ignore !== undefined) {

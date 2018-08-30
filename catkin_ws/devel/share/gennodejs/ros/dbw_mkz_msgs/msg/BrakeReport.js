@@ -33,13 +33,13 @@ class BrakeReport {
       this.enabled = null;
       this.override = null;
       this.driver = null;
+      this.timeout = null;
       this.watchdog_counter = null;
       this.watchdog_braking = null;
       this.fault_wdc = null;
       this.fault_ch1 = null;
       this.fault_ch2 = null;
-      this.fault_boo = null;
-      this.fault_connector = null;
+      this.fault_power = null;
     }
     else {
       if (initObj.hasOwnProperty('header')) {
@@ -120,6 +120,12 @@ class BrakeReport {
       else {
         this.driver = false;
       }
+      if (initObj.hasOwnProperty('timeout')) {
+        this.timeout = initObj.timeout
+      }
+      else {
+        this.timeout = false;
+      }
       if (initObj.hasOwnProperty('watchdog_counter')) {
         this.watchdog_counter = initObj.watchdog_counter
       }
@@ -150,17 +156,11 @@ class BrakeReport {
       else {
         this.fault_ch2 = false;
       }
-      if (initObj.hasOwnProperty('fault_boo')) {
-        this.fault_boo = initObj.fault_boo
+      if (initObj.hasOwnProperty('fault_power')) {
+        this.fault_power = initObj.fault_power
       }
       else {
-        this.fault_boo = false;
-      }
-      if (initObj.hasOwnProperty('fault_connector')) {
-        this.fault_connector = initObj.fault_connector
-      }
-      else {
-        this.fault_connector = false;
+        this.fault_power = false;
       }
     }
   }
@@ -193,6 +193,8 @@ class BrakeReport {
     bufferOffset = _serializer.bool(obj.override, buffer, bufferOffset);
     // Serialize message field [driver]
     bufferOffset = _serializer.bool(obj.driver, buffer, bufferOffset);
+    // Serialize message field [timeout]
+    bufferOffset = _serializer.bool(obj.timeout, buffer, bufferOffset);
     // Serialize message field [watchdog_counter]
     bufferOffset = WatchdogCounter.serialize(obj.watchdog_counter, buffer, bufferOffset);
     // Serialize message field [watchdog_braking]
@@ -203,10 +205,8 @@ class BrakeReport {
     bufferOffset = _serializer.bool(obj.fault_ch1, buffer, bufferOffset);
     // Serialize message field [fault_ch2]
     bufferOffset = _serializer.bool(obj.fault_ch2, buffer, bufferOffset);
-    // Serialize message field [fault_boo]
-    bufferOffset = _serializer.bool(obj.fault_boo, buffer, bufferOffset);
-    // Serialize message field [fault_connector]
-    bufferOffset = _serializer.bool(obj.fault_connector, buffer, bufferOffset);
+    // Serialize message field [fault_power]
+    bufferOffset = _serializer.bool(obj.fault_power, buffer, bufferOffset);
     return bufferOffset;
   }
 
@@ -240,6 +240,8 @@ class BrakeReport {
     data.override = _deserializer.bool(buffer, bufferOffset);
     // Deserialize message field [driver]
     data.driver = _deserializer.bool(buffer, bufferOffset);
+    // Deserialize message field [timeout]
+    data.timeout = _deserializer.bool(buffer, bufferOffset);
     // Deserialize message field [watchdog_counter]
     data.watchdog_counter = WatchdogCounter.deserialize(buffer, bufferOffset);
     // Deserialize message field [watchdog_braking]
@@ -250,10 +252,8 @@ class BrakeReport {
     data.fault_ch1 = _deserializer.bool(buffer, bufferOffset);
     // Deserialize message field [fault_ch2]
     data.fault_ch2 = _deserializer.bool(buffer, bufferOffset);
-    // Deserialize message field [fault_boo]
-    data.fault_boo = _deserializer.bool(buffer, bufferOffset);
-    // Deserialize message field [fault_connector]
-    data.fault_connector = _deserializer.bool(buffer, bufferOffset);
+    // Deserialize message field [fault_power]
+    data.fault_power = _deserializer.bool(buffer, bufferOffset);
     return data;
   }
 
@@ -270,7 +270,7 @@ class BrakeReport {
 
   static md5sum() {
     //Returns md5sum for a message object
-    return 'a306c167d365176ae6159e3c4e3f3197';
+    return 'a92bad28c400885f36170c1cab44618e';
   }
 
   static messageDefinition() {
@@ -298,6 +298,7 @@ class BrakeReport {
     bool enabled  # Enabled
     bool override # Driver override
     bool driver   # Driver activity
+    bool timeout  # Command timeout
     
     # Watchdog Counter
     WatchdogCounter watchdog_counter
@@ -307,8 +308,7 @@ class BrakeReport {
     # Faults
     bool fault_ch1
     bool fault_ch2
-    bool fault_boo
-    bool fault_connector # This fault can be ignored
+    bool fault_power
     
     ================================================================================
     MSG: std_msgs/Header
@@ -449,6 +449,13 @@ class BrakeReport {
       resolved.driver = false
     }
 
+    if (msg.timeout !== undefined) {
+      resolved.timeout = msg.timeout;
+    }
+    else {
+      resolved.timeout = false
+    }
+
     if (msg.watchdog_counter !== undefined) {
       resolved.watchdog_counter = WatchdogCounter.Resolve(msg.watchdog_counter)
     }
@@ -484,18 +491,11 @@ class BrakeReport {
       resolved.fault_ch2 = false
     }
 
-    if (msg.fault_boo !== undefined) {
-      resolved.fault_boo = msg.fault_boo;
+    if (msg.fault_power !== undefined) {
+      resolved.fault_power = msg.fault_power;
     }
     else {
-      resolved.fault_boo = false
-    }
-
-    if (msg.fault_connector !== undefined) {
-      resolved.fault_connector = msg.fault_connector;
-    }
-    else {
-      resolved.fault_connector = false
+      resolved.fault_power = false
     }
 
     return resolved;

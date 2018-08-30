@@ -12,6 +12,7 @@ const _arrayDeserializer = _deserializer.Array;
 const _finder = _ros_msg_utils.Find;
 const _getByteLength = _ros_msg_utils.getByteLength;
 let Gear = require('./Gear.js');
+let GearReject = require('./GearReject.js');
 let std_msgs = _finder('std_msgs');
 
 //-----------------------------------------------------------
@@ -23,6 +24,7 @@ class GearReport {
       this.header = null;
       this.state = null;
       this.cmd = null;
+      this.reject = null;
       this.override = null;
       this.fault_bus = null;
     }
@@ -44,6 +46,12 @@ class GearReport {
       }
       else {
         this.cmd = new Gear();
+      }
+      if (initObj.hasOwnProperty('reject')) {
+        this.reject = initObj.reject
+      }
+      else {
+        this.reject = new GearReject();
       }
       if (initObj.hasOwnProperty('override')) {
         this.override = initObj.override
@@ -68,6 +76,8 @@ class GearReport {
     bufferOffset = Gear.serialize(obj.state, buffer, bufferOffset);
     // Serialize message field [cmd]
     bufferOffset = Gear.serialize(obj.cmd, buffer, bufferOffset);
+    // Serialize message field [reject]
+    bufferOffset = GearReject.serialize(obj.reject, buffer, bufferOffset);
     // Serialize message field [override]
     bufferOffset = _serializer.bool(obj.override, buffer, bufferOffset);
     // Serialize message field [fault_bus]
@@ -85,6 +95,8 @@ class GearReport {
     data.state = Gear.deserialize(buffer, bufferOffset);
     // Deserialize message field [cmd]
     data.cmd = Gear.deserialize(buffer, bufferOffset);
+    // Deserialize message field [reject]
+    data.reject = GearReject.deserialize(buffer, bufferOffset);
     // Deserialize message field [override]
     data.override = _deserializer.bool(buffer, bufferOffset);
     // Deserialize message field [fault_bus]
@@ -95,7 +107,7 @@ class GearReport {
   static getMessageSize(object) {
     let length = 0;
     length += std_msgs.msg.Header.getMessageSize(object.header);
-    return length + 4;
+    return length + 5;
   }
 
   static datatype() {
@@ -105,7 +117,7 @@ class GearReport {
 
   static md5sum() {
     //Returns md5sum for a message object
-    return 'f33342dfeb80c29d8fe4b31e22519594';
+    return '785b94d5bfee677e7f0da982153f2711';
   }
 
   static messageDefinition() {
@@ -118,6 +130,9 @@ class GearReport {
     
     # Gear command enumeration
     Gear cmd
+    
+    # Gear reject enumeration
+    GearReject reject
     
     # Status
     bool override
@@ -154,6 +169,17 @@ class GearReport {
     uint8 DRIVE=4
     uint8 LOW=5
     
+    ================================================================================
+    MSG: dbw_mkz_msgs/GearReject
+    uint8 value
+    
+    uint8 NONE=0              # Not rejected
+    uint8 SHIFT_IN_PROGRESS=1 # Shift in progress
+    uint8 OVERRIDE=2          # Override on brake, throttle, or steering
+    uint8 ROTARY_LOW=3        # Rotary shifter can't shift to Low
+    uint8 ROTARY_PARK=4       # Rotary shifter can't shift out of Park
+    uint8 VEHICLE=5           # Rejected by vehicle (try pressing the brakes)
+    
     `;
   }
 
@@ -182,6 +208,13 @@ class GearReport {
     }
     else {
       resolved.cmd = new Gear()
+    }
+
+    if (msg.reject !== undefined) {
+      resolved.reject = GearReject.Resolve(msg.reject)
+    }
+    else {
+      resolved.reject = new GearReject()
     }
 
     if (msg.override !== undefined) {

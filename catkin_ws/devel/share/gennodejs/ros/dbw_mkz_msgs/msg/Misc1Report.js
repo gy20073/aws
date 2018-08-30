@@ -33,11 +33,18 @@ class Misc1Report {
       this.btn_cc_res = null;
       this.btn_cc_cncl = null;
       this.btn_cc_res_cncl = null;
+      this.btn_cc_res_inc = null;
+      this.btn_cc_res_dec = null;
       this.btn_cc_set_inc = null;
       this.btn_cc_set_dec = null;
       this.btn_cc_gap_inc = null;
       this.btn_cc_gap_dec = null;
       this.btn_la_on_off = null;
+      this.btn_ld_ok = null;
+      this.btn_ld_up = null;
+      this.btn_ld_down = null;
+      this.btn_ld_left = null;
+      this.btn_ld_right = null;
       this.fault_bus = null;
       this.door_driver = null;
       this.door_passenger = null;
@@ -117,6 +124,18 @@ class Misc1Report {
       else {
         this.btn_cc_res_cncl = false;
       }
+      if (initObj.hasOwnProperty('btn_cc_res_inc')) {
+        this.btn_cc_res_inc = initObj.btn_cc_res_inc
+      }
+      else {
+        this.btn_cc_res_inc = false;
+      }
+      if (initObj.hasOwnProperty('btn_cc_res_dec')) {
+        this.btn_cc_res_dec = initObj.btn_cc_res_dec
+      }
+      else {
+        this.btn_cc_res_dec = false;
+      }
       if (initObj.hasOwnProperty('btn_cc_set_inc')) {
         this.btn_cc_set_inc = initObj.btn_cc_set_inc
       }
@@ -146,6 +165,36 @@ class Misc1Report {
       }
       else {
         this.btn_la_on_off = false;
+      }
+      if (initObj.hasOwnProperty('btn_ld_ok')) {
+        this.btn_ld_ok = initObj.btn_ld_ok
+      }
+      else {
+        this.btn_ld_ok = false;
+      }
+      if (initObj.hasOwnProperty('btn_ld_up')) {
+        this.btn_ld_up = initObj.btn_ld_up
+      }
+      else {
+        this.btn_ld_up = false;
+      }
+      if (initObj.hasOwnProperty('btn_ld_down')) {
+        this.btn_ld_down = initObj.btn_ld_down
+      }
+      else {
+        this.btn_ld_down = false;
+      }
+      if (initObj.hasOwnProperty('btn_ld_left')) {
+        this.btn_ld_left = initObj.btn_ld_left
+      }
+      else {
+        this.btn_ld_left = false;
+      }
+      if (initObj.hasOwnProperty('btn_ld_right')) {
+        this.btn_ld_right = initObj.btn_ld_right
+      }
+      else {
+        this.btn_ld_right = false;
       }
       if (initObj.hasOwnProperty('fault_bus')) {
         this.fault_bus = initObj.fault_bus
@@ -240,6 +289,10 @@ class Misc1Report {
     bufferOffset = _serializer.bool(obj.btn_cc_cncl, buffer, bufferOffset);
     // Serialize message field [btn_cc_res_cncl]
     bufferOffset = _serializer.bool(obj.btn_cc_res_cncl, buffer, bufferOffset);
+    // Serialize message field [btn_cc_res_inc]
+    bufferOffset = _serializer.bool(obj.btn_cc_res_inc, buffer, bufferOffset);
+    // Serialize message field [btn_cc_res_dec]
+    bufferOffset = _serializer.bool(obj.btn_cc_res_dec, buffer, bufferOffset);
     // Serialize message field [btn_cc_set_inc]
     bufferOffset = _serializer.bool(obj.btn_cc_set_inc, buffer, bufferOffset);
     // Serialize message field [btn_cc_set_dec]
@@ -250,6 +303,16 @@ class Misc1Report {
     bufferOffset = _serializer.bool(obj.btn_cc_gap_dec, buffer, bufferOffset);
     // Serialize message field [btn_la_on_off]
     bufferOffset = _serializer.bool(obj.btn_la_on_off, buffer, bufferOffset);
+    // Serialize message field [btn_ld_ok]
+    bufferOffset = _serializer.bool(obj.btn_ld_ok, buffer, bufferOffset);
+    // Serialize message field [btn_ld_up]
+    bufferOffset = _serializer.bool(obj.btn_ld_up, buffer, bufferOffset);
+    // Serialize message field [btn_ld_down]
+    bufferOffset = _serializer.bool(obj.btn_ld_down, buffer, bufferOffset);
+    // Serialize message field [btn_ld_left]
+    bufferOffset = _serializer.bool(obj.btn_ld_left, buffer, bufferOffset);
+    // Serialize message field [btn_ld_right]
+    bufferOffset = _serializer.bool(obj.btn_ld_right, buffer, bufferOffset);
     // Serialize message field [fault_bus]
     bufferOffset = _serializer.bool(obj.fault_bus, buffer, bufferOffset);
     // Serialize message field [door_driver]
@@ -301,6 +364,10 @@ class Misc1Report {
     data.btn_cc_cncl = _deserializer.bool(buffer, bufferOffset);
     // Deserialize message field [btn_cc_res_cncl]
     data.btn_cc_res_cncl = _deserializer.bool(buffer, bufferOffset);
+    // Deserialize message field [btn_cc_res_inc]
+    data.btn_cc_res_inc = _deserializer.bool(buffer, bufferOffset);
+    // Deserialize message field [btn_cc_res_dec]
+    data.btn_cc_res_dec = _deserializer.bool(buffer, bufferOffset);
     // Deserialize message field [btn_cc_set_inc]
     data.btn_cc_set_inc = _deserializer.bool(buffer, bufferOffset);
     // Deserialize message field [btn_cc_set_dec]
@@ -311,6 +378,16 @@ class Misc1Report {
     data.btn_cc_gap_dec = _deserializer.bool(buffer, bufferOffset);
     // Deserialize message field [btn_la_on_off]
     data.btn_la_on_off = _deserializer.bool(buffer, bufferOffset);
+    // Deserialize message field [btn_ld_ok]
+    data.btn_ld_ok = _deserializer.bool(buffer, bufferOffset);
+    // Deserialize message field [btn_ld_up]
+    data.btn_ld_up = _deserializer.bool(buffer, bufferOffset);
+    // Deserialize message field [btn_ld_down]
+    data.btn_ld_down = _deserializer.bool(buffer, bufferOffset);
+    // Deserialize message field [btn_ld_left]
+    data.btn_ld_left = _deserializer.bool(buffer, bufferOffset);
+    // Deserialize message field [btn_ld_right]
+    data.btn_ld_right = _deserializer.bool(buffer, bufferOffset);
     // Deserialize message field [fault_bus]
     data.fault_bus = _deserializer.bool(buffer, bufferOffset);
     // Deserialize message field [door_driver]
@@ -339,7 +416,7 @@ class Misc1Report {
   static getMessageSize(object) {
     let length = 0;
     length += std_msgs.msg.Header.getMessageSize(object.header);
-    return length + 26;
+    return length + 33;
   }
 
   static datatype() {
@@ -349,7 +426,7 @@ class Misc1Report {
 
   static md5sum() {
     //Returns md5sum for a message object
-    return '9ecd16fb81815b3e46e0550feea1da2f';
+    return '5e430a9996eeb7a76d2abf0e360213d3';
   }
 
   static messageDefinition() {
@@ -376,11 +453,18 @@ class Misc1Report {
     bool btn_cc_res       # Cruise Control Resume
     bool btn_cc_cncl      # Cruise Control Cancel
     bool btn_cc_res_cncl  # Cruise Control Resume/Cancel
+    bool btn_cc_res_inc   # Cruise Control Resume+
+    bool btn_cc_res_dec   # Cruise Control Resume-
     bool btn_cc_set_inc   # Cruise Control Set+
     bool btn_cc_set_dec   # Cruise Control Set-
     bool btn_cc_gap_inc   # Cruise Control Gap+
     bool btn_cc_gap_dec   # Cruise Control Gap-
     bool btn_la_on_off    # Lane Assist On/Off Toggle
+    bool btn_ld_ok        # Left D-Pad OK
+    bool btn_ld_up        # Left D-Pad Up
+    bool btn_ld_down      # Left D-Pad Down
+    bool btn_ld_left      # Left D-Pad Left
+    bool btn_ld_right     # Left D-Pad Right
     
     # Faults
     bool fault_bus
@@ -545,6 +629,20 @@ class Misc1Report {
       resolved.btn_cc_res_cncl = false
     }
 
+    if (msg.btn_cc_res_inc !== undefined) {
+      resolved.btn_cc_res_inc = msg.btn_cc_res_inc;
+    }
+    else {
+      resolved.btn_cc_res_inc = false
+    }
+
+    if (msg.btn_cc_res_dec !== undefined) {
+      resolved.btn_cc_res_dec = msg.btn_cc_res_dec;
+    }
+    else {
+      resolved.btn_cc_res_dec = false
+    }
+
     if (msg.btn_cc_set_inc !== undefined) {
       resolved.btn_cc_set_inc = msg.btn_cc_set_inc;
     }
@@ -578,6 +676,41 @@ class Misc1Report {
     }
     else {
       resolved.btn_la_on_off = false
+    }
+
+    if (msg.btn_ld_ok !== undefined) {
+      resolved.btn_ld_ok = msg.btn_ld_ok;
+    }
+    else {
+      resolved.btn_ld_ok = false
+    }
+
+    if (msg.btn_ld_up !== undefined) {
+      resolved.btn_ld_up = msg.btn_ld_up;
+    }
+    else {
+      resolved.btn_ld_up = false
+    }
+
+    if (msg.btn_ld_down !== undefined) {
+      resolved.btn_ld_down = msg.btn_ld_down;
+    }
+    else {
+      resolved.btn_ld_down = false
+    }
+
+    if (msg.btn_ld_left !== undefined) {
+      resolved.btn_ld_left = msg.btn_ld_left;
+    }
+    else {
+      resolved.btn_ld_left = false
+    }
+
+    if (msg.btn_ld_right !== undefined) {
+      resolved.btn_ld_right = msg.btn_ld_right;
+    }
+    else {
+      resolved.btn_ld_right = false
     }
 
     if (msg.fault_bus !== undefined) {

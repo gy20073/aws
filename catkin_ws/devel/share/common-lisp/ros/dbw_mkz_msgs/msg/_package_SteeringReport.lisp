@@ -13,8 +13,8 @@
           ENABLED
           OVERRIDE-VAL
           OVERRIDE
-          DRIVER-VAL
-          DRIVER
+          TIMEOUT-VAL
+          TIMEOUT
           FAULT_WDC-VAL
           FAULT_WDC
           FAULT_BUS1-VAL
@@ -23,6 +23,6 @@
           FAULT_BUS2
           FAULT_CALIBRATION-VAL
           FAULT_CALIBRATION
-          FAULT_CONNECTOR-VAL
-          FAULT_CONNECTOR
+          FAULT_POWER-VAL
+          FAULT_POWER
 ))

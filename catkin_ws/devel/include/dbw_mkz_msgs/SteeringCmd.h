@@ -27,6 +27,7 @@ struct SteeringCmd_
     : steering_wheel_angle_cmd(0.0)
     , steering_wheel_angle_velocity(0.0)
     , enable(false)
+    , clear(false)
     , ignore(false)
     , quiet(false)
     , count(0)  {
@@ -35,6 +36,7 @@ struct SteeringCmd_
     : steering_wheel_angle_cmd(0.0)
     , steering_wheel_angle_velocity(0.0)
     , enable(false)
+    , clear(false)
     , ignore(false)
     , quiet(false)
     , count(0)  {
@@ -51,6 +53,9 @@ struct SteeringCmd_
 
    typedef uint8_t _enable_type;
   _enable_type enable;
+
+   typedef uint8_t _clear_type;
+  _clear_type clear;
 
    typedef uint8_t _ignore_type;
   _ignore_type ignore;
@@ -139,12 +144,12 @@ struct MD5Sum< ::dbw_mkz_msgs::SteeringCmd_<ContainerAllocator> >
 {
   static const char* value()
   {
-    return "042926cddf5be8099d43692732201784";
+    return "ff1fa11624bdc2aff2aeee5aa6014057";
   }
 
   static const char* value(const ::dbw_mkz_msgs::SteeringCmd_<ContainerAllocator>&) { return value(); }
-  static const uint64_t static_value1 = 0x042926cddf5be809ULL;
-  static const uint64_t static_value2 = 0x9d43692732201784ULL;
+  static const uint64_t static_value1 = 0xff1fa11624bdc2afULL;
+  static const uint64_t static_value2 = 0xf2aeee5aa6014057ULL;
 };
 
 template<class ContainerAllocator>
@@ -169,6 +174,9 @@ float32 steering_wheel_angle_velocity   # rad/s, range 0 to 8.7, 0 = maximum\n\
 \n\
 # Enable\n\
 bool enable\n\
+\n\
+# Clear driver overrides\n\
+bool clear\n\
 \n\
 # Ignore driver overrides\n\
 bool ignore\n\
@@ -199,6 +207,7 @@ namespace serialization
       stream.next(m.steering_wheel_angle_cmd);
       stream.next(m.steering_wheel_angle_velocity);
       stream.next(m.enable);
+      stream.next(m.clear);
       stream.next(m.ignore);
       stream.next(m.quiet);
       stream.next(m.count);
@@ -226,6 +235,8 @@ struct Printer< ::dbw_mkz_msgs::SteeringCmd_<ContainerAllocator> >
     Printer<float>::stream(s, indent + "  ", v.steering_wheel_angle_velocity);
     s << indent << "enable: ";
     Printer<uint8_t>::stream(s, indent + "  ", v.enable);
+    s << indent << "clear: ";
+    Printer<uint8_t>::stream(s, indent + "  ", v.clear);
     s << indent << "ignore: ";
     Printer<uint8_t>::stream(s, indent + "  ", v.ignore);
     s << indent << "quiet: ";

@@ -22,6 +22,11 @@
     :initarg :enable
     :type cl:boolean
     :initform cl:nil)
+   (clear
+    :reader clear
+    :initarg :clear
+    :type cl:boolean
+    :initform cl:nil)
    (ignore
     :reader ignore
     :initarg :ignore
@@ -57,6 +62,11 @@
   (roslisp-msg-protocol:msg-deprecation-warning "Using old-style slot reader dbw_mkz_msgs-msg:enable-val is deprecated.  Use dbw_mkz_msgs-msg:enable instead.")
   (enable m))
 
+(cl:ensure-generic-function 'clear-val :lambda-list '(m))
+(cl:defmethod clear-val ((m <ThrottleCmd>))
+  (roslisp-msg-protocol:msg-deprecation-warning "Using old-style slot reader dbw_mkz_msgs-msg:clear-val is deprecated.  Use dbw_mkz_msgs-msg:clear instead.")
+  (clear m))
+
 (cl:ensure-generic-function 'ignore-val :lambda-list '(m))
 (cl:defmethod ignore-val ((m <ThrottleCmd>))
   (roslisp-msg-protocol:msg-deprecation-warning "Using old-style slot reader dbw_mkz_msgs-msg:ignore-val is deprecated.  Use dbw_mkz_msgs-msg:ignore instead.")
@@ -87,6 +97,7 @@
     (cl:write-byte (cl:ldb (cl:byte 8 24) bits) ostream))
   (cl:write-byte (cl:ldb (cl:byte 8 0) (cl:slot-value msg 'pedal_cmd_type)) ostream)
   (cl:write-byte (cl:ldb (cl:byte 8 0) (cl:if (cl:slot-value msg 'enable) 1 0)) ostream)
+  (cl:write-byte (cl:ldb (cl:byte 8 0) (cl:if (cl:slot-value msg 'clear) 1 0)) ostream)
   (cl:write-byte (cl:ldb (cl:byte 8 0) (cl:if (cl:slot-value msg 'ignore) 1 0)) ostream)
   (cl:write-byte (cl:ldb (cl:byte 8 0) (cl:slot-value msg 'count)) ostream)
 )
@@ -100,6 +111,7 @@
     (cl:setf (cl:slot-value msg 'pedal_cmd) (roslisp-utils:decode-single-float-bits bits)))
     (cl:setf (cl:ldb (cl:byte 8 0) (cl:slot-value msg 'pedal_cmd_type)) (cl:read-byte istream))
     (cl:setf (cl:slot-value msg 'enable) (cl:not (cl:zerop (cl:read-byte istream))))
+    (cl:setf (cl:slot-value msg 'clear) (cl:not (cl:zerop (cl:read-byte istream))))
     (cl:setf (cl:slot-value msg 'ignore) (cl:not (cl:zerop (cl:read-byte istream))))
     (cl:setf (cl:ldb (cl:byte 8 0) (cl:slot-value msg 'count)) (cl:read-byte istream))
   msg
@@ -112,19 +124,20 @@
   "dbw_mkz_msgs/ThrottleCmd")
 (cl:defmethod roslisp-msg-protocol:md5sum ((type (cl:eql '<ThrottleCmd>)))
   "Returns md5sum for a message object of type '<ThrottleCmd>"
-  "dbda92d4b5ebb3cb2a081198c88bc62f")
+  "d75259a1444adebea30e45b37542c415")
 (cl:defmethod roslisp-msg-protocol:md5sum ((type (cl:eql 'ThrottleCmd)))
   "Returns md5sum for a message object of type 'ThrottleCmd"
-  "dbda92d4b5ebb3cb2a081198c88bc62f")
+  "d75259a1444adebea30e45b37542c415")
 (cl:defmethod roslisp-msg-protocol:message-definition ((type (cl:eql '<ThrottleCmd>)))
   "Returns full string definition for message of type '<ThrottleCmd>"
-  (cl:format cl:nil "# Throttle pedal~%# Options defined below~%float32 pedal_cmd~%uint8 pedal_cmd_type~%~%# Enable~%bool enable~%~%# Ignore driver overrides~%bool ignore~%~%# Watchdog counter (optional)~%uint8 count~%~%uint8 CMD_NONE=0~%uint8 CMD_PEDAL=1   # Unitless, range 0.15 to 0.80~%uint8 CMD_PERCENT=2 # Percent of maximum throttle, range 0 to 1~%~%~%"))
+  (cl:format cl:nil "# Throttle pedal~%# Options defined below~%float32 pedal_cmd~%uint8 pedal_cmd_type~%~%# Enable~%bool enable~%~%# Clear driver overrides~%bool clear~%~%# Ignore driver overrides~%bool ignore~%~%# Watchdog counter (optional)~%uint8 count~%~%uint8 CMD_NONE=0~%uint8 CMD_PEDAL=1   # Unitless, range 0.15 to 0.80~%uint8 CMD_PERCENT=2 # Percent of maximum throttle, range 0 to 1~%~%~%"))
 (cl:defmethod roslisp-msg-protocol:message-definition ((type (cl:eql 'ThrottleCmd)))
   "Returns full string definition for message of type 'ThrottleCmd"
-  (cl:format cl:nil "# Throttle pedal~%# Options defined below~%float32 pedal_cmd~%uint8 pedal_cmd_type~%~%# Enable~%bool enable~%~%# Ignore driver overrides~%bool ignore~%~%# Watchdog counter (optional)~%uint8 count~%~%uint8 CMD_NONE=0~%uint8 CMD_PEDAL=1   # Unitless, range 0.15 to 0.80~%uint8 CMD_PERCENT=2 # Percent of maximum throttle, range 0 to 1~%~%~%"))
+  (cl:format cl:nil "# Throttle pedal~%# Options defined below~%float32 pedal_cmd~%uint8 pedal_cmd_type~%~%# Enable~%bool enable~%~%# Clear driver overrides~%bool clear~%~%# Ignore driver overrides~%bool ignore~%~%# Watchdog counter (optional)~%uint8 count~%~%uint8 CMD_NONE=0~%uint8 CMD_PEDAL=1   # Unitless, range 0.15 to 0.80~%uint8 CMD_PERCENT=2 # Percent of maximum throttle, range 0 to 1~%~%~%"))
 (cl:defmethod roslisp-msg-protocol:serialization-length ((msg <ThrottleCmd>))
   (cl:+ 0
      4
+     1
      1
      1
      1
@@ -136,6 +149,7 @@
     (cl:cons ':pedal_cmd (pedal_cmd msg))
     (cl:cons ':pedal_cmd_type (pedal_cmd_type msg))
     (cl:cons ':enable (enable msg))
+    (cl:cons ':clear (clear msg))
     (cl:cons ':ignore (ignore msg))
     (cl:cons ':count (count msg))
 ))

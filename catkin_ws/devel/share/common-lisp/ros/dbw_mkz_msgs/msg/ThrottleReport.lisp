@@ -42,6 +42,11 @@
     :initarg :driver
     :type cl:boolean
     :initform cl:nil)
+   (timeout
+    :reader timeout
+    :initarg :timeout
+    :type cl:boolean
+    :initform cl:nil)
    (watchdog_counter
     :reader watchdog_counter
     :initarg :watchdog_counter
@@ -62,9 +67,9 @@
     :initarg :fault_ch2
     :type cl:boolean
     :initform cl:nil)
-   (fault_connector
-    :reader fault_connector
-    :initarg :fault_connector
+   (fault_power
+    :reader fault_power
+    :initarg :fault_power
     :type cl:boolean
     :initform cl:nil))
 )
@@ -112,6 +117,11 @@
   (roslisp-msg-protocol:msg-deprecation-warning "Using old-style slot reader dbw_mkz_msgs-msg:driver-val is deprecated.  Use dbw_mkz_msgs-msg:driver instead.")
   (driver m))
 
+(cl:ensure-generic-function 'timeout-val :lambda-list '(m))
+(cl:defmethod timeout-val ((m <ThrottleReport>))
+  (roslisp-msg-protocol:msg-deprecation-warning "Using old-style slot reader dbw_mkz_msgs-msg:timeout-val is deprecated.  Use dbw_mkz_msgs-msg:timeout instead.")
+  (timeout m))
+
 (cl:ensure-generic-function 'watchdog_counter-val :lambda-list '(m))
 (cl:defmethod watchdog_counter-val ((m <ThrottleReport>))
   (roslisp-msg-protocol:msg-deprecation-warning "Using old-style slot reader dbw_mkz_msgs-msg:watchdog_counter-val is deprecated.  Use dbw_mkz_msgs-msg:watchdog_counter instead.")
@@ -132,10 +142,10 @@
   (roslisp-msg-protocol:msg-deprecation-warning "Using old-style slot reader dbw_mkz_msgs-msg:fault_ch2-val is deprecated.  Use dbw_mkz_msgs-msg:fault_ch2 instead.")
   (fault_ch2 m))
 
-(cl:ensure-generic-function 'fault_connector-val :lambda-list '(m))
-(cl:defmethod fault_connector-val ((m <ThrottleReport>))
-  (roslisp-msg-protocol:msg-deprecation-warning "Using old-style slot reader dbw_mkz_msgs-msg:fault_connector-val is deprecated.  Use dbw_mkz_msgs-msg:fault_connector instead.")
-  (fault_connector m))
+(cl:ensure-generic-function 'fault_power-val :lambda-list '(m))
+(cl:defmethod fault_power-val ((m <ThrottleReport>))
+  (roslisp-msg-protocol:msg-deprecation-warning "Using old-style slot reader dbw_mkz_msgs-msg:fault_power-val is deprecated.  Use dbw_mkz_msgs-msg:fault_power instead.")
+  (fault_power m))
 (cl:defmethod roslisp-msg-protocol:serialize ((msg <ThrottleReport>) ostream)
   "Serializes a message object of type '<ThrottleReport>"
   (roslisp-msg-protocol:serialize (cl:slot-value msg 'header) ostream)
@@ -157,11 +167,12 @@
   (cl:write-byte (cl:ldb (cl:byte 8 0) (cl:if (cl:slot-value msg 'enabled) 1 0)) ostream)
   (cl:write-byte (cl:ldb (cl:byte 8 0) (cl:if (cl:slot-value msg 'override) 1 0)) ostream)
   (cl:write-byte (cl:ldb (cl:byte 8 0) (cl:if (cl:slot-value msg 'driver) 1 0)) ostream)
+  (cl:write-byte (cl:ldb (cl:byte 8 0) (cl:if (cl:slot-value msg 'timeout) 1 0)) ostream)
   (roslisp-msg-protocol:serialize (cl:slot-value msg 'watchdog_counter) ostream)
   (cl:write-byte (cl:ldb (cl:byte 8 0) (cl:if (cl:slot-value msg 'fault_wdc) 1 0)) ostream)
   (cl:write-byte (cl:ldb (cl:byte 8 0) (cl:if (cl:slot-value msg 'fault_ch1) 1 0)) ostream)
   (cl:write-byte (cl:ldb (cl:byte 8 0) (cl:if (cl:slot-value msg 'fault_ch2) 1 0)) ostream)
-  (cl:write-byte (cl:ldb (cl:byte 8 0) (cl:if (cl:slot-value msg 'fault_connector) 1 0)) ostream)
+  (cl:write-byte (cl:ldb (cl:byte 8 0) (cl:if (cl:slot-value msg 'fault_power) 1 0)) ostream)
 )
 (cl:defmethod roslisp-msg-protocol:deserialize ((msg <ThrottleReport>) istream)
   "Deserializes a message object of type '<ThrottleReport>"
@@ -187,11 +198,12 @@
     (cl:setf (cl:slot-value msg 'enabled) (cl:not (cl:zerop (cl:read-byte istream))))
     (cl:setf (cl:slot-value msg 'override) (cl:not (cl:zerop (cl:read-byte istream))))
     (cl:setf (cl:slot-value msg 'driver) (cl:not (cl:zerop (cl:read-byte istream))))
+    (cl:setf (cl:slot-value msg 'timeout) (cl:not (cl:zerop (cl:read-byte istream))))
   (roslisp-msg-protocol:deserialize (cl:slot-value msg 'watchdog_counter) istream)
     (cl:setf (cl:slot-value msg 'fault_wdc) (cl:not (cl:zerop (cl:read-byte istream))))
     (cl:setf (cl:slot-value msg 'fault_ch1) (cl:not (cl:zerop (cl:read-byte istream))))
     (cl:setf (cl:slot-value msg 'fault_ch2) (cl:not (cl:zerop (cl:read-byte istream))))
-    (cl:setf (cl:slot-value msg 'fault_connector) (cl:not (cl:zerop (cl:read-byte istream))))
+    (cl:setf (cl:slot-value msg 'fault_power) (cl:not (cl:zerop (cl:read-byte istream))))
   msg
 )
 (cl:defmethod roslisp-msg-protocol:ros-datatype ((msg (cl:eql '<ThrottleReport>)))
@@ -202,22 +214,23 @@
   "dbw_mkz_msgs/ThrottleReport")
 (cl:defmethod roslisp-msg-protocol:md5sum ((type (cl:eql '<ThrottleReport>)))
   "Returns md5sum for a message object of type '<ThrottleReport>"
-  "a7fd7b93c8549e83c319e38a18f6dbdc")
+  "8a31a867d359c6c8fca5fc5cc387567e")
 (cl:defmethod roslisp-msg-protocol:md5sum ((type (cl:eql 'ThrottleReport)))
   "Returns md5sum for a message object of type 'ThrottleReport"
-  "a7fd7b93c8549e83c319e38a18f6dbdc")
+  "8a31a867d359c6c8fca5fc5cc387567e")
 (cl:defmethod roslisp-msg-protocol:message-definition ((type (cl:eql '<ThrottleReport>)))
   "Returns full string definition for message of type '<ThrottleReport>"
-  (cl:format cl:nil "Header header~%~%# Throttle pedal~%# Unitless, range 0.15 to 0.50~%float32 pedal_input~%float32 pedal_cmd~%float32 pedal_output~%~%# Status~%bool enabled  # Enabled~%bool override # Driver override~%bool driver   # Driver activity~%~%# Watchdog Counter~%WatchdogCounter watchdog_counter~%bool fault_wdc~%~%# Faults~%bool fault_ch1~%bool fault_ch2~%bool fault_connector # This fault can be ignored~%~%================================================================================~%MSG: std_msgs/Header~%# Standard metadata for higher-level stamped data types.~%# This is generally used to communicate timestamped data ~%# in a particular coordinate frame.~%# ~%# sequence ID: consecutively increasing ID ~%uint32 seq~%#Two-integer timestamp that is expressed as:~%# * stamp.sec: seconds (stamp_secs) since epoch (in Python the variable is called 'secs')~%# * stamp.nsec: nanoseconds since stamp_secs (in Python the variable is called 'nsecs')~%# time-handling sugar is provided by the client library~%time stamp~%#Frame this data is associated with~%# 0: no frame~%# 1: global frame~%string frame_id~%~%================================================================================~%MSG: dbw_mkz_msgs/WatchdogCounter~%uint8 source~%~%uint8 NONE=0               # No source for watchdog counter fault~%uint8 OTHER_BRAKE=1        # Fault determined by brake controller~%uint8 OTHER_THROTTLE=2     # Fault determined by throttle controller~%uint8 OTHER_STEERING=3     # Fault determined by steering controller~%uint8 BRAKE_COUNTER=4      # Brake command counter failed to increment~%uint8 BRAKE_DISABLED=5     # Brake transition to disabled while in gear or moving~%uint8 BRAKE_COMMAND=6      # Brake command timeout after 100ms~%uint8 BRAKE_REPORT=7       # Brake report timeout after 100ms~%uint8 THROTTLE_COUNTER=8   # Throttle command counter failed to increment~%uint8 THROTTLE_DISABLED=9  # Throttle transition to disabled while in gear or moving~%uint8 THROTTLE_COMMAND=10  # Throttle command timeout after 100ms~%uint8 THROTTLE_REPORT=11   # Throttle report timeout after 100ms~%uint8 STEERING_COUNTER=12  # Steering command counter failed to increment~%uint8 STEERING_DISABLED=13 # Steering transition to disabled while in gear or moving~%uint8 STEERING_COMMAND=14  # Steering command timeout after 100ms~%uint8 STEERING_REPORT=15   # Steering report timeout after 100ms~%~%~%"))
+  (cl:format cl:nil "Header header~%~%# Throttle pedal~%# Unitless, range 0.15 to 0.80~%float32 pedal_input~%float32 pedal_cmd~%float32 pedal_output~%~%# Status~%bool enabled  # Enabled~%bool override # Driver override~%bool driver   # Driver activity~%bool timeout  # Command timeout~%~%# Watchdog Counter~%WatchdogCounter watchdog_counter~%bool fault_wdc~%~%# Faults~%bool fault_ch1~%bool fault_ch2~%bool fault_power~%~%================================================================================~%MSG: std_msgs/Header~%# Standard metadata for higher-level stamped data types.~%# This is generally used to communicate timestamped data ~%# in a particular coordinate frame.~%# ~%# sequence ID: consecutively increasing ID ~%uint32 seq~%#Two-integer timestamp that is expressed as:~%# * stamp.sec: seconds (stamp_secs) since epoch (in Python the variable is called 'secs')~%# * stamp.nsec: nanoseconds since stamp_secs (in Python the variable is called 'nsecs')~%# time-handling sugar is provided by the client library~%time stamp~%#Frame this data is associated with~%# 0: no frame~%# 1: global frame~%string frame_id~%~%================================================================================~%MSG: dbw_mkz_msgs/WatchdogCounter~%uint8 source~%~%uint8 NONE=0               # No source for watchdog counter fault~%uint8 OTHER_BRAKE=1        # Fault determined by brake controller~%uint8 OTHER_THROTTLE=2     # Fault determined by throttle controller~%uint8 OTHER_STEERING=3     # Fault determined by steering controller~%uint8 BRAKE_COUNTER=4      # Brake command counter failed to increment~%uint8 BRAKE_DISABLED=5     # Brake transition to disabled while in gear or moving~%uint8 BRAKE_COMMAND=6      # Brake command timeout after 100ms~%uint8 BRAKE_REPORT=7       # Brake report timeout after 100ms~%uint8 THROTTLE_COUNTER=8   # Throttle command counter failed to increment~%uint8 THROTTLE_DISABLED=9  # Throttle transition to disabled while in gear or moving~%uint8 THROTTLE_COMMAND=10  # Throttle command timeout after 100ms~%uint8 THROTTLE_REPORT=11   # Throttle report timeout after 100ms~%uint8 STEERING_COUNTER=12  # Steering command counter failed to increment~%uint8 STEERING_DISABLED=13 # Steering transition to disabled while in gear or moving~%uint8 STEERING_COMMAND=14  # Steering command timeout after 100ms~%uint8 STEERING_REPORT=15   # Steering report timeout after 100ms~%~%~%"))
 (cl:defmethod roslisp-msg-protocol:message-definition ((type (cl:eql 'ThrottleReport)))
   "Returns full string definition for message of type 'ThrottleReport"
-  (cl:format cl:nil "Header header~%~%# Throttle pedal~%# Unitless, range 0.15 to 0.50~%float32 pedal_input~%float32 pedal_cmd~%float32 pedal_output~%~%# Status~%bool enabled  # Enabled~%bool override # Driver override~%bool driver   # Driver activity~%~%# Watchdog Counter~%WatchdogCounter watchdog_counter~%bool fault_wdc~%~%# Faults~%bool fault_ch1~%bool fault_ch2~%bool fault_connector # This fault can be ignored~%~%================================================================================~%MSG: std_msgs/Header~%# Standard metadata for higher-level stamped data types.~%# This is generally used to communicate timestamped data ~%# in a particular coordinate frame.~%# ~%# sequence ID: consecutively increasing ID ~%uint32 seq~%#Two-integer timestamp that is expressed as:~%# * stamp.sec: seconds (stamp_secs) since epoch (in Python the variable is called 'secs')~%# * stamp.nsec: nanoseconds since stamp_secs (in Python the variable is called 'nsecs')~%# time-handling sugar is provided by the client library~%time stamp~%#Frame this data is associated with~%# 0: no frame~%# 1: global frame~%string frame_id~%~%================================================================================~%MSG: dbw_mkz_msgs/WatchdogCounter~%uint8 source~%~%uint8 NONE=0               # No source for watchdog counter fault~%uint8 OTHER_BRAKE=1        # Fault determined by brake controller~%uint8 OTHER_THROTTLE=2     # Fault determined by throttle controller~%uint8 OTHER_STEERING=3     # Fault determined by steering controller~%uint8 BRAKE_COUNTER=4      # Brake command counter failed to increment~%uint8 BRAKE_DISABLED=5     # Brake transition to disabled while in gear or moving~%uint8 BRAKE_COMMAND=6      # Brake command timeout after 100ms~%uint8 BRAKE_REPORT=7       # Brake report timeout after 100ms~%uint8 THROTTLE_COUNTER=8   # Throttle command counter failed to increment~%uint8 THROTTLE_DISABLED=9  # Throttle transition to disabled while in gear or moving~%uint8 THROTTLE_COMMAND=10  # Throttle command timeout after 100ms~%uint8 THROTTLE_REPORT=11   # Throttle report timeout after 100ms~%uint8 STEERING_COUNTER=12  # Steering command counter failed to increment~%uint8 STEERING_DISABLED=13 # Steering transition to disabled while in gear or moving~%uint8 STEERING_COMMAND=14  # Steering command timeout after 100ms~%uint8 STEERING_REPORT=15   # Steering report timeout after 100ms~%~%~%"))
+  (cl:format cl:nil "Header header~%~%# Throttle pedal~%# Unitless, range 0.15 to 0.80~%float32 pedal_input~%float32 pedal_cmd~%float32 pedal_output~%~%# Status~%bool enabled  # Enabled~%bool override # Driver override~%bool driver   # Driver activity~%bool timeout  # Command timeout~%~%# Watchdog Counter~%WatchdogCounter watchdog_counter~%bool fault_wdc~%~%# Faults~%bool fault_ch1~%bool fault_ch2~%bool fault_power~%~%================================================================================~%MSG: std_msgs/Header~%# Standard metadata for higher-level stamped data types.~%# This is generally used to communicate timestamped data ~%# in a particular coordinate frame.~%# ~%# sequence ID: consecutively increasing ID ~%uint32 seq~%#Two-integer timestamp that is expressed as:~%# * stamp.sec: seconds (stamp_secs) since epoch (in Python the variable is called 'secs')~%# * stamp.nsec: nanoseconds since stamp_secs (in Python the variable is called 'nsecs')~%# time-handling sugar is provided by the client library~%time stamp~%#Frame this data is associated with~%# 0: no frame~%# 1: global frame~%string frame_id~%~%================================================================================~%MSG: dbw_mkz_msgs/WatchdogCounter~%uint8 source~%~%uint8 NONE=0               # No source for watchdog counter fault~%uint8 OTHER_BRAKE=1        # Fault determined by brake controller~%uint8 OTHER_THROTTLE=2     # Fault determined by throttle controller~%uint8 OTHER_STEERING=3     # Fault determined by steering controller~%uint8 BRAKE_COUNTER=4      # Brake command counter failed to increment~%uint8 BRAKE_DISABLED=5     # Brake transition to disabled while in gear or moving~%uint8 BRAKE_COMMAND=6      # Brake command timeout after 100ms~%uint8 BRAKE_REPORT=7       # Brake report timeout after 100ms~%uint8 THROTTLE_COUNTER=8   # Throttle command counter failed to increment~%uint8 THROTTLE_DISABLED=9  # Throttle transition to disabled while in gear or moving~%uint8 THROTTLE_COMMAND=10  # Throttle command timeout after 100ms~%uint8 THROTTLE_REPORT=11   # Throttle report timeout after 100ms~%uint8 STEERING_COUNTER=12  # Steering command counter failed to increment~%uint8 STEERING_DISABLED=13 # Steering transition to disabled while in gear or moving~%uint8 STEERING_COMMAND=14  # Steering command timeout after 100ms~%uint8 STEERING_REPORT=15   # Steering report timeout after 100ms~%~%~%"))
 (cl:defmethod roslisp-msg-protocol:serialization-length ((msg <ThrottleReport>))
   (cl:+ 0
      (roslisp-msg-protocol:serialization-length (cl:slot-value msg 'header))
      4
      4
      4
+     1
      1
      1
      1
@@ -237,9 +250,10 @@
     (cl:cons ':enabled (enabled msg))
     (cl:cons ':override (override msg))
     (cl:cons ':driver (driver msg))
+    (cl:cons ':timeout (timeout msg))
     (cl:cons ':watchdog_counter (watchdog_counter msg))
     (cl:cons ':fault_wdc (fault_wdc msg))
     (cl:cons ':fault_ch1 (fault_ch1 msg))
     (cl:cons ':fault_ch2 (fault_ch2 msg))
-    (cl:cons ':fault_connector (fault_connector msg))
+    (cl:cons ':fault_power (fault_power msg))
 ))

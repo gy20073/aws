@@ -22,6 +22,11 @@
     :initarg :enable
     :type cl:boolean
     :initform cl:nil)
+   (clear
+    :reader clear
+    :initarg :clear
+    :type cl:boolean
+    :initform cl:nil)
    (ignore
     :reader ignore
     :initarg :ignore
@@ -62,6 +67,11 @@
   (roslisp-msg-protocol:msg-deprecation-warning "Using old-style slot reader dbw_mkz_msgs-msg:enable-val is deprecated.  Use dbw_mkz_msgs-msg:enable instead.")
   (enable m))
 
+(cl:ensure-generic-function 'clear-val :lambda-list '(m))
+(cl:defmethod clear-val ((m <SteeringCmd>))
+  (roslisp-msg-protocol:msg-deprecation-warning "Using old-style slot reader dbw_mkz_msgs-msg:clear-val is deprecated.  Use dbw_mkz_msgs-msg:clear instead.")
+  (clear m))
+
 (cl:ensure-generic-function 'ignore-val :lambda-list '(m))
 (cl:defmethod ignore-val ((m <SteeringCmd>))
   (roslisp-msg-protocol:msg-deprecation-warning "Using old-style slot reader dbw_mkz_msgs-msg:ignore-val is deprecated.  Use dbw_mkz_msgs-msg:ignore instead.")
@@ -89,6 +99,7 @@
     (cl:write-byte (cl:ldb (cl:byte 8 16) bits) ostream)
     (cl:write-byte (cl:ldb (cl:byte 8 24) bits) ostream))
   (cl:write-byte (cl:ldb (cl:byte 8 0) (cl:if (cl:slot-value msg 'enable) 1 0)) ostream)
+  (cl:write-byte (cl:ldb (cl:byte 8 0) (cl:if (cl:slot-value msg 'clear) 1 0)) ostream)
   (cl:write-byte (cl:ldb (cl:byte 8 0) (cl:if (cl:slot-value msg 'ignore) 1 0)) ostream)
   (cl:write-byte (cl:ldb (cl:byte 8 0) (cl:if (cl:slot-value msg 'quiet) 1 0)) ostream)
   (cl:write-byte (cl:ldb (cl:byte 8 0) (cl:slot-value msg 'count)) ostream)
@@ -108,6 +119,7 @@
       (cl:setf (cl:ldb (cl:byte 8 24) bits) (cl:read-byte istream))
     (cl:setf (cl:slot-value msg 'steering_wheel_angle_velocity) (roslisp-utils:decode-single-float-bits bits)))
     (cl:setf (cl:slot-value msg 'enable) (cl:not (cl:zerop (cl:read-byte istream))))
+    (cl:setf (cl:slot-value msg 'clear) (cl:not (cl:zerop (cl:read-byte istream))))
     (cl:setf (cl:slot-value msg 'ignore) (cl:not (cl:zerop (cl:read-byte istream))))
     (cl:setf (cl:slot-value msg 'quiet) (cl:not (cl:zerop (cl:read-byte istream))))
     (cl:setf (cl:ldb (cl:byte 8 0) (cl:slot-value msg 'count)) (cl:read-byte istream))
@@ -121,20 +133,21 @@
   "dbw_mkz_msgs/SteeringCmd")
 (cl:defmethod roslisp-msg-protocol:md5sum ((type (cl:eql '<SteeringCmd>)))
   "Returns md5sum for a message object of type '<SteeringCmd>"
-  "042926cddf5be8099d43692732201784")
+  "ff1fa11624bdc2aff2aeee5aa6014057")
 (cl:defmethod roslisp-msg-protocol:md5sum ((type (cl:eql 'SteeringCmd)))
   "Returns md5sum for a message object of type 'SteeringCmd"
-  "042926cddf5be8099d43692732201784")
+  "ff1fa11624bdc2aff2aeee5aa6014057")
 (cl:defmethod roslisp-msg-protocol:message-definition ((type (cl:eql '<SteeringCmd>)))
   "Returns full string definition for message of type '<SteeringCmd>"
-  (cl:format cl:nil "# Steering Wheel~%float32 steering_wheel_angle_cmd        # rad, range -8.2 to 8.2~%float32 steering_wheel_angle_velocity   # rad/s, range 0 to 8.7, 0 = maximum~%~%# Enable~%bool enable~%~%# Ignore driver overrides~%bool ignore~%~%# Disable the driver override audible warning~%bool quiet~%~%# Watchdog counter (optional)~%uint8 count~%~%~%"))
+  (cl:format cl:nil "# Steering Wheel~%float32 steering_wheel_angle_cmd        # rad, range -8.2 to 8.2~%float32 steering_wheel_angle_velocity   # rad/s, range 0 to 8.7, 0 = maximum~%~%# Enable~%bool enable~%~%# Clear driver overrides~%bool clear~%~%# Ignore driver overrides~%bool ignore~%~%# Disable the driver override audible warning~%bool quiet~%~%# Watchdog counter (optional)~%uint8 count~%~%~%"))
 (cl:defmethod roslisp-msg-protocol:message-definition ((type (cl:eql 'SteeringCmd)))
   "Returns full string definition for message of type 'SteeringCmd"
-  (cl:format cl:nil "# Steering Wheel~%float32 steering_wheel_angle_cmd        # rad, range -8.2 to 8.2~%float32 steering_wheel_angle_velocity   # rad/s, range 0 to 8.7, 0 = maximum~%~%# Enable~%bool enable~%~%# Ignore driver overrides~%bool ignore~%~%# Disable the driver override audible warning~%bool quiet~%~%# Watchdog counter (optional)~%uint8 count~%~%~%"))
+  (cl:format cl:nil "# Steering Wheel~%float32 steering_wheel_angle_cmd        # rad, range -8.2 to 8.2~%float32 steering_wheel_angle_velocity   # rad/s, range 0 to 8.7, 0 = maximum~%~%# Enable~%bool enable~%~%# Clear driver overrides~%bool clear~%~%# Ignore driver overrides~%bool ignore~%~%# Disable the driver override audible warning~%bool quiet~%~%# Watchdog counter (optional)~%uint8 count~%~%~%"))
 (cl:defmethod roslisp-msg-protocol:serialization-length ((msg <SteeringCmd>))
   (cl:+ 0
      4
      4
+     1
      1
      1
      1
@@ -146,6 +159,7 @@
     (cl:cons ':steering_wheel_angle_cmd (steering_wheel_angle_cmd msg))
     (cl:cons ':steering_wheel_angle_velocity (steering_wheel_angle_velocity msg))
     (cl:cons ':enable (enable msg))
+    (cl:cons ':clear (clear msg))
     (cl:cons ':ignore (ignore msg))
     (cl:cons ':quiet (quiet msg))
     (cl:cons ':count (count msg))

@@ -21,6 +21,7 @@ class SteeringCmd {
       this.steering_wheel_angle_cmd = null;
       this.steering_wheel_angle_velocity = null;
       this.enable = null;
+      this.clear = null;
       this.ignore = null;
       this.quiet = null;
       this.count = null;
@@ -43,6 +44,12 @@ class SteeringCmd {
       }
       else {
         this.enable = false;
+      }
+      if (initObj.hasOwnProperty('clear')) {
+        this.clear = initObj.clear
+      }
+      else {
+        this.clear = false;
       }
       if (initObj.hasOwnProperty('ignore')) {
         this.ignore = initObj.ignore
@@ -73,6 +80,8 @@ class SteeringCmd {
     bufferOffset = _serializer.float32(obj.steering_wheel_angle_velocity, buffer, bufferOffset);
     // Serialize message field [enable]
     bufferOffset = _serializer.bool(obj.enable, buffer, bufferOffset);
+    // Serialize message field [clear]
+    bufferOffset = _serializer.bool(obj.clear, buffer, bufferOffset);
     // Serialize message field [ignore]
     bufferOffset = _serializer.bool(obj.ignore, buffer, bufferOffset);
     // Serialize message field [quiet]
@@ -92,6 +101,8 @@ class SteeringCmd {
     data.steering_wheel_angle_velocity = _deserializer.float32(buffer, bufferOffset);
     // Deserialize message field [enable]
     data.enable = _deserializer.bool(buffer, bufferOffset);
+    // Deserialize message field [clear]
+    data.clear = _deserializer.bool(buffer, bufferOffset);
     // Deserialize message field [ignore]
     data.ignore = _deserializer.bool(buffer, bufferOffset);
     // Deserialize message field [quiet]
@@ -102,7 +113,7 @@ class SteeringCmd {
   }
 
   static getMessageSize(object) {
-    return 12;
+    return 13;
   }
 
   static datatype() {
@@ -112,7 +123,7 @@ class SteeringCmd {
 
   static md5sum() {
     //Returns md5sum for a message object
-    return '042926cddf5be8099d43692732201784';
+    return 'ff1fa11624bdc2aff2aeee5aa6014057';
   }
 
   static messageDefinition() {
@@ -124,6 +135,9 @@ class SteeringCmd {
     
     # Enable
     bool enable
+    
+    # Clear driver overrides
+    bool clear
     
     # Ignore driver overrides
     bool ignore
@@ -162,6 +176,13 @@ class SteeringCmd {
     }
     else {
       resolved.enable = false
+    }
+
+    if (msg.clear !== undefined) {
+      resolved.clear = msg.clear;
+    }
+    else {
+      resolved.clear = false
     }
 
     if (msg.ignore !== undefined) {

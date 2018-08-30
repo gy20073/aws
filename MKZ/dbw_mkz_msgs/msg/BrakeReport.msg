@@ -20,6 +20,7 @@ bool boo_output
 bool enabled  # Enabled
 bool override # Driver override
 bool driver   # Driver activity
+bool timeout  # Command timeout
 
 # Watchdog Counter
 WatchdogCounter watchdog_counter
@@ -29,5 +30,4 @@ bool fault_wdc
 # Faults
 bool fault_ch1
 bool fault_ch2
-bool fault_boo
-bool fault_connector # This fault can be ignored
+bool fault_power

@@ -27,6 +27,11 @@
     :initarg :enable
     :type cl:boolean
     :initform cl:nil)
+   (clear
+    :reader clear
+    :initarg :clear
+    :type cl:boolean
+    :initform cl:nil)
    (ignore
     :reader ignore
     :initarg :ignore
@@ -67,6 +72,11 @@
   (roslisp-msg-protocol:msg-deprecation-warning "Using old-style slot reader dbw_mkz_msgs-msg:enable-val is deprecated.  Use dbw_mkz_msgs-msg:enable instead.")
   (enable m))
 
+(cl:ensure-generic-function 'clear-val :lambda-list '(m))
+(cl:defmethod clear-val ((m <BrakeCmd>))
+  (roslisp-msg-protocol:msg-deprecation-warning "Using old-style slot reader dbw_mkz_msgs-msg:clear-val is deprecated.  Use dbw_mkz_msgs-msg:clear instead.")
+  (clear m))
+
 (cl:ensure-generic-function 'ignore-val :lambda-list '(m))
 (cl:defmethod ignore-val ((m <BrakeCmd>))
   (roslisp-msg-protocol:msg-deprecation-warning "Using old-style slot reader dbw_mkz_msgs-msg:ignore-val is deprecated.  Use dbw_mkz_msgs-msg:ignore instead.")
@@ -82,6 +92,7 @@
     (:CMD_PEDAL . 1)
     (:CMD_PERCENT . 2)
     (:CMD_TORQUE . 3)
+    (:CMD_TORQUE_RQ . 4)
     (:TORQUE_BOO . 520.0)
     (:TORQUE_MAX . 3412.0))
 )
@@ -91,6 +102,7 @@
     (:CMD_PEDAL . 1)
     (:CMD_PERCENT . 2)
     (:CMD_TORQUE . 3)
+    (:CMD_TORQUE_RQ . 4)
     (:TORQUE_BOO . 520.0)
     (:TORQUE_MAX . 3412.0))
 )
@@ -104,6 +116,7 @@
   (cl:write-byte (cl:ldb (cl:byte 8 0) (cl:slot-value msg 'pedal_cmd_type)) ostream)
   (cl:write-byte (cl:ldb (cl:byte 8 0) (cl:if (cl:slot-value msg 'boo_cmd) 1 0)) ostream)
   (cl:write-byte (cl:ldb (cl:byte 8 0) (cl:if (cl:slot-value msg 'enable) 1 0)) ostream)
+  (cl:write-byte (cl:ldb (cl:byte 8 0) (cl:if (cl:slot-value msg 'clear) 1 0)) ostream)
   (cl:write-byte (cl:ldb (cl:byte 8 0) (cl:if (cl:slot-value msg 'ignore) 1 0)) ostream)
   (cl:write-byte (cl:ldb (cl:byte 8 0) (cl:slot-value msg 'count)) ostream)
 )
@@ -118,6 +131,7 @@
     (cl:setf (cl:ldb (cl:byte 8 0) (cl:slot-value msg 'pedal_cmd_type)) (cl:read-byte istream))
     (cl:setf (cl:slot-value msg 'boo_cmd) (cl:not (cl:zerop (cl:read-byte istream))))
     (cl:setf (cl:slot-value msg 'enable) (cl:not (cl:zerop (cl:read-byte istream))))
+    (cl:setf (cl:slot-value msg 'clear) (cl:not (cl:zerop (cl:read-byte istream))))
     (cl:setf (cl:slot-value msg 'ignore) (cl:not (cl:zerop (cl:read-byte istream))))
     (cl:setf (cl:ldb (cl:byte 8 0) (cl:slot-value msg 'count)) (cl:read-byte istream))
   msg
@@ -130,19 +144,20 @@
   "dbw_mkz_msgs/BrakeCmd")
 (cl:defmethod roslisp-msg-protocol:md5sum ((type (cl:eql '<BrakeCmd>)))
   "Returns md5sum for a message object of type '<BrakeCmd>"
-  "4b6c57c74f8e12f7f2af7f00a7897290")
+  "071bf128b9bdc978dd5a1a6a5be08be3")
 (cl:defmethod roslisp-msg-protocol:md5sum ((type (cl:eql 'BrakeCmd)))
   "Returns md5sum for a message object of type 'BrakeCmd"
-  "4b6c57c74f8e12f7f2af7f00a7897290")
+  "071bf128b9bdc978dd5a1a6a5be08be3")
 (cl:defmethod roslisp-msg-protocol:message-definition ((type (cl:eql '<BrakeCmd>)))
   "Returns full string definition for message of type '<BrakeCmd>"
-  (cl:format cl:nil "# Brake pedal~%# Options defined below~%float32 pedal_cmd~%uint8 pedal_cmd_type~%~%# Brake On Off (BOO), brake lights~%bool boo_cmd~%~%# Enable~%bool enable~%~%# Ignore driver overrides~%bool ignore~%~%# Watchdog counter (optional)~%uint8 count~%~%uint8 CMD_NONE=0~%uint8 CMD_PEDAL=1   # Unitless, range 0.15 to 0.50~%uint8 CMD_PERCENT=2 # Percent of maximum torque, range 0 to 1~%uint8 CMD_TORQUE=3  # Nm, range 0 to 3250~%~%float32 TORQUE_BOO=520  # Nm, brake lights threshold~%float32 TORQUE_MAX=3412 # Nm, maximum torque~%~%~%"))
+  (cl:format cl:nil "# Brake pedal~%# Options defined below~%float32 pedal_cmd~%uint8 pedal_cmd_type~%~%# Brake On Off (BOO), brake lights~%bool boo_cmd~%~%# Enable~%bool enable~%~%# Clear driver overrides~%bool clear~%~%# Ignore driver overrides~%bool ignore~%~%# Watchdog counter (optional)~%uint8 count~%~%uint8 CMD_NONE=0~%uint8 CMD_PEDAL=1     # Unitless, range 0.15 to 0.50~%uint8 CMD_PERCENT=2   # Percent of maximum torque, range 0 to 1~%uint8 CMD_TORQUE=3    # Nm, range 0 to 3250, open-loop~%uint8 CMD_TORQUE_RQ=4 # Nm, range 0 to 3250, closed-loop~%~%float32 TORQUE_BOO=520  # Nm, brake lights threshold~%float32 TORQUE_MAX=3412 # Nm, maximum torque~%~%~%"))
 (cl:defmethod roslisp-msg-protocol:message-definition ((type (cl:eql 'BrakeCmd)))
   "Returns full string definition for message of type 'BrakeCmd"
-  (cl:format cl:nil "# Brake pedal~%# Options defined below~%float32 pedal_cmd~%uint8 pedal_cmd_type~%~%# Brake On Off (BOO), brake lights~%bool boo_cmd~%~%# Enable~%bool enable~%~%# Ignore driver overrides~%bool ignore~%~%# Watchdog counter (optional)~%uint8 count~%~%uint8 CMD_NONE=0~%uint8 CMD_PEDAL=1   # Unitless, range 0.15 to 0.50~%uint8 CMD_PERCENT=2 # Percent of maximum torque, range 0 to 1~%uint8 CMD_TORQUE=3  # Nm, range 0 to 3250~%~%float32 TORQUE_BOO=520  # Nm, brake lights threshold~%float32 TORQUE_MAX=3412 # Nm, maximum torque~%~%~%"))
+  (cl:format cl:nil "# Brake pedal~%# Options defined below~%float32 pedal_cmd~%uint8 pedal_cmd_type~%~%# Brake On Off (BOO), brake lights~%bool boo_cmd~%~%# Enable~%bool enable~%~%# Clear driver overrides~%bool clear~%~%# Ignore driver overrides~%bool ignore~%~%# Watchdog counter (optional)~%uint8 count~%~%uint8 CMD_NONE=0~%uint8 CMD_PEDAL=1     # Unitless, range 0.15 to 0.50~%uint8 CMD_PERCENT=2   # Percent of maximum torque, range 0 to 1~%uint8 CMD_TORQUE=3    # Nm, range 0 to 3250, open-loop~%uint8 CMD_TORQUE_RQ=4 # Nm, range 0 to 3250, closed-loop~%~%float32 TORQUE_BOO=520  # Nm, brake lights threshold~%float32 TORQUE_MAX=3412 # Nm, maximum torque~%~%~%"))
 (cl:defmethod roslisp-msg-protocol:serialization-length ((msg <BrakeCmd>))
   (cl:+ 0
      4
+     1
      1
      1
      1
@@ -156,6 +171,7 @@
     (cl:cons ':pedal_cmd_type (pedal_cmd_type msg))
     (cl:cons ':boo_cmd (boo_cmd msg))
     (cl:cons ':enable (enable msg))
+    (cl:cons ':clear (clear msg))
     (cl:cons ':ignore (ignore msg))
     (cl:cons ':count (count msg))
 ))
