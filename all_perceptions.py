@@ -175,6 +175,12 @@ class Perceptions:
         self.paths["depth"] = {"model_path": "/root/models/model_city2eigen",
                                "python_path": "/root/monodepth"}
 
+    def path_docker_newseg(self):
+        self.path_docker()
+        codebase = "/root/aws/"
+        self.paths["seg"] = {"model_path": "/root/models/seg_v2.net",
+                             "mean_path": "/root/models/seg_stat_v2.t7"}
+
     @staticmethod
     def merge_images(viz_dict, new_size):
         nimage = len(viz_dict)
