@@ -43,7 +43,8 @@ def on_image_received(data):
     # flip because the camera is flipped
     img = img[::-1, ::-1, :]
 
-    control, vis = driving_model.compute_action(img, vehicle_real_speed_kmh, direction,
+    sensors = [img]
+    control, vis = driving_model.compute_action(sensors, vehicle_real_speed_kmh, direction,
                                            save_image_to_disk=False, return_vis=True)
 
     # safty guards to guard against dangerous situation
