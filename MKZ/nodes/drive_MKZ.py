@@ -18,7 +18,7 @@ from dbw_mkz_msgs.msg import SteeringReport
 import sys, os, time
 
 # some constants
-SAFETY_SPEED = 16.0 # in km/h, cap the speed if larger than it
+SAFETY_SPEED = 8.0 # in km/h, cap the speed if larger than it
 
 KEYBOARD_TOPIC = "mkz_key_command"
 INPUT_IMAGE_TOPIC = "/image_sender_0"
@@ -56,9 +56,9 @@ def on_image_received(data):
     # the meaning of the predicted value
     # the meaning of the required value
     # TODO: right now no smoother
-    controller.set_throttle(control.throttle * 0.3)
-    controller.set_break(control.brake * 0.3)
-    controller.set_steer(control.steer * 4.1)  # 8.2 in range
+    controller.set_throttle(control.throttle * 0.1)
+    controller.set_break(control.brake * 0.0)
+    controller.set_steer(control.steer * -3.1)  # 8.2 in range
 
     vis_pub_full.publish(bridge.cv2_to_imgmsg(vis, "rgb8"))
 

@@ -5,6 +5,8 @@
           STEERING_WHEEL_ANGLE_VELOCITY
           ENABLE-VAL
           ENABLE
+          CLEAR-VAL
+          CLEAR
           IGNORE-VAL
           IGNORE
           QUIET-VAL

@@ -28,6 +28,7 @@ struct BrakeCmd_
     , pedal_cmd_type(0)
     , boo_cmd(false)
     , enable(false)
+    , clear(false)
     , ignore(false)
     , count(0)  {
     }
@@ -36,6 +37,7 @@ struct BrakeCmd_
     , pedal_cmd_type(0)
     , boo_cmd(false)
     , enable(false)
+    , clear(false)
     , ignore(false)
     , count(0)  {
   (void)_alloc;
@@ -55,6 +57,9 @@ struct BrakeCmd_
    typedef uint8_t _enable_type;
   _enable_type enable;
 
+   typedef uint8_t _clear_type;
+  _clear_type clear;
+
    typedef uint8_t _ignore_type;
   _ignore_type ignore;
 
@@ -68,6 +73,7 @@ struct BrakeCmd_
     CMD_PEDAL = 1u,
     CMD_PERCENT = 2u,
     CMD_TORQUE = 3u,
+    CMD_TORQUE_RQ = 4u,
   };
 
   static const float TORQUE_BOO;
@@ -84,6 +90,8 @@ typedef boost::shared_ptr< ::dbw_mkz_msgs::BrakeCmd > BrakeCmdPtr;
 typedef boost::shared_ptr< ::dbw_mkz_msgs::BrakeCmd const> BrakeCmdConstPtr;
 
 // constants requiring out of line definition
+
+   
 
    
 
@@ -173,12 +181,12 @@ struct MD5Sum< ::dbw_mkz_msgs::BrakeCmd_<ContainerAllocator> >
 {
   static const char* value()
   {
-    return "4b6c57c74f8e12f7f2af7f00a7897290";
+    return "071bf128b9bdc978dd5a1a6a5be08be3";
   }
 
   static const char* value(const ::dbw_mkz_msgs::BrakeCmd_<ContainerAllocator>&) { return value(); }
-  static const uint64_t static_value1 = 0x4b6c57c74f8e12f7ULL;
-  static const uint64_t static_value2 = 0xf2af7f00a7897290ULL;
+  static const uint64_t static_value1 = 0x071bf128b9bdc978ULL;
+  static const uint64_t static_value2 = 0xdd5a1a6a5be08be3ULL;
 };
 
 template<class ContainerAllocator>
@@ -208,6 +216,9 @@ bool boo_cmd\n\
 # Enable\n\
 bool enable\n\
 \n\
+# Clear driver overrides\n\
+bool clear\n\
+\n\
 # Ignore driver overrides\n\
 bool ignore\n\
 \n\
@@ -215,9 +226,10 @@ bool ignore\n\
 uint8 count\n\
 \n\
 uint8 CMD_NONE=0\n\
-uint8 CMD_PEDAL=1   # Unitless, range 0.15 to 0.50\n\
-uint8 CMD_PERCENT=2 # Percent of maximum torque, range 0 to 1\n\
-uint8 CMD_TORQUE=3  # Nm, range 0 to 3250\n\
+uint8 CMD_PEDAL=1     # Unitless, range 0.15 to 0.50\n\
+uint8 CMD_PERCENT=2   # Percent of maximum torque, range 0 to 1\n\
+uint8 CMD_TORQUE=3    # Nm, range 0 to 3250, open-loop\n\
+uint8 CMD_TORQUE_RQ=4 # Nm, range 0 to 3250, closed-loop\n\
 \n\
 float32 TORQUE_BOO=520  # Nm, brake lights threshold\n\
 float32 TORQUE_MAX=3412 # Nm, maximum torque\n\
@@ -243,6 +255,7 @@ namespace serialization
       stream.next(m.pedal_cmd_type);
       stream.next(m.boo_cmd);
       stream.next(m.enable);
+      stream.next(m.clear);
       stream.next(m.ignore);
       stream.next(m.count);
     }
@@ -271,6 +284,8 @@ struct Printer< ::dbw_mkz_msgs::BrakeCmd_<ContainerAllocator> >
     Printer<uint8_t>::stream(s, indent + "  ", v.boo_cmd);
     s << indent << "enable: ";
     Printer<uint8_t>::stream(s, indent + "  ", v.enable);
+    s << indent << "clear: ";
+    Printer<uint8_t>::stream(s, indent + "  ", v.clear);
     s << indent << "ignore: ";
     Printer<uint8_t>::stream(s, indent + "  ", v.ignore);
     s << indent << "count: ";

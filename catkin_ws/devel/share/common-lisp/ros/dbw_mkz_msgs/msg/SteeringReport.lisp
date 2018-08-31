@@ -42,9 +42,9 @@
     :initarg :override
     :type cl:boolean
     :initform cl:nil)
-   (driver
-    :reader driver
-    :initarg :driver
+   (timeout
+    :reader timeout
+    :initarg :timeout
     :type cl:boolean
     :initform cl:nil)
    (fault_wdc
@@ -67,9 +67,9 @@
     :initarg :fault_calibration
     :type cl:boolean
     :initform cl:nil)
-   (fault_connector
-    :reader fault_connector
-    :initarg :fault_connector
+   (fault_power
+    :reader fault_power
+    :initarg :fault_power
     :type cl:boolean
     :initform cl:nil))
 )
@@ -117,10 +117,10 @@
   (roslisp-msg-protocol:msg-deprecation-warning "Using old-style slot reader dbw_mkz_msgs-msg:override-val is deprecated.  Use dbw_mkz_msgs-msg:override instead.")
   (override m))
 
-(cl:ensure-generic-function 'driver-val :lambda-list '(m))
-(cl:defmethod driver-val ((m <SteeringReport>))
-  (roslisp-msg-protocol:msg-deprecation-warning "Using old-style slot reader dbw_mkz_msgs-msg:driver-val is deprecated.  Use dbw_mkz_msgs-msg:driver instead.")
-  (driver m))
+(cl:ensure-generic-function 'timeout-val :lambda-list '(m))
+(cl:defmethod timeout-val ((m <SteeringReport>))
+  (roslisp-msg-protocol:msg-deprecation-warning "Using old-style slot reader dbw_mkz_msgs-msg:timeout-val is deprecated.  Use dbw_mkz_msgs-msg:timeout instead.")
+  (timeout m))
 
 (cl:ensure-generic-function 'fault_wdc-val :lambda-list '(m))
 (cl:defmethod fault_wdc-val ((m <SteeringReport>))
@@ -142,10 +142,10 @@
   (roslisp-msg-protocol:msg-deprecation-warning "Using old-style slot reader dbw_mkz_msgs-msg:fault_calibration-val is deprecated.  Use dbw_mkz_msgs-msg:fault_calibration instead.")
   (fault_calibration m))
 
-(cl:ensure-generic-function 'fault_connector-val :lambda-list '(m))
-(cl:defmethod fault_connector-val ((m <SteeringReport>))
-  (roslisp-msg-protocol:msg-deprecation-warning "Using old-style slot reader dbw_mkz_msgs-msg:fault_connector-val is deprecated.  Use dbw_mkz_msgs-msg:fault_connector instead.")
-  (fault_connector m))
+(cl:ensure-generic-function 'fault_power-val :lambda-list '(m))
+(cl:defmethod fault_power-val ((m <SteeringReport>))
+  (roslisp-msg-protocol:msg-deprecation-warning "Using old-style slot reader dbw_mkz_msgs-msg:fault_power-val is deprecated.  Use dbw_mkz_msgs-msg:fault_power instead.")
+  (fault_power m))
 (cl:defmethod roslisp-msg-protocol:serialize ((msg <SteeringReport>) ostream)
   "Serializes a message object of type '<SteeringReport>"
   (roslisp-msg-protocol:serialize (cl:slot-value msg 'header) ostream)
@@ -171,12 +171,12 @@
     (cl:write-byte (cl:ldb (cl:byte 8 24) bits) ostream))
   (cl:write-byte (cl:ldb (cl:byte 8 0) (cl:if (cl:slot-value msg 'enabled) 1 0)) ostream)
   (cl:write-byte (cl:ldb (cl:byte 8 0) (cl:if (cl:slot-value msg 'override) 1 0)) ostream)
-  (cl:write-byte (cl:ldb (cl:byte 8 0) (cl:if (cl:slot-value msg 'driver) 1 0)) ostream)
+  (cl:write-byte (cl:ldb (cl:byte 8 0) (cl:if (cl:slot-value msg 'timeout) 1 0)) ostream)
   (cl:write-byte (cl:ldb (cl:byte 8 0) (cl:if (cl:slot-value msg 'fault_wdc) 1 0)) ostream)
   (cl:write-byte (cl:ldb (cl:byte 8 0) (cl:if (cl:slot-value msg 'fault_bus1) 1 0)) ostream)
   (cl:write-byte (cl:ldb (cl:byte 8 0) (cl:if (cl:slot-value msg 'fault_bus2) 1 0)) ostream)
   (cl:write-byte (cl:ldb (cl:byte 8 0) (cl:if (cl:slot-value msg 'fault_calibration) 1 0)) ostream)
-  (cl:write-byte (cl:ldb (cl:byte 8 0) (cl:if (cl:slot-value msg 'fault_connector) 1 0)) ostream)
+  (cl:write-byte (cl:ldb (cl:byte 8 0) (cl:if (cl:slot-value msg 'fault_power) 1 0)) ostream)
 )
 (cl:defmethod roslisp-msg-protocol:deserialize ((msg <SteeringReport>) istream)
   "Deserializes a message object of type '<SteeringReport>"
@@ -207,12 +207,12 @@
     (cl:setf (cl:slot-value msg 'speed) (roslisp-utils:decode-single-float-bits bits)))
     (cl:setf (cl:slot-value msg 'enabled) (cl:not (cl:zerop (cl:read-byte istream))))
     (cl:setf (cl:slot-value msg 'override) (cl:not (cl:zerop (cl:read-byte istream))))
-    (cl:setf (cl:slot-value msg 'driver) (cl:not (cl:zerop (cl:read-byte istream))))
+    (cl:setf (cl:slot-value msg 'timeout) (cl:not (cl:zerop (cl:read-byte istream))))
     (cl:setf (cl:slot-value msg 'fault_wdc) (cl:not (cl:zerop (cl:read-byte istream))))
     (cl:setf (cl:slot-value msg 'fault_bus1) (cl:not (cl:zerop (cl:read-byte istream))))
     (cl:setf (cl:slot-value msg 'fault_bus2) (cl:not (cl:zerop (cl:read-byte istream))))
     (cl:setf (cl:slot-value msg 'fault_calibration) (cl:not (cl:zerop (cl:read-byte istream))))
-    (cl:setf (cl:slot-value msg 'fault_connector) (cl:not (cl:zerop (cl:read-byte istream))))
+    (cl:setf (cl:slot-value msg 'fault_power) (cl:not (cl:zerop (cl:read-byte istream))))
   msg
 )
 (cl:defmethod roslisp-msg-protocol:ros-datatype ((msg (cl:eql '<SteeringReport>)))
@@ -223,16 +223,16 @@
   "dbw_mkz_msgs/SteeringReport")
 (cl:defmethod roslisp-msg-protocol:md5sum ((type (cl:eql '<SteeringReport>)))
   "Returns md5sum for a message object of type '<SteeringReport>"
-  "25bf2c220d904531d8bc16ab5271325d")
+  "6f32c1fc98edaf75e24a770b2ae3abfc")
 (cl:defmethod roslisp-msg-protocol:md5sum ((type (cl:eql 'SteeringReport)))
   "Returns md5sum for a message object of type 'SteeringReport"
-  "25bf2c220d904531d8bc16ab5271325d")
+  "6f32c1fc98edaf75e24a770b2ae3abfc")
 (cl:defmethod roslisp-msg-protocol:message-definition ((type (cl:eql '<SteeringReport>)))
   "Returns full string definition for message of type '<SteeringReport>"
-  (cl:format cl:nil "Header header~%~%# Steering Wheel~%float32 steering_wheel_angle      # rad~%float32 steering_wheel_angle_cmd  # rad~%float32 steering_wheel_torque     # Nm~%~%# Vehicle Speed~%float32 speed                     # m/s~%~%# Status~%bool enabled  # Enabled~%bool override # Driver override~%bool driver   # Driver activity~%~%# Watchdog Counter~%bool fault_wdc~%~%# Faults~%bool fault_bus1~%bool fault_bus2~%bool fault_calibration~%bool fault_connector # This fault can be ignored~%~%================================================================================~%MSG: std_msgs/Header~%# Standard metadata for higher-level stamped data types.~%# This is generally used to communicate timestamped data ~%# in a particular coordinate frame.~%# ~%# sequence ID: consecutively increasing ID ~%uint32 seq~%#Two-integer timestamp that is expressed as:~%# * stamp.sec: seconds (stamp_secs) since epoch (in Python the variable is called 'secs')~%# * stamp.nsec: nanoseconds since stamp_secs (in Python the variable is called 'nsecs')~%# time-handling sugar is provided by the client library~%time stamp~%#Frame this data is associated with~%# 0: no frame~%# 1: global frame~%string frame_id~%~%~%"))
+  (cl:format cl:nil "Header header~%~%# Steering Wheel~%float32 steering_wheel_angle      # rad~%float32 steering_wheel_angle_cmd  # rad~%float32 steering_wheel_torque     # Nm~%~%# Vehicle Speed~%float32 speed                     # m/s~%~%# Status~%bool enabled  # Enabled~%bool override # Driver override~%bool timeout  # Command timeout~%~%# Watchdog Counter~%bool fault_wdc~%~%# Faults~%bool fault_bus1~%bool fault_bus2~%bool fault_calibration~%bool fault_power~%~%================================================================================~%MSG: std_msgs/Header~%# Standard metadata for higher-level stamped data types.~%# This is generally used to communicate timestamped data ~%# in a particular coordinate frame.~%# ~%# sequence ID: consecutively increasing ID ~%uint32 seq~%#Two-integer timestamp that is expressed as:~%# * stamp.sec: seconds (stamp_secs) since epoch (in Python the variable is called 'secs')~%# * stamp.nsec: nanoseconds since stamp_secs (in Python the variable is called 'nsecs')~%# time-handling sugar is provided by the client library~%time stamp~%#Frame this data is associated with~%# 0: no frame~%# 1: global frame~%string frame_id~%~%~%"))
 (cl:defmethod roslisp-msg-protocol:message-definition ((type (cl:eql 'SteeringReport)))
   "Returns full string definition for message of type 'SteeringReport"
-  (cl:format cl:nil "Header header~%~%# Steering Wheel~%float32 steering_wheel_angle      # rad~%float32 steering_wheel_angle_cmd  # rad~%float32 steering_wheel_torque     # Nm~%~%# Vehicle Speed~%float32 speed                     # m/s~%~%# Status~%bool enabled  # Enabled~%bool override # Driver override~%bool driver   # Driver activity~%~%# Watchdog Counter~%bool fault_wdc~%~%# Faults~%bool fault_bus1~%bool fault_bus2~%bool fault_calibration~%bool fault_connector # This fault can be ignored~%~%================================================================================~%MSG: std_msgs/Header~%# Standard metadata for higher-level stamped data types.~%# This is generally used to communicate timestamped data ~%# in a particular coordinate frame.~%# ~%# sequence ID: consecutively increasing ID ~%uint32 seq~%#Two-integer timestamp that is expressed as:~%# * stamp.sec: seconds (stamp_secs) since epoch (in Python the variable is called 'secs')~%# * stamp.nsec: nanoseconds since stamp_secs (in Python the variable is called 'nsecs')~%# time-handling sugar is provided by the client library~%time stamp~%#Frame this data is associated with~%# 0: no frame~%# 1: global frame~%string frame_id~%~%~%"))
+  (cl:format cl:nil "Header header~%~%# Steering Wheel~%float32 steering_wheel_angle      # rad~%float32 steering_wheel_angle_cmd  # rad~%float32 steering_wheel_torque     # Nm~%~%# Vehicle Speed~%float32 speed                     # m/s~%~%# Status~%bool enabled  # Enabled~%bool override # Driver override~%bool timeout  # Command timeout~%~%# Watchdog Counter~%bool fault_wdc~%~%# Faults~%bool fault_bus1~%bool fault_bus2~%bool fault_calibration~%bool fault_power~%~%================================================================================~%MSG: std_msgs/Header~%# Standard metadata for higher-level stamped data types.~%# This is generally used to communicate timestamped data ~%# in a particular coordinate frame.~%# ~%# sequence ID: consecutively increasing ID ~%uint32 seq~%#Two-integer timestamp that is expressed as:~%# * stamp.sec: seconds (stamp_secs) since epoch (in Python the variable is called 'secs')~%# * stamp.nsec: nanoseconds since stamp_secs (in Python the variable is called 'nsecs')~%# time-handling sugar is provided by the client library~%time stamp~%#Frame this data is associated with~%# 0: no frame~%# 1: global frame~%string frame_id~%~%~%"))
 (cl:defmethod roslisp-msg-protocol:serialization-length ((msg <SteeringReport>))
   (cl:+ 0
      (roslisp-msg-protocol:serialization-length (cl:slot-value msg 'header))
@@ -259,10 +259,10 @@
     (cl:cons ':speed (speed msg))
     (cl:cons ':enabled (enabled msg))
     (cl:cons ':override (override msg))
-    (cl:cons ':driver (driver msg))
+    (cl:cons ':timeout (timeout msg))
     (cl:cons ':fault_wdc (fault_wdc msg))
     (cl:cons ':fault_bus1 (fault_bus1 msg))
     (cl:cons ':fault_bus2 (fault_bus2 msg))
     (cl:cons ':fault_calibration (fault_calibration msg))
-    (cl:cons ':fault_connector (fault_connector msg))
+    (cl:cons ':fault_power (fault_power msg))
 ))

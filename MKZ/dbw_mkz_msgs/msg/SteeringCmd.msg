@@ -5,6 +5,9 @@ float32 steering_wheel_angle_velocity   # rad/s, range 0 to 8.7, 0 = maximum
 # Enable
 bool enable
 
+# Clear driver overrides
+bool clear
+
 # Ignore driver overrides
 bool ignore
 

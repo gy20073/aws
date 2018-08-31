@@ -5,6 +5,8 @@
           PEDAL_CMD_TYPE
           ENABLE-VAL
           ENABLE
+          CLEAR-VAL
+          CLEAR
           IGNORE-VAL
           IGNORE
           COUNT-VAL

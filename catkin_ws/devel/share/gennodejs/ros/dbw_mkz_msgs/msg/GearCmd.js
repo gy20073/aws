@@ -20,6 +20,7 @@ class GearCmd {
     if (initObj === null) {
       // initObj === null is a special case for deserialization where we don't initialize fields
       this.cmd = null;
+      this.clear = null;
     }
     else {
       if (initObj.hasOwnProperty('cmd')) {
@@ -28,6 +29,12 @@ class GearCmd {
       else {
         this.cmd = new Gear();
       }
+      if (initObj.hasOwnProperty('clear')) {
+        this.clear = initObj.clear
+      }
+      else {
+        this.clear = false;
+      }
     }
   }
 
@@ -35,6 +42,8 @@ class GearCmd {
     // Serializes a message object of type GearCmd
     // Serialize message field [cmd]
     bufferOffset = Gear.serialize(obj.cmd, buffer, bufferOffset);
+    // Serialize message field [clear]
+    bufferOffset = _serializer.bool(obj.clear, buffer, bufferOffset);
     return bufferOffset;
   }
 
@@ -44,11 +53,13 @@ class GearCmd {
     let data = new GearCmd(null);
     // Deserialize message field [cmd]
     data.cmd = Gear.deserialize(buffer, bufferOffset);
+    // Deserialize message field [clear]
+    data.clear = _deserializer.bool(buffer, bufferOffset);
     return data;
   }
 
   static getMessageSize(object) {
-    return 1;
+    return 2;
   }
 
   static datatype() {
@@ -58,7 +69,7 @@ class GearCmd {
 
   static md5sum() {
     //Returns md5sum for a message object
-    return 'e4d2b0484c21e028e30e3c34f7f76ad3';
+    return '14694bb9a291d2a80b8033843d95776e';
   }
 
   static messageDefinition() {
@@ -66,6 +77,9 @@ class GearCmd {
     return `
     # Gear command enumeration
     Gear cmd
+    
+    # Clear driver overrides
+    bool clear
     
     ================================================================================
     MSG: dbw_mkz_msgs/Gear
@@ -92,6 +106,13 @@ class GearCmd {
     }
     else {
       resolved.cmd = new Gear()
+    }
+
+    if (msg.clear !== undefined) {
+      resolved.clear = msg.clear;
+    }
+    else {
+      resolved.clear = false
     }
 
     return resolved;

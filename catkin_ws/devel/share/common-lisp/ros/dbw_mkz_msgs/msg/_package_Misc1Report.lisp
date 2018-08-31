@@ -21,6 +21,10 @@
           BTN_CC_CNCL
           BTN_CC_RES_CNCL-VAL
           BTN_CC_RES_CNCL
+          BTN_CC_RES_INC-VAL
+          BTN_CC_RES_INC
+          BTN_CC_RES_DEC-VAL
+          BTN_CC_RES_DEC
           BTN_CC_SET_INC-VAL
           BTN_CC_SET_INC
           BTN_CC_SET_DEC-VAL
@@ -31,6 +35,16 @@
           BTN_CC_GAP_DEC
           BTN_LA_ON_OFF-VAL
           BTN_LA_ON_OFF
+          BTN_LD_OK-VAL
+          BTN_LD_OK
+          BTN_LD_UP-VAL
+          BTN_LD_UP
+          BTN_LD_DOWN-VAL
+          BTN_LD_DOWN
+          BTN_LD_LEFT-VAL
+          BTN_LD_LEFT
+          BTN_LD_RIGHT-VAL
+          BTN_LD_RIGHT
           FAULT_BUS-VAL
           FAULT_BUS
           DOOR_DRIVER-VAL

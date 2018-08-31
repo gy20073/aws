@@ -18,6 +18,7 @@
 #include <std_msgs/Header.h>
 #include <dbw_mkz_msgs/Gear.h>
 #include <dbw_mkz_msgs/Gear.h>
+#include <dbw_mkz_msgs/GearReject.h>
 
 namespace dbw_mkz_msgs
 {
@@ -30,6 +31,7 @@ struct GearReport_
     : header()
     , state()
     , cmd()
+    , reject()
     , override(false)
     , fault_bus(false)  {
     }
@@ -37,6 +39,7 @@ struct GearReport_
     : header(_alloc)
     , state(_alloc)
     , cmd(_alloc)
+    , reject(_alloc)
     , override(false)
     , fault_bus(false)  {
   (void)_alloc;
@@ -52,6 +55,9 @@ struct GearReport_
 
    typedef  ::dbw_mkz_msgs::Gear_<ContainerAllocator>  _cmd_type;
   _cmd_type cmd;
+
+   typedef  ::dbw_mkz_msgs::GearReject_<ContainerAllocator>  _reject_type;
+  _reject_type reject;
 
    typedef uint8_t _override_type;
   _override_type override;
@@ -137,12 +143,12 @@ struct MD5Sum< ::dbw_mkz_msgs::GearReport_<ContainerAllocator> >
 {
   static const char* value()
   {
-    return "f33342dfeb80c29d8fe4b31e22519594";
+    return "785b94d5bfee677e7f0da982153f2711";
   }
 
   static const char* value(const ::dbw_mkz_msgs::GearReport_<ContainerAllocator>&) { return value(); }
-  static const uint64_t static_value1 = 0xf33342dfeb80c29dULL;
-  static const uint64_t static_value2 = 0x8fe4b31e22519594ULL;
+  static const uint64_t static_value1 = 0x785b94d5bfee677eULL;
+  static const uint64_t static_value2 = 0x7f0da982153f2711ULL;
 };
 
 template<class ContainerAllocator>
@@ -168,6 +174,9 @@ Gear state\n\
 \n\
 # Gear command enumeration\n\
 Gear cmd\n\
+\n\
+# Gear reject enumeration\n\
+GearReject reject\n\
 \n\
 # Status\n\
 bool override\n\
@@ -203,6 +212,17 @@ uint8 REVERSE=2\n\
 uint8 NEUTRAL=3\n\
 uint8 DRIVE=4\n\
 uint8 LOW=5\n\
+\n\
+================================================================================\n\
+MSG: dbw_mkz_msgs/GearReject\n\
+uint8 value\n\
+\n\
+uint8 NONE=0              # Not rejected\n\
+uint8 SHIFT_IN_PROGRESS=1 # Shift in progress\n\
+uint8 OVERRIDE=2          # Override on brake, throttle, or steering\n\
+uint8 ROTARY_LOW=3        # Rotary shifter can't shift to Low\n\
+uint8 ROTARY_PARK=4       # Rotary shifter can't shift out of Park\n\
+uint8 VEHICLE=5           # Rejected by vehicle (try pressing the brakes)\n\
 ";
   }
 
@@ -224,6 +244,7 @@ namespace serialization
       stream.next(m.header);
       stream.next(m.state);
       stream.next(m.cmd);
+      stream.next(m.reject);
       stream.next(m.override);
       stream.next(m.fault_bus);
     }
@@ -253,6 +274,9 @@ struct Printer< ::dbw_mkz_msgs::GearReport_<ContainerAllocator> >
     s << indent << "cmd: ";
     s << std::endl;
     Printer< ::dbw_mkz_msgs::Gear_<ContainerAllocator> >::stream(s, indent + "  ", v.cmd);
+    s << indent << "reject: ";
+    s << std::endl;
+    Printer< ::dbw_mkz_msgs::GearReject_<ContainerAllocator> >::stream(s, indent + "  ", v.reject);
     s << indent << "override: ";
     Printer<uint8_t>::stream(s, indent + "  ", v.override);
     s << indent << "fault_bus: ";

@@ -25,10 +25,12 @@ struct GearCmd_
   typedef GearCmd_<ContainerAllocator> Type;
 
   GearCmd_()
-    : cmd()  {
+    : cmd()
+    , clear(false)  {
     }
   GearCmd_(const ContainerAllocator& _alloc)
-    : cmd(_alloc)  {
+    : cmd(_alloc)
+    , clear(false)  {
   (void)_alloc;
     }
 
@@ -36,6 +38,9 @@ struct GearCmd_
 
    typedef  ::dbw_mkz_msgs::Gear_<ContainerAllocator>  _cmd_type;
   _cmd_type cmd;
+
+   typedef uint8_t _clear_type;
+  _clear_type clear;
 
 
 
@@ -115,12 +120,12 @@ struct MD5Sum< ::dbw_mkz_msgs::GearCmd_<ContainerAllocator> >
 {
   static const char* value()
   {
-    return "e4d2b0484c21e028e30e3c34f7f76ad3";
+    return "14694bb9a291d2a80b8033843d95776e";
   }
 
   static const char* value(const ::dbw_mkz_msgs::GearCmd_<ContainerAllocator>&) { return value(); }
-  static const uint64_t static_value1 = 0xe4d2b0484c21e028ULL;
-  static const uint64_t static_value2 = 0xe30e3c34f7f76ad3ULL;
+  static const uint64_t static_value1 = 0x14694bb9a291d2a8ULL;
+  static const uint64_t static_value2 = 0x0b8033843d95776eULL;
 };
 
 template<class ContainerAllocator>
@@ -141,6 +146,9 @@ struct Definition< ::dbw_mkz_msgs::GearCmd_<ContainerAllocator> >
   {
     return "# Gear command enumeration\n\
 Gear cmd\n\
+\n\
+# Clear driver overrides\n\
+bool clear\n\
 \n\
 ================================================================================\n\
 MSG: dbw_mkz_msgs/Gear\n\
@@ -171,6 +179,7 @@ namespace serialization
     template<typename Stream, typename T> inline static void allInOne(Stream& stream, T m)
     {
       stream.next(m.cmd);
+      stream.next(m.clear);
     }
 
     ROS_DECLARE_ALLINONE_SERIALIZER
@@ -192,6 +201,8 @@ struct Printer< ::dbw_mkz_msgs::GearCmd_<ContainerAllocator> >
     s << indent << "cmd: ";
     s << std::endl;
     Printer< ::dbw_mkz_msgs::Gear_<ContainerAllocator> >::stream(s, indent + "  ", v.cmd);
+    s << indent << "clear: ";
+    Printer<uint8_t>::stream(s, indent + "  ", v.clear);
   }
 };
 

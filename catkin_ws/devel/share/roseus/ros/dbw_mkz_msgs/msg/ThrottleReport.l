@@ -16,7 +16,7 @@
 
 (defclass dbw_mkz_msgs::ThrottleReport
   :super ros::object
-  :slots (_header _pedal_input _pedal_cmd _pedal_output _enabled _override _driver _watchdog_counter _fault_wdc _fault_ch1 _fault_ch2 _fault_connector ))
+  :slots (_header _pedal_input _pedal_cmd _pedal_output _enabled _override _driver _timeout _watchdog_counter _fault_wdc _fault_ch1 _fault_ch2 _fault_power ))
 
 (defmethod dbw_mkz_msgs::ThrottleReport
   (:init
@@ -28,11 +28,12 @@
     ((:enabled __enabled) nil)
     ((:override __override) nil)
     ((:driver __driver) nil)
+    ((:timeout __timeout) nil)
     ((:watchdog_counter __watchdog_counter) (instance dbw_mkz_msgs::WatchdogCounter :init))
     ((:fault_wdc __fault_wdc) nil)
     ((:fault_ch1 __fault_ch1) nil)
     ((:fault_ch2 __fault_ch2) nil)
-    ((:fault_connector __fault_connector) nil)
+    ((:fault_power __fault_power) nil)
     )
    (send-super :init)
    (setq _header __header)
@@ -42,11 +43,12 @@
    (setq _enabled __enabled)
    (setq _override __override)
    (setq _driver __driver)
+   (setq _timeout __timeout)
    (setq _watchdog_counter __watchdog_counter)
    (setq _fault_wdc __fault_wdc)
    (setq _fault_ch1 __fault_ch1)
    (setq _fault_ch2 __fault_ch2)
-   (setq _fault_connector __fault_connector)
+   (setq _fault_power __fault_power)
    self)
   (:header
    (&rest __header)
@@ -73,6 +75,9 @@
   (:driver
    (&optional __driver)
    (if __driver (setq _driver __driver)) _driver)
+  (:timeout
+   (&optional __timeout)
+   (if __timeout (setq _timeout __timeout)) _timeout)
   (:watchdog_counter
    (&rest __watchdog_counter)
    (if (keywordp (car __watchdog_counter))
@@ -89,9 +94,9 @@
   (:fault_ch2
    (&optional __fault_ch2)
    (if __fault_ch2 (setq _fault_ch2 __fault_ch2)) _fault_ch2)
-  (:fault_connector
-   (&optional __fault_connector)
-   (if __fault_connector (setq _fault_connector __fault_connector)) _fault_connector)
+  (:fault_power
+   (&optional __fault_power)
+   (if __fault_power (setq _fault_power __fault_power)) _fault_power)
   (:serialization-length
    ()
    (+
@@ -109,6 +114,8 @@
     1
     ;; bool _driver
     1
+    ;; bool _timeout
+    1
     ;; dbw_mkz_msgs/WatchdogCounter _watchdog_counter
     (send _watchdog_counter :serialization-length)
     ;; bool _fault_wdc
@@ -117,7 +124,7 @@
     1
     ;; bool _fault_ch2
     1
-    ;; bool _fault_connector
+    ;; bool _fault_power
     1
     ))
   (:serialize
@@ -138,6 +145,8 @@
        (if _override (write-byte -1 s) (write-byte 0 s))
      ;; bool _driver
        (if _driver (write-byte -1 s) (write-byte 0 s))
+     ;; bool _timeout
+       (if _timeout (write-byte -1 s) (write-byte 0 s))
      ;; dbw_mkz_msgs/WatchdogCounter _watchdog_counter
        (send _watchdog_counter :serialize s)
      ;; bool _fault_wdc
@@ -146,8 +155,8 @@
        (if _fault_ch1 (write-byte -1 s) (write-byte 0 s))
      ;; bool _fault_ch2
        (if _fault_ch2 (write-byte -1 s) (write-byte 0 s))
-     ;; bool _fault_connector
-       (if _fault_connector (write-byte -1 s) (write-byte 0 s))
+     ;; bool _fault_power
+       (if _fault_power (write-byte -1 s) (write-byte 0 s))
      ;;
      (if (null strm) (get-output-stream-string s))))
   (:deserialize
@@ -166,6 +175,8 @@
      (setq _override (not (= 0 (sys::peek buf ptr- :char)))) (incf ptr- 1)
    ;; bool _driver
      (setq _driver (not (= 0 (sys::peek buf ptr- :char)))) (incf ptr- 1)
+   ;; bool _timeout
+     (setq _timeout (not (= 0 (sys::peek buf ptr- :char)))) (incf ptr- 1)
    ;; dbw_mkz_msgs/WatchdogCounter _watchdog_counter
      (send _watchdog_counter :deserialize buf ptr-) (incf ptr- (send _watchdog_counter :serialization-length))
    ;; bool _fault_wdc
@@ -174,19 +185,19 @@
      (setq _fault_ch1 (not (= 0 (sys::peek buf ptr- :char)))) (incf ptr- 1)
    ;; bool _fault_ch2
      (setq _fault_ch2 (not (= 0 (sys::peek buf ptr- :char)))) (incf ptr- 1)
-   ;; bool _fault_connector
-     (setq _fault_connector (not (= 0 (sys::peek buf ptr- :char)))) (incf ptr- 1)
+   ;; bool _fault_power
+     (setq _fault_power (not (= 0 (sys::peek buf ptr- :char)))) (incf ptr- 1)
    ;;
    self)
   )
 
-(setf (get dbw_mkz_msgs::ThrottleReport :md5sum-) "a7fd7b93c8549e83c319e38a18f6dbdc")
+(setf (get dbw_mkz_msgs::ThrottleReport :md5sum-) "8a31a867d359c6c8fca5fc5cc387567e")
 (setf (get dbw_mkz_msgs::ThrottleReport :datatype-) "dbw_mkz_msgs/ThrottleReport")
 (setf (get dbw_mkz_msgs::ThrottleReport :definition-)
       "Header header
 
 # Throttle pedal
-# Unitless, range 0.15 to 0.50
+# Unitless, range 0.15 to 0.80
 float32 pedal_input
 float32 pedal_cmd
 float32 pedal_output
@@ -195,6 +206,7 @@ float32 pedal_output
 bool enabled  # Enabled
 bool override # Driver override
 bool driver   # Driver activity
+bool timeout  # Command timeout
 
 # Watchdog Counter
 WatchdogCounter watchdog_counter
@@ -203,7 +215,7 @@ bool fault_wdc
 # Faults
 bool fault_ch1
 bool fault_ch2
-bool fault_connector # This fault can be ignored
+bool fault_power
 
 ================================================================================
 MSG: std_msgs/Header
@@ -248,6 +260,6 @@ uint8 STEERING_REPORT=15   # Steering report timeout after 100ms
 
 
 
-(provide :dbw_mkz_msgs/ThrottleReport "a7fd7b93c8549e83c319e38a18f6dbdc")
+(provide :dbw_mkz_msgs/ThrottleReport "8a31a867d359c6c8fca5fc5cc387567e")
 
 

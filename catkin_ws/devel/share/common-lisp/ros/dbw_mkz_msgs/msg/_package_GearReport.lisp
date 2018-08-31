@@ -5,6 +5,8 @@
           STATE
           CMD-VAL
           CMD
+          REJECT-VAL
+          REJECT
           OVERRIDE-VAL
           OVERRIDE
           FAULT_BUS-VAL

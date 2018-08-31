@@ -27,6 +27,7 @@ struct ThrottleCmd_
     : pedal_cmd(0.0)
     , pedal_cmd_type(0)
     , enable(false)
+    , clear(false)
     , ignore(false)
     , count(0)  {
     }
@@ -34,6 +35,7 @@ struct ThrottleCmd_
     : pedal_cmd(0.0)
     , pedal_cmd_type(0)
     , enable(false)
+    , clear(false)
     , ignore(false)
     , count(0)  {
   (void)_alloc;
@@ -49,6 +51,9 @@ struct ThrottleCmd_
 
    typedef uint8_t _enable_type;
   _enable_type enable;
+
+   typedef uint8_t _clear_type;
+  _clear_type clear;
 
    typedef uint8_t _ignore_type;
   _ignore_type ignore;
@@ -145,12 +150,12 @@ struct MD5Sum< ::dbw_mkz_msgs::ThrottleCmd_<ContainerAllocator> >
 {
   static const char* value()
   {
-    return "dbda92d4b5ebb3cb2a081198c88bc62f";
+    return "d75259a1444adebea30e45b37542c415";
   }
 
   static const char* value(const ::dbw_mkz_msgs::ThrottleCmd_<ContainerAllocator>&) { return value(); }
-  static const uint64_t static_value1 = 0xdbda92d4b5ebb3cbULL;
-  static const uint64_t static_value2 = 0x2a081198c88bc62fULL;
+  static const uint64_t static_value1 = 0xd75259a1444adebeULL;
+  static const uint64_t static_value2 = 0xa30e45b37542c415ULL;
 };
 
 template<class ContainerAllocator>
@@ -176,6 +181,9 @@ uint8 pedal_cmd_type\n\
 \n\
 # Enable\n\
 bool enable\n\
+\n\
+# Clear driver overrides\n\
+bool clear\n\
 \n\
 # Ignore driver overrides\n\
 bool ignore\n\
@@ -207,6 +215,7 @@ namespace serialization
       stream.next(m.pedal_cmd);
       stream.next(m.pedal_cmd_type);
       stream.next(m.enable);
+      stream.next(m.clear);
       stream.next(m.ignore);
       stream.next(m.count);
     }
@@ -233,6 +242,8 @@ struct Printer< ::dbw_mkz_msgs::ThrottleCmd_<ContainerAllocator> >
     Printer<uint8_t>::stream(s, indent + "  ", v.pedal_cmd_type);
     s << indent << "enable: ";
     Printer<uint8_t>::stream(s, indent + "  ", v.enable);
+    s << indent << "clear: ";
+    Printer<uint8_t>::stream(s, indent + "  ", v.clear);
     s << indent << "ignore: ";
     Printer<uint8_t>::stream(s, indent + "  ", v.ignore);
     s << indent << "count: ";

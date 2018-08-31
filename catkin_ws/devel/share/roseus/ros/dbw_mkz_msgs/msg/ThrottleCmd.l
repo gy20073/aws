@@ -23,7 +23,7 @@
 (defconstant dbw_mkz_msgs::ThrottleCmd::*CMD_PERCENT* 2)
 (defclass dbw_mkz_msgs::ThrottleCmd
   :super ros::object
-  :slots (_pedal_cmd _pedal_cmd_type _enable _ignore _count ))
+  :slots (_pedal_cmd _pedal_cmd_type _enable _clear _ignore _count ))
 
 (defmethod dbw_mkz_msgs::ThrottleCmd
   (:init
@@ -31,6 +31,7 @@
     ((:pedal_cmd __pedal_cmd) 0.0)
     ((:pedal_cmd_type __pedal_cmd_type) 0)
     ((:enable __enable) nil)
+    ((:clear __clear) nil)
     ((:ignore __ignore) nil)
     ((:count __count) 0)
     )
@@ -38,6 +39,7 @@
    (setq _pedal_cmd (float __pedal_cmd))
    (setq _pedal_cmd_type (round __pedal_cmd_type))
    (setq _enable __enable)
+   (setq _clear __clear)
    (setq _ignore __ignore)
    (setq _count (round __count))
    self)
@@ -50,6 +52,9 @@
   (:enable
    (&optional __enable)
    (if __enable (setq _enable __enable)) _enable)
+  (:clear
+   (&optional __clear)
+   (if __clear (setq _clear __clear)) _clear)
   (:ignore
    (&optional __ignore)
    (if __ignore (setq _ignore __ignore)) _ignore)
@@ -64,6 +69,8 @@
     ;; uint8 _pedal_cmd_type
     1
     ;; bool _enable
+    1
+    ;; bool _clear
     1
     ;; bool _ignore
     1
@@ -80,6 +87,8 @@
        (write-byte _pedal_cmd_type s)
      ;; bool _enable
        (if _enable (write-byte -1 s) (write-byte 0 s))
+     ;; bool _clear
+       (if _clear (write-byte -1 s) (write-byte 0 s))
      ;; bool _ignore
        (if _ignore (write-byte -1 s) (write-byte 0 s))
      ;; uint8 _count
@@ -94,6 +103,8 @@
      (setq _pedal_cmd_type (sys::peek buf ptr- :char)) (incf ptr- 1)
    ;; bool _enable
      (setq _enable (not (= 0 (sys::peek buf ptr- :char)))) (incf ptr- 1)
+   ;; bool _clear
+     (setq _clear (not (= 0 (sys::peek buf ptr- :char)))) (incf ptr- 1)
    ;; bool _ignore
      (setq _ignore (not (= 0 (sys::peek buf ptr- :char)))) (incf ptr- 1)
    ;; uint8 _count
@@ -102,7 +113,7 @@
    self)
   )
 
-(setf (get dbw_mkz_msgs::ThrottleCmd :md5sum-) "dbda92d4b5ebb3cb2a081198c88bc62f")
+(setf (get dbw_mkz_msgs::ThrottleCmd :md5sum-) "d75259a1444adebea30e45b37542c415")
 (setf (get dbw_mkz_msgs::ThrottleCmd :datatype-) "dbw_mkz_msgs/ThrottleCmd")
 (setf (get dbw_mkz_msgs::ThrottleCmd :definition-)
       "# Throttle pedal
@@ -112,6 +123,9 @@ uint8 pedal_cmd_type
 
 # Enable
 bool enable
+
+# Clear driver overrides
+bool clear
 
 # Ignore driver overrides
 bool ignore
@@ -127,6 +141,6 @@ uint8 CMD_PERCENT=2 # Percent of maximum throttle, range 0 to 1
 
 
 
-(provide :dbw_mkz_msgs/ThrottleCmd "dbda92d4b5ebb3cb2a081198c88bc62f")
+(provide :dbw_mkz_msgs/ThrottleCmd "d75259a1444adebea30e45b37542c415")
 
 

@@ -11,7 +11,7 @@ float32 speed                     # m/s
 # Status
 bool enabled  # Enabled
 bool override # Driver override
-bool driver   # Driver activity
+bool timeout  # Command timeout
 
 # Watchdog Counter
 bool fault_wdc
@@ -20,4 +20,4 @@ bool fault_wdc
 bool fault_bus1
 bool fault_bus2
 bool fault_calibration
-bool fault_connector # This fault can be ignored
+bool fault_power

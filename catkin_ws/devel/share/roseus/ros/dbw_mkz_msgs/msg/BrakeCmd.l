@@ -24,6 +24,9 @@
 (intern "*CMD_TORQUE*" (find-package "DBW_MKZ_MSGS::BRAKECMD"))
 (shadow '*CMD_TORQUE* (find-package "DBW_MKZ_MSGS::BRAKECMD"))
 (defconstant dbw_mkz_msgs::BrakeCmd::*CMD_TORQUE* 3)
+(intern "*CMD_TORQUE_RQ*" (find-package "DBW_MKZ_MSGS::BRAKECMD"))
+(shadow '*CMD_TORQUE_RQ* (find-package "DBW_MKZ_MSGS::BRAKECMD"))
+(defconstant dbw_mkz_msgs::BrakeCmd::*CMD_TORQUE_RQ* 4)
 (intern "*TORQUE_BOO*" (find-package "DBW_MKZ_MSGS::BRAKECMD"))
 (shadow '*TORQUE_BOO* (find-package "DBW_MKZ_MSGS::BRAKECMD"))
 (defconstant dbw_mkz_msgs::BrakeCmd::*TORQUE_BOO* 520.0)
@@ -32,7 +35,7 @@
 (defconstant dbw_mkz_msgs::BrakeCmd::*TORQUE_MAX* 3412.0)
 (defclass dbw_mkz_msgs::BrakeCmd
   :super ros::object
-  :slots (_pedal_cmd _pedal_cmd_type _boo_cmd _enable _ignore _count ))
+  :slots (_pedal_cmd _pedal_cmd_type _boo_cmd _enable _clear _ignore _count ))
 
 (defmethod dbw_mkz_msgs::BrakeCmd
   (:init
@@ -41,6 +44,7 @@
     ((:pedal_cmd_type __pedal_cmd_type) 0)
     ((:boo_cmd __boo_cmd) nil)
     ((:enable __enable) nil)
+    ((:clear __clear) nil)
     ((:ignore __ignore) nil)
     ((:count __count) 0)
     )
@@ -49,6 +53,7 @@
    (setq _pedal_cmd_type (round __pedal_cmd_type))
    (setq _boo_cmd __boo_cmd)
    (setq _enable __enable)
+   (setq _clear __clear)
    (setq _ignore __ignore)
    (setq _count (round __count))
    self)
@@ -64,6 +69,9 @@
   (:enable
    (&optional __enable)
    (if __enable (setq _enable __enable)) _enable)
+  (:clear
+   (&optional __clear)
+   (if __clear (setq _clear __clear)) _clear)
   (:ignore
    (&optional __ignore)
    (if __ignore (setq _ignore __ignore)) _ignore)
@@ -80,6 +88,8 @@
     ;; bool _boo_cmd
     1
     ;; bool _enable
+    1
+    ;; bool _clear
     1
     ;; bool _ignore
     1
@@ -98,6 +108,8 @@
        (if _boo_cmd (write-byte -1 s) (write-byte 0 s))
      ;; bool _enable
        (if _enable (write-byte -1 s) (write-byte 0 s))
+     ;; bool _clear
+       (if _clear (write-byte -1 s) (write-byte 0 s))
      ;; bool _ignore
        (if _ignore (write-byte -1 s) (write-byte 0 s))
      ;; uint8 _count
@@ -114,6 +126,8 @@
      (setq _boo_cmd (not (= 0 (sys::peek buf ptr- :char)))) (incf ptr- 1)
    ;; bool _enable
      (setq _enable (not (= 0 (sys::peek buf ptr- :char)))) (incf ptr- 1)
+   ;; bool _clear
+     (setq _clear (not (= 0 (sys::peek buf ptr- :char)))) (incf ptr- 1)
    ;; bool _ignore
      (setq _ignore (not (= 0 (sys::peek buf ptr- :char)))) (incf ptr- 1)
    ;; uint8 _count
@@ -122,7 +136,7 @@
    self)
   )
 
-(setf (get dbw_mkz_msgs::BrakeCmd :md5sum-) "4b6c57c74f8e12f7f2af7f00a7897290")
+(setf (get dbw_mkz_msgs::BrakeCmd :md5sum-) "071bf128b9bdc978dd5a1a6a5be08be3")
 (setf (get dbw_mkz_msgs::BrakeCmd :datatype-) "dbw_mkz_msgs/BrakeCmd")
 (setf (get dbw_mkz_msgs::BrakeCmd :definition-)
       "# Brake pedal
@@ -136,6 +150,9 @@ bool boo_cmd
 # Enable
 bool enable
 
+# Clear driver overrides
+bool clear
+
 # Ignore driver overrides
 bool ignore
 
@@ -143,9 +160,10 @@ bool ignore
 uint8 count
 
 uint8 CMD_NONE=0
-uint8 CMD_PEDAL=1   # Unitless, range 0.15 to 0.50
-uint8 CMD_PERCENT=2 # Percent of maximum torque, range 0 to 1
-uint8 CMD_TORQUE=3  # Nm, range 0 to 3250
+uint8 CMD_PEDAL=1     # Unitless, range 0.15 to 0.50
+uint8 CMD_PERCENT=2   # Percent of maximum torque, range 0 to 1
+uint8 CMD_TORQUE=3    # Nm, range 0 to 3250, open-loop
+uint8 CMD_TORQUE_RQ=4 # Nm, range 0 to 3250, closed-loop
 
 float32 TORQUE_BOO=520  # Nm, brake lights threshold
 float32 TORQUE_MAX=3412 # Nm, maximum torque
@@ -154,6 +172,6 @@ float32 TORQUE_MAX=3412 # Nm, maximum torque
 
 
 
-(provide :dbw_mkz_msgs/BrakeCmd "4b6c57c74f8e12f7f2af7f00a7897290")
+(provide :dbw_mkz_msgs/BrakeCmd "071bf128b9bdc978dd5a1a6a5be08be3")
 
 

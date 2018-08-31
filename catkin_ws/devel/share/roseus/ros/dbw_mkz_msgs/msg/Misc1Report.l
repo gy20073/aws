@@ -16,7 +16,7 @@
 
 (defclass dbw_mkz_msgs::Misc1Report
   :super ros::object
-  :slots (_header _turn_signal _high_beam_headlights _wiper _ambient_light _btn_cc_on _btn_cc_off _btn_cc_on_off _btn_cc_res _btn_cc_cncl _btn_cc_res_cncl _btn_cc_set_inc _btn_cc_set_dec _btn_cc_gap_inc _btn_cc_gap_dec _btn_la_on_off _fault_bus _door_driver _door_passenger _door_rear_left _door_rear_right _door_hood _door_trunk _passenger_detect _passenger_airbag _buckle_driver _buckle_passenger ))
+  :slots (_header _turn_signal _high_beam_headlights _wiper _ambient_light _btn_cc_on _btn_cc_off _btn_cc_on_off _btn_cc_res _btn_cc_cncl _btn_cc_res_cncl _btn_cc_res_inc _btn_cc_res_dec _btn_cc_set_inc _btn_cc_set_dec _btn_cc_gap_inc _btn_cc_gap_dec _btn_la_on_off _btn_ld_ok _btn_ld_up _btn_ld_down _btn_ld_left _btn_ld_right _fault_bus _door_driver _door_passenger _door_rear_left _door_rear_right _door_hood _door_trunk _passenger_detect _passenger_airbag _buckle_driver _buckle_passenger ))
 
 (defmethod dbw_mkz_msgs::Misc1Report
   (:init
@@ -32,11 +32,18 @@
     ((:btn_cc_res __btn_cc_res) nil)
     ((:btn_cc_cncl __btn_cc_cncl) nil)
     ((:btn_cc_res_cncl __btn_cc_res_cncl) nil)
+    ((:btn_cc_res_inc __btn_cc_res_inc) nil)
+    ((:btn_cc_res_dec __btn_cc_res_dec) nil)
     ((:btn_cc_set_inc __btn_cc_set_inc) nil)
     ((:btn_cc_set_dec __btn_cc_set_dec) nil)
     ((:btn_cc_gap_inc __btn_cc_gap_inc) nil)
     ((:btn_cc_gap_dec __btn_cc_gap_dec) nil)
     ((:btn_la_on_off __btn_la_on_off) nil)
+    ((:btn_ld_ok __btn_ld_ok) nil)
+    ((:btn_ld_up __btn_ld_up) nil)
+    ((:btn_ld_down __btn_ld_down) nil)
+    ((:btn_ld_left __btn_ld_left) nil)
+    ((:btn_ld_right __btn_ld_right) nil)
     ((:fault_bus __fault_bus) nil)
     ((:door_driver __door_driver) nil)
     ((:door_passenger __door_passenger) nil)
@@ -61,11 +68,18 @@
    (setq _btn_cc_res __btn_cc_res)
    (setq _btn_cc_cncl __btn_cc_cncl)
    (setq _btn_cc_res_cncl __btn_cc_res_cncl)
+   (setq _btn_cc_res_inc __btn_cc_res_inc)
+   (setq _btn_cc_res_dec __btn_cc_res_dec)
    (setq _btn_cc_set_inc __btn_cc_set_inc)
    (setq _btn_cc_set_dec __btn_cc_set_dec)
    (setq _btn_cc_gap_inc __btn_cc_gap_inc)
    (setq _btn_cc_gap_dec __btn_cc_gap_dec)
    (setq _btn_la_on_off __btn_la_on_off)
+   (setq _btn_ld_ok __btn_ld_ok)
+   (setq _btn_ld_up __btn_ld_up)
+   (setq _btn_ld_down __btn_ld_down)
+   (setq _btn_ld_left __btn_ld_left)
+   (setq _btn_ld_right __btn_ld_right)
    (setq _fault_bus __fault_bus)
    (setq _door_driver __door_driver)
    (setq _door_passenger __door_passenger)
@@ -127,6 +141,12 @@
   (:btn_cc_res_cncl
    (&optional __btn_cc_res_cncl)
    (if __btn_cc_res_cncl (setq _btn_cc_res_cncl __btn_cc_res_cncl)) _btn_cc_res_cncl)
+  (:btn_cc_res_inc
+   (&optional __btn_cc_res_inc)
+   (if __btn_cc_res_inc (setq _btn_cc_res_inc __btn_cc_res_inc)) _btn_cc_res_inc)
+  (:btn_cc_res_dec
+   (&optional __btn_cc_res_dec)
+   (if __btn_cc_res_dec (setq _btn_cc_res_dec __btn_cc_res_dec)) _btn_cc_res_dec)
   (:btn_cc_set_inc
    (&optional __btn_cc_set_inc)
    (if __btn_cc_set_inc (setq _btn_cc_set_inc __btn_cc_set_inc)) _btn_cc_set_inc)
@@ -142,6 +162,21 @@
   (:btn_la_on_off
    (&optional __btn_la_on_off)
    (if __btn_la_on_off (setq _btn_la_on_off __btn_la_on_off)) _btn_la_on_off)
+  (:btn_ld_ok
+   (&optional __btn_ld_ok)
+   (if __btn_ld_ok (setq _btn_ld_ok __btn_ld_ok)) _btn_ld_ok)
+  (:btn_ld_up
+   (&optional __btn_ld_up)
+   (if __btn_ld_up (setq _btn_ld_up __btn_ld_up)) _btn_ld_up)
+  (:btn_ld_down
+   (&optional __btn_ld_down)
+   (if __btn_ld_down (setq _btn_ld_down __btn_ld_down)) _btn_ld_down)
+  (:btn_ld_left
+   (&optional __btn_ld_left)
+   (if __btn_ld_left (setq _btn_ld_left __btn_ld_left)) _btn_ld_left)
+  (:btn_ld_right
+   (&optional __btn_ld_right)
+   (if __btn_ld_right (setq _btn_ld_right __btn_ld_right)) _btn_ld_right)
   (:fault_bus
    (&optional __fault_bus)
    (if __fault_bus (setq _fault_bus __fault_bus)) _fault_bus)
@@ -200,6 +235,10 @@
     1
     ;; bool _btn_cc_res_cncl
     1
+    ;; bool _btn_cc_res_inc
+    1
+    ;; bool _btn_cc_res_dec
+    1
     ;; bool _btn_cc_set_inc
     1
     ;; bool _btn_cc_set_dec
@@ -209,6 +248,16 @@
     ;; bool _btn_cc_gap_dec
     1
     ;; bool _btn_la_on_off
+    1
+    ;; bool _btn_ld_ok
+    1
+    ;; bool _btn_ld_up
+    1
+    ;; bool _btn_ld_down
+    1
+    ;; bool _btn_ld_left
+    1
+    ;; bool _btn_ld_right
     1
     ;; bool _fault_bus
     1
@@ -259,6 +308,10 @@
        (if _btn_cc_cncl (write-byte -1 s) (write-byte 0 s))
      ;; bool _btn_cc_res_cncl
        (if _btn_cc_res_cncl (write-byte -1 s) (write-byte 0 s))
+     ;; bool _btn_cc_res_inc
+       (if _btn_cc_res_inc (write-byte -1 s) (write-byte 0 s))
+     ;; bool _btn_cc_res_dec
+       (if _btn_cc_res_dec (write-byte -1 s) (write-byte 0 s))
      ;; bool _btn_cc_set_inc
        (if _btn_cc_set_inc (write-byte -1 s) (write-byte 0 s))
      ;; bool _btn_cc_set_dec
@@ -269,6 +322,16 @@
        (if _btn_cc_gap_dec (write-byte -1 s) (write-byte 0 s))
      ;; bool _btn_la_on_off
        (if _btn_la_on_off (write-byte -1 s) (write-byte 0 s))
+     ;; bool _btn_ld_ok
+       (if _btn_ld_ok (write-byte -1 s) (write-byte 0 s))
+     ;; bool _btn_ld_up
+       (if _btn_ld_up (write-byte -1 s) (write-byte 0 s))
+     ;; bool _btn_ld_down
+       (if _btn_ld_down (write-byte -1 s) (write-byte 0 s))
+     ;; bool _btn_ld_left
+       (if _btn_ld_left (write-byte -1 s) (write-byte 0 s))
+     ;; bool _btn_ld_right
+       (if _btn_ld_right (write-byte -1 s) (write-byte 0 s))
      ;; bool _fault_bus
        (if _fault_bus (write-byte -1 s) (write-byte 0 s))
      ;; bool _door_driver
@@ -317,6 +380,10 @@
      (setq _btn_cc_cncl (not (= 0 (sys::peek buf ptr- :char)))) (incf ptr- 1)
    ;; bool _btn_cc_res_cncl
      (setq _btn_cc_res_cncl (not (= 0 (sys::peek buf ptr- :char)))) (incf ptr- 1)
+   ;; bool _btn_cc_res_inc
+     (setq _btn_cc_res_inc (not (= 0 (sys::peek buf ptr- :char)))) (incf ptr- 1)
+   ;; bool _btn_cc_res_dec
+     (setq _btn_cc_res_dec (not (= 0 (sys::peek buf ptr- :char)))) (incf ptr- 1)
    ;; bool _btn_cc_set_inc
      (setq _btn_cc_set_inc (not (= 0 (sys::peek buf ptr- :char)))) (incf ptr- 1)
    ;; bool _btn_cc_set_dec
@@ -327,6 +394,16 @@
      (setq _btn_cc_gap_dec (not (= 0 (sys::peek buf ptr- :char)))) (incf ptr- 1)
    ;; bool _btn_la_on_off
      (setq _btn_la_on_off (not (= 0 (sys::peek buf ptr- :char)))) (incf ptr- 1)
+   ;; bool _btn_ld_ok
+     (setq _btn_ld_ok (not (= 0 (sys::peek buf ptr- :char)))) (incf ptr- 1)
+   ;; bool _btn_ld_up
+     (setq _btn_ld_up (not (= 0 (sys::peek buf ptr- :char)))) (incf ptr- 1)
+   ;; bool _btn_ld_down
+     (setq _btn_ld_down (not (= 0 (sys::peek buf ptr- :char)))) (incf ptr- 1)
+   ;; bool _btn_ld_left
+     (setq _btn_ld_left (not (= 0 (sys::peek buf ptr- :char)))) (incf ptr- 1)
+   ;; bool _btn_ld_right
+     (setq _btn_ld_right (not (= 0 (sys::peek buf ptr- :char)))) (incf ptr- 1)
    ;; bool _fault_bus
      (setq _fault_bus (not (= 0 (sys::peek buf ptr- :char)))) (incf ptr- 1)
    ;; bool _door_driver
@@ -353,7 +430,7 @@
    self)
   )
 
-(setf (get dbw_mkz_msgs::Misc1Report :md5sum-) "9ecd16fb81815b3e46e0550feea1da2f")
+(setf (get dbw_mkz_msgs::Misc1Report :md5sum-) "5e430a9996eeb7a76d2abf0e360213d3")
 (setf (get dbw_mkz_msgs::Misc1Report :datatype-) "dbw_mkz_msgs/Misc1Report")
 (setf (get dbw_mkz_msgs::Misc1Report :definition-)
       "Header header
@@ -377,11 +454,18 @@ bool btn_cc_on_off    # Cruise Control On/Off Toggle
 bool btn_cc_res       # Cruise Control Resume
 bool btn_cc_cncl      # Cruise Control Cancel
 bool btn_cc_res_cncl  # Cruise Control Resume/Cancel
+bool btn_cc_res_inc   # Cruise Control Resume+
+bool btn_cc_res_dec   # Cruise Control Resume-
 bool btn_cc_set_inc   # Cruise Control Set+
 bool btn_cc_set_dec   # Cruise Control Set-
 bool btn_cc_gap_inc   # Cruise Control Gap+
 bool btn_cc_gap_dec   # Cruise Control Gap-
 bool btn_la_on_off    # Lane Assist On/Off Toggle
+bool btn_ld_ok        # Left D-Pad OK
+bool btn_ld_up        # Left D-Pad Up
+bool btn_ld_down      # Left D-Pad Down
+bool btn_ld_left      # Left D-Pad Left
+bool btn_ld_right     # Left D-Pad Right
 
 # Faults
 bool fault_bus
@@ -464,6 +548,6 @@ uint8 NO_DATA=7
 
 
 
-(provide :dbw_mkz_msgs/Misc1Report "9ecd16fb81815b3e46e0550feea1da2f")
+(provide :dbw_mkz_msgs/Misc1Report "5e430a9996eeb7a76d2abf0e360213d3")
 
 

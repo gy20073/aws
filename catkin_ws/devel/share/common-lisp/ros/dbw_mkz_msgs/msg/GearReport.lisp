@@ -22,6 +22,11 @@
     :initarg :cmd
     :type dbw_mkz_msgs-msg:Gear
     :initform (cl:make-instance 'dbw_mkz_msgs-msg:Gear))
+   (reject
+    :reader reject
+    :initarg :reject
+    :type dbw_mkz_msgs-msg:GearReject
+    :initform (cl:make-instance 'dbw_mkz_msgs-msg:GearReject))
    (override
     :reader override
     :initarg :override
@@ -57,6 +62,11 @@
   (roslisp-msg-protocol:msg-deprecation-warning "Using old-style slot reader dbw_mkz_msgs-msg:cmd-val is deprecated.  Use dbw_mkz_msgs-msg:cmd instead.")
   (cmd m))
 
+(cl:ensure-generic-function 'reject-val :lambda-list '(m))
+(cl:defmethod reject-val ((m <GearReport>))
+  (roslisp-msg-protocol:msg-deprecation-warning "Using old-style slot reader dbw_mkz_msgs-msg:reject-val is deprecated.  Use dbw_mkz_msgs-msg:reject instead.")
+  (reject m))
+
 (cl:ensure-generic-function 'override-val :lambda-list '(m))
 (cl:defmethod override-val ((m <GearReport>))
   (roslisp-msg-protocol:msg-deprecation-warning "Using old-style slot reader dbw_mkz_msgs-msg:override-val is deprecated.  Use dbw_mkz_msgs-msg:override instead.")
@@ -71,6 +81,7 @@
   (roslisp-msg-protocol:serialize (cl:slot-value msg 'header) ostream)
   (roslisp-msg-protocol:serialize (cl:slot-value msg 'state) ostream)
   (roslisp-msg-protocol:serialize (cl:slot-value msg 'cmd) ostream)
+  (roslisp-msg-protocol:serialize (cl:slot-value msg 'reject) ostream)
   (cl:write-byte (cl:ldb (cl:byte 8 0) (cl:if (cl:slot-value msg 'override) 1 0)) ostream)
   (cl:write-byte (cl:ldb (cl:byte 8 0) (cl:if (cl:slot-value msg 'fault_bus) 1 0)) ostream)
 )
@@ -79,6 +90,7 @@
   (roslisp-msg-protocol:deserialize (cl:slot-value msg 'header) istream)
   (roslisp-msg-protocol:deserialize (cl:slot-value msg 'state) istream)
   (roslisp-msg-protocol:deserialize (cl:slot-value msg 'cmd) istream)
+  (roslisp-msg-protocol:deserialize (cl:slot-value msg 'reject) istream)
     (cl:setf (cl:slot-value msg 'override) (cl:not (cl:zerop (cl:read-byte istream))))
     (cl:setf (cl:slot-value msg 'fault_bus) (cl:not (cl:zerop (cl:read-byte istream))))
   msg
@@ -91,21 +103,22 @@
   "dbw_mkz_msgs/GearReport")
 (cl:defmethod roslisp-msg-protocol:md5sum ((type (cl:eql '<GearReport>)))
   "Returns md5sum for a message object of type '<GearReport>"
-  "f33342dfeb80c29d8fe4b31e22519594")
+  "785b94d5bfee677e7f0da982153f2711")
 (cl:defmethod roslisp-msg-protocol:md5sum ((type (cl:eql 'GearReport)))
   "Returns md5sum for a message object of type 'GearReport"
-  "f33342dfeb80c29d8fe4b31e22519594")
+  "785b94d5bfee677e7f0da982153f2711")
 (cl:defmethod roslisp-msg-protocol:message-definition ((type (cl:eql '<GearReport>)))
   "Returns full string definition for message of type '<GearReport>"
-  (cl:format cl:nil "Header header~%~%# Current gear enumeration~%Gear state~%~%# Gear command enumeration~%Gear cmd~%~%# Status~%bool override~%~%# Faults~%bool fault_bus~%~%================================================================================~%MSG: std_msgs/Header~%# Standard metadata for higher-level stamped data types.~%# This is generally used to communicate timestamped data ~%# in a particular coordinate frame.~%# ~%# sequence ID: consecutively increasing ID ~%uint32 seq~%#Two-integer timestamp that is expressed as:~%# * stamp.sec: seconds (stamp_secs) since epoch (in Python the variable is called 'secs')~%# * stamp.nsec: nanoseconds since stamp_secs (in Python the variable is called 'nsecs')~%# time-handling sugar is provided by the client library~%time stamp~%#Frame this data is associated with~%# 0: no frame~%# 1: global frame~%string frame_id~%~%================================================================================~%MSG: dbw_mkz_msgs/Gear~%uint8 gear~%~%uint8 NONE=0~%uint8 PARK=1~%uint8 REVERSE=2~%uint8 NEUTRAL=3~%uint8 DRIVE=4~%uint8 LOW=5~%~%~%"))
+  (cl:format cl:nil "Header header~%~%# Current gear enumeration~%Gear state~%~%# Gear command enumeration~%Gear cmd~%~%# Gear reject enumeration~%GearReject reject~%~%# Status~%bool override~%~%# Faults~%bool fault_bus~%~%================================================================================~%MSG: std_msgs/Header~%# Standard metadata for higher-level stamped data types.~%# This is generally used to communicate timestamped data ~%# in a particular coordinate frame.~%# ~%# sequence ID: consecutively increasing ID ~%uint32 seq~%#Two-integer timestamp that is expressed as:~%# * stamp.sec: seconds (stamp_secs) since epoch (in Python the variable is called 'secs')~%# * stamp.nsec: nanoseconds since stamp_secs (in Python the variable is called 'nsecs')~%# time-handling sugar is provided by the client library~%time stamp~%#Frame this data is associated with~%# 0: no frame~%# 1: global frame~%string frame_id~%~%================================================================================~%MSG: dbw_mkz_msgs/Gear~%uint8 gear~%~%uint8 NONE=0~%uint8 PARK=1~%uint8 REVERSE=2~%uint8 NEUTRAL=3~%uint8 DRIVE=4~%uint8 LOW=5~%~%================================================================================~%MSG: dbw_mkz_msgs/GearReject~%uint8 value~%~%uint8 NONE=0              # Not rejected~%uint8 SHIFT_IN_PROGRESS=1 # Shift in progress~%uint8 OVERRIDE=2          # Override on brake, throttle, or steering~%uint8 ROTARY_LOW=3        # Rotary shifter can't shift to Low~%uint8 ROTARY_PARK=4       # Rotary shifter can't shift out of Park~%uint8 VEHICLE=5           # Rejected by vehicle (try pressing the brakes)~%~%~%"))
 (cl:defmethod roslisp-msg-protocol:message-definition ((type (cl:eql 'GearReport)))
   "Returns full string definition for message of type 'GearReport"
-  (cl:format cl:nil "Header header~%~%# Current gear enumeration~%Gear state~%~%# Gear command enumeration~%Gear cmd~%~%# Status~%bool override~%~%# Faults~%bool fault_bus~%~%================================================================================~%MSG: std_msgs/Header~%# Standard metadata for higher-level stamped data types.~%# This is generally used to communicate timestamped data ~%# in a particular coordinate frame.~%# ~%# sequence ID: consecutively increasing ID ~%uint32 seq~%#Two-integer timestamp that is expressed as:~%# * stamp.sec: seconds (stamp_secs) since epoch (in Python the variable is called 'secs')~%# * stamp.nsec: nanoseconds since stamp_secs (in Python the variable is called 'nsecs')~%# time-handling sugar is provided by the client library~%time stamp~%#Frame this data is associated with~%# 0: no frame~%# 1: global frame~%string frame_id~%~%================================================================================~%MSG: dbw_mkz_msgs/Gear~%uint8 gear~%~%uint8 NONE=0~%uint8 PARK=1~%uint8 REVERSE=2~%uint8 NEUTRAL=3~%uint8 DRIVE=4~%uint8 LOW=5~%~%~%"))
+  (cl:format cl:nil "Header header~%~%# Current gear enumeration~%Gear state~%~%# Gear command enumeration~%Gear cmd~%~%# Gear reject enumeration~%GearReject reject~%~%# Status~%bool override~%~%# Faults~%bool fault_bus~%~%================================================================================~%MSG: std_msgs/Header~%# Standard metadata for higher-level stamped data types.~%# This is generally used to communicate timestamped data ~%# in a particular coordinate frame.~%# ~%# sequence ID: consecutively increasing ID ~%uint32 seq~%#Two-integer timestamp that is expressed as:~%# * stamp.sec: seconds (stamp_secs) since epoch (in Python the variable is called 'secs')~%# * stamp.nsec: nanoseconds since stamp_secs (in Python the variable is called 'nsecs')~%# time-handling sugar is provided by the client library~%time stamp~%#Frame this data is associated with~%# 0: no frame~%# 1: global frame~%string frame_id~%~%================================================================================~%MSG: dbw_mkz_msgs/Gear~%uint8 gear~%~%uint8 NONE=0~%uint8 PARK=1~%uint8 REVERSE=2~%uint8 NEUTRAL=3~%uint8 DRIVE=4~%uint8 LOW=5~%~%================================================================================~%MSG: dbw_mkz_msgs/GearReject~%uint8 value~%~%uint8 NONE=0              # Not rejected~%uint8 SHIFT_IN_PROGRESS=1 # Shift in progress~%uint8 OVERRIDE=2          # Override on brake, throttle, or steering~%uint8 ROTARY_LOW=3        # Rotary shifter can't shift to Low~%uint8 ROTARY_PARK=4       # Rotary shifter can't shift out of Park~%uint8 VEHICLE=5           # Rejected by vehicle (try pressing the brakes)~%~%~%"))
 (cl:defmethod roslisp-msg-protocol:serialization-length ((msg <GearReport>))
   (cl:+ 0
      (roslisp-msg-protocol:serialization-length (cl:slot-value msg 'header))
      (roslisp-msg-protocol:serialization-length (cl:slot-value msg 'state))
      (roslisp-msg-protocol:serialization-length (cl:slot-value msg 'cmd))
+     (roslisp-msg-protocol:serialization-length (cl:slot-value msg 'reject))
      1
      1
 ))
@@ -115,6 +128,7 @@
     (cl:cons ':header (header msg))
     (cl:cons ':state (state msg))
     (cl:cons ':cmd (cmd msg))
+    (cl:cons ':reject (reject msg))
     (cl:cons ':override (override msg))
     (cl:cons ':fault_bus (fault_bus msg))
 ))

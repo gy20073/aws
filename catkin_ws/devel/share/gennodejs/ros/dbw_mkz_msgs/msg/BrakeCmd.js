@@ -22,6 +22,7 @@ class BrakeCmd {
       this.pedal_cmd_type = null;
       this.boo_cmd = null;
       this.enable = null;
+      this.clear = null;
       this.ignore = null;
       this.count = null;
     }
@@ -50,6 +51,12 @@ class BrakeCmd {
       else {
         this.enable = false;
       }
+      if (initObj.hasOwnProperty('clear')) {
+        this.clear = initObj.clear
+      }
+      else {
+        this.clear = false;
+      }
       if (initObj.hasOwnProperty('ignore')) {
         this.ignore = initObj.ignore
       }
@@ -75,6 +82,8 @@ class BrakeCmd {
     bufferOffset = _serializer.bool(obj.boo_cmd, buffer, bufferOffset);
     // Serialize message field [enable]
     bufferOffset = _serializer.bool(obj.enable, buffer, bufferOffset);
+    // Serialize message field [clear]
+    bufferOffset = _serializer.bool(obj.clear, buffer, bufferOffset);
     // Serialize message field [ignore]
     bufferOffset = _serializer.bool(obj.ignore, buffer, bufferOffset);
     // Serialize message field [count]
@@ -94,6 +103,8 @@ class BrakeCmd {
     data.boo_cmd = _deserializer.bool(buffer, bufferOffset);
     // Deserialize message field [enable]
     data.enable = _deserializer.bool(buffer, bufferOffset);
+    // Deserialize message field [clear]
+    data.clear = _deserializer.bool(buffer, bufferOffset);
     // Deserialize message field [ignore]
     data.ignore = _deserializer.bool(buffer, bufferOffset);
     // Deserialize message field [count]
@@ -102,7 +113,7 @@ class BrakeCmd {
   }
 
   static getMessageSize(object) {
-    return 9;
+    return 10;
   }
 
   static datatype() {
@@ -112,7 +123,7 @@ class BrakeCmd {
 
   static md5sum() {
     //Returns md5sum for a message object
-    return '4b6c57c74f8e12f7f2af7f00a7897290';
+    return '071bf128b9bdc978dd5a1a6a5be08be3';
   }
 
   static messageDefinition() {
@@ -129,6 +140,9 @@ class BrakeCmd {
     # Enable
     bool enable
     
+    # Clear driver overrides
+    bool clear
+    
     # Ignore driver overrides
     bool ignore
     
@@ -136,9 +150,10 @@ class BrakeCmd {
     uint8 count
     
     uint8 CMD_NONE=0
-    uint8 CMD_PEDAL=1   # Unitless, range 0.15 to 0.50
-    uint8 CMD_PERCENT=2 # Percent of maximum torque, range 0 to 1
-    uint8 CMD_TORQUE=3  # Nm, range 0 to 3250
+    uint8 CMD_PEDAL=1     # Unitless, range 0.15 to 0.50
+    uint8 CMD_PERCENT=2   # Percent of maximum torque, range 0 to 1
+    uint8 CMD_TORQUE=3    # Nm, range 0 to 3250, open-loop
+    uint8 CMD_TORQUE_RQ=4 # Nm, range 0 to 3250, closed-loop
     
     float32 TORQUE_BOO=520  # Nm, brake lights threshold
     float32 TORQUE_MAX=3412 # Nm, maximum torque
@@ -180,6 +195,13 @@ class BrakeCmd {
       resolved.enable = false
     }
 
+    if (msg.clear !== undefined) {
+      resolved.clear = msg.clear;
+    }
+    else {
+      resolved.clear = false
+    }
+
     if (msg.ignore !== undefined) {
       resolved.ignore = msg.ignore;
     }
@@ -204,6 +226,7 @@ BrakeCmd.Constants = {
   CMD_PEDAL: 1,
   CMD_PERCENT: 2,
   CMD_TORQUE: 3,
+  CMD_TORQUE_RQ: 4,
   TORQUE_BOO: 520.0,
   TORQUE_MAX: 3412.0,
 }

@@ -1,56 +1,58 @@
 
 "use strict";
 
-let WatchdogCounter = require('./WatchdogCounter.js');
-let BrakeCmd = require('./BrakeCmd.js');
-let ThrottleReport = require('./ThrottleReport.js');
-let HillStartAssist = require('./HillStartAssist.js');
-let AmbientLight = require('./AmbientLight.js');
-let BrakeInfoReport = require('./BrakeInfoReport.js');
-let Misc1Report = require('./Misc1Report.js');
-let TirePressureReport = require('./TirePressureReport.js');
-let TwistCmd = require('./TwistCmd.js');
-let SteeringReport = require('./SteeringReport.js');
-let BrakeReport = require('./BrakeReport.js');
 let FuelLevelReport = require('./FuelLevelReport.js');
-let SteeringCmd = require('./SteeringCmd.js');
-let TurnSignalCmd = require('./TurnSignalCmd.js');
-let ThrottleInfoReport = require('./ThrottleInfoReport.js');
-let ParkingBrake = require('./ParkingBrake.js');
-let SuspensionReport = require('./SuspensionReport.js');
-let Wiper = require('./Wiper.js');
-let SurroundReport = require('./SurroundReport.js');
-let ThrottleCmd = require('./ThrottleCmd.js');
-let GearCmd = require('./GearCmd.js');
-let TurnSignal = require('./TurnSignal.js');
+let WatchdogCounter = require('./WatchdogCounter.js');
 let WheelSpeedReport = require('./WheelSpeedReport.js');
-let GearReport = require('./GearReport.js');
+let SteeringReport = require('./SteeringReport.js');
+let ParkingBrake = require('./ParkingBrake.js');
 let Gear = require('./Gear.js');
+let Wiper = require('./Wiper.js');
+let TirePressureReport = require('./TirePressureReport.js');
+let AmbientLight = require('./AmbientLight.js');
+let TurnSignalCmd = require('./TurnSignalCmd.js');
+let Misc1Report = require('./Misc1Report.js');
+let GearReport = require('./GearReport.js');
+let GearReject = require('./GearReject.js');
+let BrakeReport = require('./BrakeReport.js');
+let BrakeInfoReport = require('./BrakeInfoReport.js');
+let BrakeCmd = require('./BrakeCmd.js');
+let SteeringCmd = require('./SteeringCmd.js');
+let ThrottleInfoReport = require('./ThrottleInfoReport.js');
+let ThrottleCmd = require('./ThrottleCmd.js');
+let WheelPositionReport = require('./WheelPositionReport.js');
+let HillStartAssist = require('./HillStartAssist.js');
+let TwistCmd = require('./TwistCmd.js');
+let ThrottleReport = require('./ThrottleReport.js');
+let TurnSignal = require('./TurnSignal.js');
+let SurroundReport = require('./SurroundReport.js');
+let GearCmd = require('./GearCmd.js');
 
 module.exports = {
-  WatchdogCounter: WatchdogCounter,
-  BrakeCmd: BrakeCmd,
-  ThrottleReport: ThrottleReport,
-  HillStartAssist: HillStartAssist,
-  AmbientLight: AmbientLight,
-  BrakeInfoReport: BrakeInfoReport,
-  Misc1Report: Misc1Report,
-  TirePressureReport: TirePressureReport,
-  TwistCmd: TwistCmd,
-  SteeringReport: SteeringReport,
-  BrakeReport: BrakeReport,
   FuelLevelReport: FuelLevelReport,
-  SteeringCmd: SteeringCmd,
-  TurnSignalCmd: TurnSignalCmd,
-  ThrottleInfoReport: ThrottleInfoReport,
-  ParkingBrake: ParkingBrake,
-  SuspensionReport: SuspensionReport,
-  Wiper: Wiper,
-  SurroundReport: SurroundReport,
-  ThrottleCmd: ThrottleCmd,
-  GearCmd: GearCmd,
-  TurnSignal: TurnSignal,
+  WatchdogCounter: WatchdogCounter,
   WheelSpeedReport: WheelSpeedReport,
-  GearReport: GearReport,
+  SteeringReport: SteeringReport,
+  ParkingBrake: ParkingBrake,
   Gear: Gear,
+  Wiper: Wiper,
+  TirePressureReport: TirePressureReport,
+  AmbientLight: AmbientLight,
+  TurnSignalCmd: TurnSignalCmd,
+  Misc1Report: Misc1Report,
+  GearReport: GearReport,
+  GearReject: GearReject,
+  BrakeReport: BrakeReport,
+  BrakeInfoReport: BrakeInfoReport,
+  BrakeCmd: BrakeCmd,
+  SteeringCmd: SteeringCmd,
+  ThrottleInfoReport: ThrottleInfoReport,
+  ThrottleCmd: ThrottleCmd,
+  WheelPositionReport: WheelPositionReport,
+  HillStartAssist: HillStartAssist,
+  TwistCmd: TwistCmd,
+  ThrottleReport: ThrottleReport,
+  TurnSignal: TurnSignal,
+  SurroundReport: SurroundReport,
+  GearCmd: GearCmd,
 };

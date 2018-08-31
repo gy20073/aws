@@ -16,7 +16,7 @@
 
 (defclass dbw_mkz_msgs::BrakeReport
   :super ros::object
-  :slots (_header _pedal_input _pedal_cmd _pedal_output _torque_input _torque_cmd _torque_output _boo_input _boo_cmd _boo_output _enabled _override _driver _watchdog_counter _watchdog_braking _fault_wdc _fault_ch1 _fault_ch2 _fault_boo _fault_connector ))
+  :slots (_header _pedal_input _pedal_cmd _pedal_output _torque_input _torque_cmd _torque_output _boo_input _boo_cmd _boo_output _enabled _override _driver _timeout _watchdog_counter _watchdog_braking _fault_wdc _fault_ch1 _fault_ch2 _fault_power ))
 
 (defmethod dbw_mkz_msgs::BrakeReport
   (:init
@@ -34,13 +34,13 @@
     ((:enabled __enabled) nil)
     ((:override __override) nil)
     ((:driver __driver) nil)
+    ((:timeout __timeout) nil)
     ((:watchdog_counter __watchdog_counter) (instance dbw_mkz_msgs::WatchdogCounter :init))
     ((:watchdog_braking __watchdog_braking) nil)
     ((:fault_wdc __fault_wdc) nil)
     ((:fault_ch1 __fault_ch1) nil)
     ((:fault_ch2 __fault_ch2) nil)
-    ((:fault_boo __fault_boo) nil)
-    ((:fault_connector __fault_connector) nil)
+    ((:fault_power __fault_power) nil)
     )
    (send-super :init)
    (setq _header __header)
@@ -56,13 +56,13 @@
    (setq _enabled __enabled)
    (setq _override __override)
    (setq _driver __driver)
+   (setq _timeout __timeout)
    (setq _watchdog_counter __watchdog_counter)
    (setq _watchdog_braking __watchdog_braking)
    (setq _fault_wdc __fault_wdc)
    (setq _fault_ch1 __fault_ch1)
    (setq _fault_ch2 __fault_ch2)
-   (setq _fault_boo __fault_boo)
-   (setq _fault_connector __fault_connector)
+   (setq _fault_power __fault_power)
    self)
   (:header
    (&rest __header)
@@ -107,6 +107,9 @@
   (:driver
    (&optional __driver)
    (if __driver (setq _driver __driver)) _driver)
+  (:timeout
+   (&optional __timeout)
+   (if __timeout (setq _timeout __timeout)) _timeout)
   (:watchdog_counter
    (&rest __watchdog_counter)
    (if (keywordp (car __watchdog_counter))
@@ -126,12 +129,9 @@
   (:fault_ch2
    (&optional __fault_ch2)
    (if __fault_ch2 (setq _fault_ch2 __fault_ch2)) _fault_ch2)
-  (:fault_boo
-   (&optional __fault_boo)
-   (if __fault_boo (setq _fault_boo __fault_boo)) _fault_boo)
-  (:fault_connector
-   (&optional __fault_connector)
-   (if __fault_connector (setq _fault_connector __fault_connector)) _fault_connector)
+  (:fault_power
+   (&optional __fault_power)
+   (if __fault_power (setq _fault_power __fault_power)) _fault_power)
   (:serialization-length
    ()
    (+
@@ -161,6 +161,8 @@
     1
     ;; bool _driver
     1
+    ;; bool _timeout
+    1
     ;; dbw_mkz_msgs/WatchdogCounter _watchdog_counter
     (send _watchdog_counter :serialization-length)
     ;; bool _watchdog_braking
@@ -171,9 +173,7 @@
     1
     ;; bool _fault_ch2
     1
-    ;; bool _fault_boo
-    1
-    ;; bool _fault_connector
+    ;; bool _fault_power
     1
     ))
   (:serialize
@@ -206,6 +206,8 @@
        (if _override (write-byte -1 s) (write-byte 0 s))
      ;; bool _driver
        (if _driver (write-byte -1 s) (write-byte 0 s))
+     ;; bool _timeout
+       (if _timeout (write-byte -1 s) (write-byte 0 s))
      ;; dbw_mkz_msgs/WatchdogCounter _watchdog_counter
        (send _watchdog_counter :serialize s)
      ;; bool _watchdog_braking
@@ -216,10 +218,8 @@
        (if _fault_ch1 (write-byte -1 s) (write-byte 0 s))
      ;; bool _fault_ch2
        (if _fault_ch2 (write-byte -1 s) (write-byte 0 s))
-     ;; bool _fault_boo
-       (if _fault_boo (write-byte -1 s) (write-byte 0 s))
-     ;; bool _fault_connector
-       (if _fault_connector (write-byte -1 s) (write-byte 0 s))
+     ;; bool _fault_power
+       (if _fault_power (write-byte -1 s) (write-byte 0 s))
      ;;
      (if (null strm) (get-output-stream-string s))))
   (:deserialize
@@ -250,6 +250,8 @@
      (setq _override (not (= 0 (sys::peek buf ptr- :char)))) (incf ptr- 1)
    ;; bool _driver
      (setq _driver (not (= 0 (sys::peek buf ptr- :char)))) (incf ptr- 1)
+   ;; bool _timeout
+     (setq _timeout (not (= 0 (sys::peek buf ptr- :char)))) (incf ptr- 1)
    ;; dbw_mkz_msgs/WatchdogCounter _watchdog_counter
      (send _watchdog_counter :deserialize buf ptr-) (incf ptr- (send _watchdog_counter :serialization-length))
    ;; bool _watchdog_braking
@@ -260,15 +262,13 @@
      (setq _fault_ch1 (not (= 0 (sys::peek buf ptr- :char)))) (incf ptr- 1)
    ;; bool _fault_ch2
      (setq _fault_ch2 (not (= 0 (sys::peek buf ptr- :char)))) (incf ptr- 1)
-   ;; bool _fault_boo
-     (setq _fault_boo (not (= 0 (sys::peek buf ptr- :char)))) (incf ptr- 1)
-   ;; bool _fault_connector
-     (setq _fault_connector (not (= 0 (sys::peek buf ptr- :char)))) (incf ptr- 1)
+   ;; bool _fault_power
+     (setq _fault_power (not (= 0 (sys::peek buf ptr- :char)))) (incf ptr- 1)
    ;;
    self)
   )
 
-(setf (get dbw_mkz_msgs::BrakeReport :md5sum-) "a306c167d365176ae6159e3c4e3f3197")
+(setf (get dbw_mkz_msgs::BrakeReport :md5sum-) "a92bad28c400885f36170c1cab44618e")
 (setf (get dbw_mkz_msgs::BrakeReport :datatype-) "dbw_mkz_msgs/BrakeReport")
 (setf (get dbw_mkz_msgs::BrakeReport :definition-)
       "Header header
@@ -293,6 +293,7 @@ bool boo_output
 bool enabled  # Enabled
 bool override # Driver override
 bool driver   # Driver activity
+bool timeout  # Command timeout
 
 # Watchdog Counter
 WatchdogCounter watchdog_counter
@@ -302,8 +303,7 @@ bool fault_wdc
 # Faults
 bool fault_ch1
 bool fault_ch2
-bool fault_boo
-bool fault_connector # This fault can be ignored
+bool fault_power
 
 ================================================================================
 MSG: std_msgs/Header
@@ -348,6 +348,6 @@ uint8 STEERING_REPORT=15   # Steering report timeout after 100ms
 
 
 
-(provide :dbw_mkz_msgs/BrakeReport "a306c167d365176ae6159e3c4e3f3197")
+(provide :dbw_mkz_msgs/BrakeReport "a92bad28c400885f36170c1cab44618e")
 
 
