@@ -395,7 +395,7 @@ class Perceptions:
             elif "det" in key:
                 dB, dH, dW, dC = logits_dict[key].shape
                 # compute the effective height
-                eH = int(1.0 * size[0] / size[1] * dW)
+                eH = int(1.0 * det_sz[0] / det_sz[1] * dW)
                 assert(eH == det_sz[0] and dW == det_sz[1])
                 # compute the upper margine
                 H_start = (dH - eH) // 2
