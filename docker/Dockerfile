@@ -140,3 +140,8 @@ RUN apt-get install -yqq ros-kinetic-image-view
 
 # TODO: Carla, the training code
 RUN pip install h5py imgaug pygame
+
+RUN apt-get install -y openssh-client
+
+RUN /root/gdown.pl/gdown.pl https://drive.google.com/file/d/1_0xQQxe_ygrY5qoPK85Hz2NNpEW9d0dV/view /root/models/seg_stat_v2.t7
+RUN /root/gdown.pl/gdown.pl https://drive.google.com/file/d/1ZRki61mogUfdrixf9Lh75Ja6jEqL5Fpn/view /root/models/seg_v2.net
