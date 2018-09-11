@@ -1,0 +1,38 @@
+<html>
+    <head>
+        <title>Google Map</title>
+        <meta name="viewport" content="initial-scale=1.0">
+        <meta charset="utf-8">
+        <style>
+          #map {
+            height: 400px;
+            width: 1250px;
+          }
+        </style>
+    </head>
+
+    <body>
+        <!--
+        <div id="latclicked"></div>
+        <div id="longclicked"></div>
+         -->
+
+        <div id="latmoved"></div>
+        <div id="longmoved"></div>
+
+        <div style="padding:10px">
+            <div id="map"></div>
+        </div>
+
+        <script type="text/javascript" src="file:///Volumes/Data/Berkeley/code_and_data/code/aws/MKZ/collect_traj.js"></script>
+
+        <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDPogxeKkTjtKau4FChWHd5lAHNl5A_KpI&callback=initMap"
+        async defer></script>
+    </body>
+
+
+    <body>
+        Select file to read <input type="file" onchange="loadFile(this)">
+        <pre id="data"></pre>
+    </body>
+</html>
