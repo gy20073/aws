@@ -4,10 +4,13 @@
     <arg name="fake_video_path" default="/root/video_lowres.mkv" />
     <arg name="exp_id" default="mm45_v5_ablate_base" />
 
+    <arg name="use_auto_traj" default="false" />
+    <arg name="gps_traj_file" default="traj1.txt" />
+
     <group ns="vehicle">
 
         <node name="run_drive_MKZ" pkg="mkz_intel" type="drive_MKZ.py" output="screen"
-              args="$(arg exp_id)"> </node>
+              args="$(arg exp_id) $(arg use_auto_traj) $(arg gps_traj_file)"> </node>
 
         <node name="run_keyboard_reader" pkg="mkz_intel" type="keyboard_input.py" output="screen"> </node>
 

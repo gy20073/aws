@@ -3,7 +3,7 @@
 # This file put (1)driving model, (2)keyboard input (3)publish twist command (4)receive image together
 
 # roslib related
-import roslib
+import roslib, math
 roslib.load_manifest('dbw_mkz_msgs')
 import rospy, importlib, inspect
 
@@ -13,6 +13,7 @@ from cv_bridge import CvBridge
 from std_msgs.msg import String
 from geometry_msgs.msg import Vector3
 from dbw_mkz_msgs.msg import SteeringReport
+from sensor_msgs.msg import NavSatFix
 
 # standard system packages
 import sys, os, time
@@ -85,6 +86,24 @@ def on_key_received(data):
     else:
         print("invalid command", key)
 
+global gps_arr
+def on_gps_received(data):
+    lat = data.latitude
+    lng = data.longitude
+
+    min_direction = 2.0
+    min_dist = 99999999.0
+    for entry in gps_arr:
+        dist = math.sqrt((lat-entry[0])**2 + (lng-entry[1])**2)
+        if dist < min_dist:
+            min_direction = entry[2]
+            min_dist = dist
+
+    print("Prior: setting to prior", min_direction)
+
+    global direction
+    direction = min_direction
+
 def get_file_real_path():
     abspath = os.path.abspath(inspect.getfile(inspect.currentframe()))
     return os.path.realpath(abspath)
@@ -112,6 +131,13 @@ if __name__ == "__main__":
     rospy.init_node('BDD_Driving_Model')
     exp_id = sys.argv[1]
 
+    use_auto_traj = sys.argv[2]
+    if use_auto_traj.lower() == "true":
+        use_auto_traj = True
+        gps_traj_file = sys.argv[3]
+    else:
+        use_auto_traj = False
+
     # a global shared data structure, list of [forward speed in m/s, yaw rate in rad/s]
     global bridge
     bridge = CvBridge()
@@ -128,10 +154,23 @@ if __name__ == "__main__":
     os.chdir(driving_model_code_path)
     sys.path.append("drive_interfaces/carla/comercial_cars")
     from carla_machine import *
-    driving_model = CarlaMachine("0", exp_id, get_driver_config(), 0.1)
+    driving_model = CarlaMachine("0", exp_id, get_driver_config(), 0.1,
+                                 perception_gpus=[0, 1],
+                                 perception_paths="path_docker_newseg")
 
     # subscribe to many topics
     rospy.Subscriber(INPUT_IMAGE_TOPIC, sImage, on_image_received, queue_size=1)
-    rospy.Subscriber(KEYBOARD_TOPIC, String, on_key_received, queue_size=10)
+    if use_auto_traj:
+        rospy.Subscriber("/vehicle/gps/ﬁx", NavSatFix, on_gps_received, queue_size=1)
+        with open(gps_traj_file, "r") as f:
+            global gps_arr
+            lines = f.readlines()
+            gps_arr = []
+            for line in lines:
+                sp = line.split(", ")
+                gps_arr.append([float(sp[0]), float(sp[1]), int(float(sp[2]))])
+            print(gps_arr)
+    else:
+        rospy.Subscriber(KEYBOARD_TOPIC, String, on_key_received, queue_size=10)
     rospy.Subscriber("dbw_mkz_msgs/SteeringReport", SteeringReport, on_speed_received, queue_size=1)
     rospy.spin()
