@@ -155,13 +155,13 @@ if __name__ == "__main__":
     sys.path.append("drive_interfaces/carla/comercial_cars")
     from carla_machine import *
     driving_model = CarlaMachine("0", exp_id, get_driver_config(), 0.1,
-                                 perception_gpus=[0, 1],
+                                 gpu_perception=[0, 1],
                                  perception_paths="path_docker_newseg")
 
     # subscribe to many topics
     rospy.Subscriber(INPUT_IMAGE_TOPIC, sImage, on_image_received, queue_size=1)
     if use_auto_traj:
-        rospy.Subscriber("/vehicle/gps/ﬁx", NavSatFix, on_gps_received, queue_size=1)
+        rospy.Subscriber("/fix", NavSatFix, on_gps_received, queue_size=1)
         with open(gps_traj_file, "r") as f:
             global gps_arr
             lines = f.readlines()

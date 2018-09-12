@@ -12,8 +12,8 @@ output_base="/root/mount/home/bdd/intel/data"
 #bash ./record_rosbag_and_video.bash $output_base &
 
 roslaunch mkz_intel CIL.launch \
-    exp_id:="mm45_v4_base_newseg_noiser_TL_N0_1" \
+    exp_id:="mm45_v4_base_newseg_noiser_TL_structure_noise_02" \
     use_fake_image:="false" \
     fake_video_path:="/scratch/yang/aws_data/mkz/mkz2/inverted_compress.avi" \
-    use_auto_traj:="true" \
+    use_auto_traj:="false" \
     gps_traj_file:="traj1.txt"
