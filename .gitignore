@@ -111,3 +111,4 @@ drivable_area/data_mkz
 *batch_temp*
 docker/deps/*
 *pkl
+.DS_Store
