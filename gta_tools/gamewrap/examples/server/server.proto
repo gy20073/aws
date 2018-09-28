@@ -1,0 +1,57 @@
+syntax = "proto3";
+
+option optimize_for = LITE_RUNTIME;
+
+package server;
+
+message Message {
+  enum Command {
+    LIST_TARGETS = 0;
+    FETCH_TARGET = 1;
+    INTERCEPT_KEY = 2;
+    SEND_KEY = 3;
+  }
+  enum Type {
+    REQUEST = 0;
+	REPLY = 1;
+  }
+  Command command = 1;
+  Type type = 2;
+  uint32 id = 3;
+};
+
+message ListTargetReply {
+  repeated string target = 1;
+};
+
+message FetchTargetRequest {
+  string target = 1;
+  uint32 repeat = 2;
+  float fps = 3;
+};
+message FetchTargetReply {
+  enum Type {
+    UBYTE  = 1;
+    USHORT = 2;
+    SHORT  = 3;
+    UINT   = 4;
+    INT    = 5;
+    FLOAT  = 6;
+    HALF   = 7;
+  }
+  string target = 1;
+  uint32 width = 2;
+  uint32 height = 3;
+  uint32 channels = 4;
+  Type type = 5;
+  repeated uint8 data = 6;
+};
+
+message InterceptKeyReply {
+  
+};
+
+message SendKeyRequest {
+  uint8 key = 1;
+  float duration = 2;
+};

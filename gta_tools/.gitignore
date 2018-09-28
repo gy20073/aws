@@ -1,0 +1,4 @@
+*.pyc
+.idea/
+hybrid_client/*.pyc
+hybrid_client/.idea/
