@@ -15,7 +15,9 @@ brake = []
 steering = []
 angle = []
 direction = []
-rootpath = '/scratch/yang/aws_data/carla_collect/daggerseg/daggerseg/'
+location = []
+dagger = []
+rootpath = '/scratch/yang/aws_data/carla_collect/daggerseg/'
 imgpath_raw = glob(rootpath+'*')
 imgpath = []
 to_del = []
@@ -33,8 +35,7 @@ for path in tqdm(imgpath[:train_len]):
     sortedtime = sorted(parsedinfo.keys())
     for idx, t in enumerate(sortedtime):
         frame = parsedinfo[t]
-        if frame['dagger']:
-            continue
+
         img.append(os.path.join(os.path.relpath(path,rootpath),str(t)+'_final.png'))
         speed.append(frame['speed'])
         thottle.append(frame['throttle'])
@@ -42,6 +43,8 @@ for path in tqdm(imgpath[:train_len]):
         steering.append(frame['steering'])
         angle.append(frame['yawRate'])
         direction.append(frame['direction'])
+        location.append(frame['location'])
+        dagger.append(frame['dagger'])
 
 writelist2txt(img, rootpath+'train_imgs.txt')
 writelist2txt(speed, rootpath+'train_speeds.txt')
@@ -50,6 +53,8 @@ writelist2txt(brake, rootpath+'train_brakes.txt')
 writelist2txt(steering, rootpath+'train_steerings.txt')
 writelist2txt(thottle, rootpath+'train_thottles.txt')
 writelist2txt(direction, rootpath+'train_direction.txt')
+writelist2txt(location, rootpath+'train_location.txt')
+writelist2txt(dagger, rootpath+'train_dagger.txt')
 
 img = []
 speed = []
@@ -58,6 +63,8 @@ brake = []
 steering = []
 angle = []
 direction = []
+location = []
+dagger = []
 for path in tqdm(imgpath[train_len:]):
     try:
        parsedinfo = json.load(open(os.path.join(path,'parsedinfo.json'),'r'))
@@ -66,8 +73,7 @@ for path in tqdm(imgpath[train_len:]):
     sortedtime = sorted(parsedinfo.keys())
     for idx, t in enumerate(sortedtime):
         frame = parsedinfo[t]
-        if frame['dagger']:
-            continue
+
         img.append(os.path.join(os.path.relpath(path,rootpath),str(t)+'_final.png'))
         speed.append(frame['speed'])
         thottle.append(frame['throttle'])
@@ -75,6 +81,8 @@ for path in tqdm(imgpath[train_len:]):
         steering.append(frame['steering'])
         angle.append(frame['yawRate'])
         direction.append(frame['direction'])
+        location.append(frame['location'])
+        dagger.append(frame['dagger'])
 
 writelist2txt(img, rootpath + 'val_imgs.txt')
 writelist2txt(speed, rootpath + 'val_speeds.txt')
@@ -83,3 +91,5 @@ writelist2txt(brake, rootpath + 'val_brakes.txt')
 writelist2txt(steering, rootpath + 'val_steerings.txt')
 writelist2txt(thottle, rootpath + 'val_thottles.txt')
 writelist2txt(direction, rootpath+'val_direction.txt')
+writelist2txt(location, rootpath+'val_location.txt')
+writelist2txt(dagger, rootpath+'val_dagger.txt')
