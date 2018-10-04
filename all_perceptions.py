@@ -277,6 +277,9 @@ class Perceptions:
     def compute_async_impl(self, input_queue, output_queue, block=True):
         # start multiple threads for each mode
         self.batch_id = 0 # the priority number
+        self.input_queue_replicate = {}
+        for mode in self.all_modes.keys():
+            self.input_queue_replicate[mode] = Queue.Queue(5)
         t = threading.Thread(target=self._thread_input_replicater, args=(input_queue,))
         t.start()
 
@@ -304,9 +307,6 @@ class Perceptions:
 
     def _thread_input_replicater(self, input_queue):
         # setup each of the input queues
-        self.input_queue_replicate = {}
-        for mode in self.all_modes.keys():
-            self.input_queue_replicate[mode] = Queue.Queue(5)
         while True:
             data = input_queue.get()
             self.images = data[1]
