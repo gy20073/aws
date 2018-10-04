@@ -1,6 +1,6 @@
 import pickle
 from glob import glob
-import os
+import os, sys
 from tqdm import tqdm
 import numpy as np
 import json
@@ -58,7 +58,7 @@ def find_time_match_info(dir_name):
     pickle.dump(match_info, open(os.path.join(dir_name, 'info_match.p'), 'wb'), protocol=2)
 
 
-imgpath_raw = glob('/Volumes/conditionR6/dagger_yang/*')
+imgpath_raw = glob(sys.argv[1] + '/*')
 imgpath = []
 to_del = []
 for path in tqdm(imgpath_raw):

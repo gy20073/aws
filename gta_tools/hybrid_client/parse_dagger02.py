@@ -1,6 +1,6 @@
 import pickle
 from glob import glob
-import os
+import os, sys
 from tqdm import tqdm
 import json
 
@@ -17,7 +17,7 @@ angle = []
 direction = []
 location = []
 dagger = []
-rootpath = '/Volumes/conditionR6/dagger_yang/'
+rootpath = sys.argv[1] + '/'
 imgpath_raw = glob(rootpath+'*')
 imgpath = []
 to_del = []
