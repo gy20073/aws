@@ -54,6 +54,10 @@ def segment(img, seg):
 def vis_all(x, wrapper):
     batch_size = len(x)
     x = np.stack(x, axis=0)
+
+    # center zoom
+    #x = x[:,x.shape[1]//4:x.shape[1]*3//4, x.shape[2] // 4:x.shape[2] * 3 // 4, :]
+
     print("before compute")
     pred = wrapper.compute(x)
     print("after compute")
@@ -152,18 +156,18 @@ if __name__ == "__main__":
 
     if True:
         # test within the docker
-        video_path = "/scratch/yang/aws_data/carla_collect/straight_3cam_constantaug2/default_ImageSizeX=700_WeatherId=13/data_00008.h5.mp4"
-        batch_size = 1
+        video_path = "/scratch/yang/aws_data/carla_collect/gta/gta_batch1/train/gta_00035.h5.mp4"
+        batch_size = 4
 
         from all_perceptions import Perceptions
 
         perceptions = Perceptions(det_COCO=True,
                                   det_TL=True,
-                                  det_TS=False,
+                                  det_TS=True,
                                   seg=True,
                                   depth=True,
                                   batch_size=batch_size,
-                                  gpu_assignment=[1],
+                                  gpu_assignment=[0,1,2,3],
                                   compute_methods={},
                                   viz_methods={},
                                   path_config="path_jormungandr_newseg")

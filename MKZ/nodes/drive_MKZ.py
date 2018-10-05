@@ -5,7 +5,7 @@
 # roslib related
 import roslib, math
 roslib.load_manifest('dbw_mkz_msgs')
-import rospy, importlib, inspect
+import rospy, importlib, inspect, threading
 
 # messages related
 from sensor_msgs.msg import Image as sImage
@@ -23,15 +23,41 @@ SAFETY_SPEED = 8.0 # in km/h, cap the speed if larger than it
 
 KEYBOARD_TOPIC = "mkz_key_command"
 INPUT_IMAGE_TOPIC = "/image_sender_0"
+INPUT_IMAGE_TOPIC_LEFT = "TODO"
+INPUT_IMAGE_TOPIC_RIGHT = "TODO"
 
 global bridge, driving_model, vis_pub_full, vehicle_real_speed_kmh, direction, controller
 debug_speed = 0
 vehicle_real_speed_kmh = 0.0
 driving_model = None
 direction = 2.0
+use_left_right = False
 
 from control_interface import ControlInterface
 
+left_cache = None
+left_lock = threading.Lock()
+def on_image_received_left(data):
+    global left_cache
+    img = bridge.imgmsg_to_cv2(data, "bgr8")
+    # flip because the camera is flipped
+    img = img[::-1, ::-1, :]
+    left_lock.acquire()
+    left_cache = img
+    left_lock.release()
+
+right_cache = None
+right_lock = threading.Lock()
+def on_image_received_right(data):
+    global right_cache
+    img = bridge.imgmsg_to_cv2(data, "bgr8")
+    # flip because the camera is flipped
+    img = img[::-1, ::-1, :]
+    right_lock.acquire()
+    right_cache = img
+    right_lock.release()
+
+# this is the center image
 def on_image_received(data):
     # this would directly receive the raw image from the driver
     if driving_model is None or vehicle_real_speed_kmh is None:
@@ -44,7 +70,17 @@ def on_image_received(data):
     # flip because the camera is flipped
     img = img[::-1, ::-1, :]
 
-    sensors = [img]
+    if use_left_right:
+        if left_cache is None or right_cache is None:
+            return
+        left_lock.acquire()
+        right_lock.acquire()
+        sensors = [left_cache, img, right_cache]
+        left_lock.release()
+        right_lock.release()
+
+    else:
+        sensors = [img]
     control, vis = driving_model.compute_action(sensors, vehicle_real_speed_kmh, direction,
                                            save_image_to_disk=False, return_vis=True)
 
@@ -138,6 +174,12 @@ if __name__ == "__main__":
     else:
         use_auto_traj = False
 
+    global use_left_right
+    if sys.argv[4].lower() == "true":
+        use_left_right = True
+    else:
+        use_left_right = False
+
     # a global shared data structure, list of [forward speed in m/s, yaw rate in rad/s]
     global bridge
     bridge = CvBridge()
@@ -160,6 +202,11 @@ if __name__ == "__main__":
 
     # subscribe to many topics
     rospy.Subscriber(INPUT_IMAGE_TOPIC, sImage, on_image_received, queue_size=1)
+    if use_left_right:
+        rospy.Subscriber(INPUT_IMAGE_TOPIC_LEFT, sImage, on_image_received_left, queue_size=1)
+        rospy.Subscriber(INPUT_IMAGE_TOPIC_RIGHT, sImage, on_image_received_right, queue_size=1)
+
+
     if use_auto_traj:
         rospy.Subscriber("/fix", NavSatFix, on_gps_received, queue_size=1)
         with open(gps_traj_file, "r") as f:
