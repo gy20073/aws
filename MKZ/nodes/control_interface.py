@@ -47,18 +47,18 @@ class ControlInterface(object):
         # rad, range -8.2 to 8.2
         steer_cmd.steering_wheel_angle_cmd = self._steer
         # TODO: safty, from 0 to 8.2 rad/s
-        steer_cmd.steering_wheel_angle_velocity = 5.0
+        steer_cmd.steering_wheel_angle_velocity = 10.0
         self._steer_pub.publish(steer_cmd)
 
     def start_loop(self):
         self.counter += 1
-        if self.counter % 150 == 0:
+        if self.counter % 350 == 0:
             #print("time eplapsed is ", time.time() - self.last_time)
             #self.last_time = time.time()
             print("brake", self._brake, "throttle", self._throttle, "steer", self._steer)
         self.pub_once()
         if not rospy.is_shutdown():
-            threading.Timer(1.0 / 150, self.start_loop).start()
+            threading.Timer(1.0 / 350, self.start_loop).start()
 
 
 if __name__ == "__main__":

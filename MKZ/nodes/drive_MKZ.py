@@ -19,12 +19,15 @@ from sensor_msgs.msg import NavSatFix
 import sys, os, time
 
 # some constants
-SAFETY_SPEED = 8.0 # in km/h, cap the speed if larger than it
+CONTROL_MODE = 'CARLA0.9.X' #''GTAV' #'CARLA0.9.X'
+SAFETY_SPEED = 3.0 # in km/h, cap the speed if larger than it
+THROTTLE_CONSTANT = 0.1
+STEERING_CONSTANT = -3.1
 
 KEYBOARD_TOPIC = "mkz_key_command"
 INPUT_IMAGE_TOPIC = "/image_sender_0"
-INPUT_IMAGE_TOPIC_LEFT = "TODO"
-INPUT_IMAGE_TOPIC_RIGHT = "TODO"
+INPUT_IMAGE_TOPIC_LEFT = "/camera_array/cam1/image_raw"
+INPUT_IMAGE_TOPIC_RIGHT = "/camera_array/cam2/image_raw"
 
 global bridge, driving_model, vis_pub_full, vehicle_real_speed_kmh, direction, controller
 debug_speed = 0
@@ -37,6 +40,24 @@ from control_interface import ControlInterface
 
 left_cache = None
 left_lock = threading.Lock()
+
+def initialize_control_constants(control_mode):
+    global SAFETY_SPEED, THROTTLE_CONSTANT, STEERING_CONSTANT
+
+    if control_mode == 'GTAV':
+        SAFETY_SPEED = 17.0  #km/h
+        THROTTLE_CONSTANT = 0.8
+        STEERING_CONSTANT = -12.1
+    elif control_mode == 'CARLA0.9.X':
+        SAFETY_SPEED = 8.0  # km/h
+        THROTTLE_CONSTANT = 0.4
+        STEERING_CONSTANT = -3.5
+    else:
+        SAFETY_SPEED = 17.0  #km/h
+        THROTTLE_CONSTANT = 0.8
+        STEERING_CONSTANT = -20.1
+
+
 def on_image_received_left(data):
     global left_cache
     img = bridge.imgmsg_to_cv2(data, "bgr8")
@@ -82,21 +103,25 @@ def on_image_received(data):
     else:
         sensors = [img]
     control, vis = driving_model.compute_action(sensors, vehicle_real_speed_kmh, direction,
-                                           save_image_to_disk=False, return_vis=True)
+                                                save_image_to_disk=False, return_vis=True)
+    #control, vis = driving_model.compute_action(sensors, 0.0, direction, save_image_to_disk=False, return_vis=True)
 
     # safty guards to guard against dangerous situation
     if vehicle_real_speed_kmh > SAFETY_SPEED:
         print "speed still larger than safty speed, cropped. (It will affect performance)"
         control.throttle = 0.0
 
+    print('>>>>>> Real speed = {}'.format(vehicle_real_speed_kmh))
     # convert the output to the format of vehicle format
-    # the meaning of the predicted value
+    # the mean
+    # =ol9f the predicted value
     # the meaning of the required value
     # TODO: right now no smoother
-    controller.set_throttle(control.throttle * 0.1)
-    controller.set_break(control.brake * 0.0)
-    controller.set_steer(control.steer * -3.1)  # 8.2 in range
 
+    controller.set_throttle(control.throttle * THROTTLE_CONSTANT)
+    controller.set_break(control.brake * 0.0)
+    controller.set_steer(control.steer * STEERING_CONSTANT)  # 8.2 in range
+    print('>>> Steering value = {} | Steering constant = {}'.format(control.steer * STEERING_CONSTANT, STEERING_CONSTANT))
     vis_pub_full.publish(bridge.cv2_to_imgmsg(vis, "rgb8"))
 
     print ("total time for on image receive is ", time.time()-time0)
@@ -184,6 +209,8 @@ if __name__ == "__main__":
     global bridge
     bridge = CvBridge()
 
+    initialize_control_constants(CONTROL_MODE)
+
     global vis_pub_full
     vis_pub_full = rospy.Publisher('/vis_continuous_full', sImage, queue_size=10)
 
@@ -198,7 +225,8 @@ if __name__ == "__main__":
     from carla_machine import *
     driving_model = CarlaMachine("0", exp_id, get_driver_config(), 0.1,
                                  gpu_perception=[0, 1],
-                                 perception_paths="path_docker_newseg")
+                                 perception_paths="path_docker_newseg",
+                                 batch_size=3 if use_left_right else 1)
 
     # subscribe to many topics
     rospy.Subscriber(INPUT_IMAGE_TOPIC, sImage, on_image_received, queue_size=1)
@@ -219,5 +247,5 @@ if __name__ == "__main__":
             print(gps_arr)
     else:
         rospy.Subscriber(KEYBOARD_TOPIC, String, on_key_received, queue_size=10)
-    rospy.Subscriber("dbw_mkz_msgs/SteeringReport", SteeringReport, on_speed_received, queue_size=1)
+    rospy.Subscriber("/vehicle/steering_report", SteeringReport, on_speed_received, queue_size=1)
     rospy.spin()

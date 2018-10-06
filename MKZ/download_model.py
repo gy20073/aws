@@ -2,7 +2,9 @@ import os, copy, sys
 from subprocess import call
 
 if __name__ == "__main__":
-    exp_id = "mm45_v4_base_newseg_noiser_TL_structure_noise_02"
+    exp_id = "mm45_v4_base_3cam_conaug_share_3cam_middlesplit"
+
+
     remote_path = "/scratch/yang/aws_data/CIL_modular_data/models/" + exp_id
     local_path = "/root/mount/home/bdd/intel/data/CIL_modular_data/models/" + exp_id
     if not os.path.exists(local_path):
