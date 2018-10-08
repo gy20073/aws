@@ -70,7 +70,7 @@ def on_image_received_left(data):
 
     global left_cache
     img = bridge.imgmsg_to_cv2(data, "bgr8")
-    #img = cv2.resize(img, (IM_WIDTH, IM_HEIGHT))
+    img = cv2.resize(img, (IM_WIDTH, IM_HEIGHT))
     # flip because the camera is flipped
     img = img[::-1, ::-1, :]
     left_lock.acquire()
@@ -87,7 +87,7 @@ def on_image_received_right(data):
 
     global right_cache
     img = bridge.imgmsg_to_cv2(data, "bgr8")
-    #img = cv2.resize(img, (IM_WIDTH, IM_HEIGHT))
+    img = cv2.resize(img, (IM_WIDTH, IM_HEIGHT))
     # flip because the camera is flipped
     img = img[::-1, ::-1, :]
     right_lock.acquire()
@@ -119,8 +119,10 @@ def on_image_received(data):
 
     else:
         sensors = [img]
+    t00 = time.time()
     control, vis = driving_model.compute_action(sensors, vehicle_real_speed_kmh, direction,
                                                 save_image_to_disk=False, return_vis=True)
+    #print("time for compute action is ", time.time() - t00)
     #control, vis = driving_model.compute_action(sensors, 0.0, direction, save_image_to_disk=False, return_vis=True)
 
     # safty guards to guard against dangerous situation
@@ -128,7 +130,7 @@ def on_image_received(data):
         print "speed still larger than safty speed, cropped. (It will affect performance)"
         control.throttle = 0.0
 
-    print('>>>>>> Real speed = {}'.format(vehicle_real_speed_kmh))
+    print('>>>>>> Real speed = {} km/h'.format(vehicle_real_speed_kmh))
     # convert the output to the format of vehicle format
     # the meaning of the predicted value
     # the meaning of the required value
@@ -140,12 +142,11 @@ def on_image_received(data):
     print('>>> Steering value = {} | Steering constant = {}'.format(control.steer * STEERING_CONSTANT, STEERING_CONSTANT))
     vis_pub_full.publish(bridge.cv2_to_imgmsg(vis, "rgb8"))
 
-    print ("total time for on image receive is ", time.time()-time0)
     time_now = time.time()
     global last_computation
-    print("model running HZ is ", 1.0 / (time_now - last_computation))
+    print ("total time for on image receive is ", time.time()-time0, ". Runs at ", 1.0 / (time_now - last_computation), "Hz")
     last_computation = time.time()
-    print "on image received"
+
 
 
 def on_key_received(data):
