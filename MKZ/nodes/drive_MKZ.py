@@ -3,7 +3,7 @@
 # This file put (1)driving model, (2)keyboard input (3)publish twist command (4)receive image together
 
 # roslib related
-import roslib, math
+import roslib, math, cv2
 roslib.load_manifest('dbw_mkz_msgs')
 import rospy, importlib, inspect, threading
 
@@ -32,6 +32,13 @@ vehicle_real_speed_kmh = 0.0
 driving_model = None
 direction = 2.0
 use_left_right = False
+IMAGE_TEMPORAL_DOWNSAMPLE_FACTOR = 3
+count_left = 0
+count_right = 0
+count_middle = 0
+IM_WIDTH = 768
+IM_HEIGHT = 576
+last_computation = time.time()
 
 from control_interface import ControlInterface
 
@@ -56,8 +63,14 @@ def initialize_control_constants(control_mode):
 
 
 def on_image_received_left(data):
+    global count_left
+    count_left += 1
+    if count_left % IMAGE_TEMPORAL_DOWNSAMPLE_FACTOR != 0:
+        return
+
     global left_cache
     img = bridge.imgmsg_to_cv2(data, "bgr8")
+    #img = cv2.resize(img, (IM_WIDTH, IM_HEIGHT))
     # flip because the camera is flipped
     img = img[::-1, ::-1, :]
     left_lock.acquire()
@@ -67,8 +80,14 @@ def on_image_received_left(data):
 right_cache = None
 right_lock = threading.Lock()
 def on_image_received_right(data):
+    global count_right
+    count_right += 1
+    if count_right % IMAGE_TEMPORAL_DOWNSAMPLE_FACTOR != 0:
+        return
+
     global right_cache
     img = bridge.imgmsg_to_cv2(data, "bgr8")
+    #img = cv2.resize(img, (IM_WIDTH, IM_HEIGHT))
     # flip because the camera is flipped
     img = img[::-1, ::-1, :]
     right_lock.acquire()
@@ -85,6 +104,7 @@ def on_image_received(data):
     global bridge, driving_model, vis_pub_full, controller
 
     img = bridge.imgmsg_to_cv2(data, "bgr8")
+    #img = cv2.resize(img, (IM_WIDTH, IM_HEIGHT))
     # flip because the camera is flipped
     img = img[::-1, ::-1, :]
 
@@ -121,6 +141,10 @@ def on_image_received(data):
     vis_pub_full.publish(bridge.cv2_to_imgmsg(vis, "rgb8"))
 
     print ("total time for on image receive is ", time.time()-time0)
+    time_now = time.time()
+    global last_computation
+    print("model running HZ is ", 1.0 / (time_now - last_computation))
+    last_computation = time.time()
     print "on image received"
 
 
