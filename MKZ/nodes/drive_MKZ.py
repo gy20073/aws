@@ -20,9 +20,6 @@ import sys, os, time
 
 # some constants
 CONTROL_MODE = 'CARLA0.9.X' #''GTAV' #'CARLA0.9.X'
-SAFETY_SPEED = 3.0 # in km/h, cap the speed if larger than it
-THROTTLE_CONSTANT = 0.1
-STEERING_CONSTANT = -3.1
 
 KEYBOARD_TOPIC = "mkz_key_command"
 INPUT_IMAGE_TOPIC = "/image_sender_0"
@@ -52,7 +49,7 @@ def initialize_control_constants(control_mode):
         SAFETY_SPEED = 8.0  # km/h
         THROTTLE_CONSTANT = 0.4
         STEERING_CONSTANT = -3.5
-    else:
+    else: # default is carla 0.8 autopilot
         SAFETY_SPEED = 17.0  #km/h
         THROTTLE_CONSTANT = 0.8
         STEERING_CONSTANT = -20.1
@@ -113,8 +110,7 @@ def on_image_received(data):
 
     print('>>>>>> Real speed = {}'.format(vehicle_real_speed_kmh))
     # convert the output to the format of vehicle format
-    # the mean
-    # =ol9f the predicted value
+    # the meaning of the predicted value
     # the meaning of the required value
     # TODO: right now no smoother
 
