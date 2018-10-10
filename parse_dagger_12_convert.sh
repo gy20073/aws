@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 input_path="/Volumes/conditionR6/dagger_yang"
-output_path="/Volumes/Data/Downloads/vladlen/data/gta_batch3"
+output_path="/Volumes/Data/Downloads/vladlen/data/gta_batch5"
 num_threads="4"
 
 python3 gta_tools/hybrid_client/parse_dagger.py $input_path
