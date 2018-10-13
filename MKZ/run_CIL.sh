@@ -17,4 +17,5 @@ roslaunch mkz_intel CIL.launch \
     fake_video_path:="/scratch/yang/aws_data/mkz/mkz2/inverted_compress.avi" \
     use_auto_traj:="false" \
     gps_traj_file:="traj1.txt" \
-    use_left_right:="true"
+    use_left_right:="true" \
+    use_waypoint:="true"

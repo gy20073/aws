@@ -181,8 +181,7 @@ class Perceptions:
         self.paths["seg"] = {"model_path": "/root/models/seg_v2.net",
                              "mean_path": "/root/models/seg_stat_v2.t7"}
 
-    @staticmethod
-    def merge_images(viz_dict, new_size):
+    def merge_images(self, viz_dict, new_size):
         nimage = len(viz_dict)
         sqrt_n = math.ceil(math.sqrt(nimage))
         sqrt_n = int(sqrt_n)
@@ -190,6 +189,8 @@ class Perceptions:
         nrow = int(math.ceil(nimage * 1.0 / sqrt_n))
 
         output = np.zeros((new_size[0]*nrow, new_size[1]*sqrt_n, 3), dtype=np.uint8)
+        self.viz_nrow = nrow
+        self.viz_ncol = sqrt_n
 
         for i, key in enumerate(sorted(viz_dict.keys())):
             image = viz_dict[key]
@@ -202,6 +203,9 @@ class Perceptions:
             output[irow*new_size[0]:(irow+1)*new_size[0],
                    icol*new_size[1]:(icol+1)*new_size[1], :] = image
         return output
+
+    def get_viz_nrow_ncol(self):
+        return self.viz_nrow, self.viz_ncol
 
     def compute(self, images, intermediate_size=(576, 768)):
         # depth 256*512, seg: 576*768, yolo 312*416
