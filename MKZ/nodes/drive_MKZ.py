@@ -32,7 +32,8 @@ vehicle_real_speed_kmh = 0.0
 driving_model = None
 direction = 2.0
 use_left_right = False
-IMAGE_TEMPORAL_DOWNSAMPLE_FACTOR = 3
+IMAGE_TEMPORAL_DOWNSAMPLE_FACTOR = 1
+IMAGE_DOWNSAMPLE_MAIN = 1
 count_left = 0
 count_right = 0
 count_middle = 0
@@ -98,6 +99,11 @@ def on_image_received_right(data):
 def on_image_received(data):
     # this would directly receive the raw image from the driver
     if driving_model is None or vehicle_real_speed_kmh is None:
+        return
+
+    global count_middle
+    count_middle += 1
+    if count_middle % IMAGE_DOWNSAMPLE_MAIN != 0:
         return
 
     time0 = time.time()
