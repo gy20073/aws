@@ -17,6 +17,10 @@ from sensor_msgs.msg import NavSatFix
 
 # standard system packages
 import sys, os, time
+import numpy as np
+
+sys.path.append("TODO: the path to the path_follower")
+from path_follower.msg import Waypoints, Point2D
 
 # some constants
 CONTROL_MODE = 'CARLA0.9.X' #''GTAV' #'CARLA0.9.X'
@@ -107,7 +111,7 @@ def on_image_received(data):
         return
 
     time0 = time.time()
-    global bridge, driving_model, vis_pub_full, controller
+    global bridge, driving_model, vis_pub_full, controller, waypoint_pub
 
     img = bridge.imgmsg_to_cv2(data, "bgr8")
     #img = cv2.resize(img, (IM_WIDTH, IM_HEIGHT))
@@ -130,22 +134,46 @@ def on_image_received(data):
                                                 save_image_to_disk=False, return_vis=True)
     #print("time for compute action is ", time.time() - t00)
     #control, vis = driving_model.compute_action(sensors, 0.0, direction, save_image_to_disk=False, return_vis=True)
+    global use_waypoint
 
-    # safty guards to guard against dangerous situation
-    if vehicle_real_speed_kmh > SAFETY_SPEED:
-        print "speed still larger than safty speed, cropped. (It will affect performance)"
-        control.throttle = 0.0
+    if use_waypoint:
+        # shift the waypoint forward by the computation time
+        time_passed = time.time() - time0
+        time_list = np.array([0.2*(i+1) for i in range(control.shape[0])])
+        time_list -= time_passed # this typically less than 200ms
+        desired_time = np.array([0.2*(i+1) for i in range(control.shape[0]-1)])
 
-    print('>>>>>> Real speed = {} km/h'.format(vehicle_real_speed_kmh))
-    # convert the output to the format of vehicle format
-    # the meaning of the predicted value
-    # the meaning of the required value
-    # TODO: right now no smoother
+        wp0 = np.interp(desired_time, time_list, control[:, 0])
+        wp1 = np.interp(desired_time, time_list, control[:, 1])
+        control = np.stack([wp0, wp1], axis=0)
 
-    controller.set_throttle(control.throttle * THROTTLE_CONSTANT)
-    controller.set_break(control.brake * 0.0)
-    controller.set_steer(control.steer * STEERING_CONSTANT)  # 8.2 in range
-    print('>>> Steering value = {} | Steering constant = {}'.format(control.steer * STEERING_CONSTANT, STEERING_CONSTANT))
+        # TODO: have a manner to control the safety speed
+        waypoints = Waypoints()
+        for i in range(1, control.shape[0]):
+            pt = Point2D()
+            pt.x = control[i, 0]
+            pt.y = -control[i, 1]
+            waypoints.points.append(pt)
+        waypoints.dt = 0.2
+        waypoint_pub.publish(waypoints)
+
+    else:
+        # safty guards to guard against dangerous situation
+        if vehicle_real_speed_kmh > SAFETY_SPEED:
+            print "speed still larger than safty speed, cropped. (It will affect performance)"
+            control.throttle = 0.0
+
+        print('>>>>>> Real speed = {} km/h'.format(vehicle_real_speed_kmh))
+        # convert the output to the format of vehicle format
+        # the meaning of the predicted value
+        # the meaning of the required value
+        # TODO: right now no smoother
+
+        controller.set_throttle(control.throttle * THROTTLE_CONSTANT)
+        controller.set_break(control.brake * 0.0)
+        controller.set_steer(control.steer * STEERING_CONSTANT)  # 8.2 in range
+        print('>>> Steering value = {} | Steering constant = {}'.format(control.steer * STEERING_CONSTANT, STEERING_CONSTANT))
+
     vis_pub_full.publish(bridge.cv2_to_imgmsg(vis, "rgb8"))
 
     time_now = time.time()
@@ -232,6 +260,12 @@ if __name__ == "__main__":
     else:
         use_left_right = False
 
+    global use_waypoint
+    if sys.argv[5].lower() == "true":
+        use_waypoint = True
+    else:
+        use_waypoint = False
+
     # a global shared data structure, list of [forward speed in m/s, yaw rate in rad/s]
     global bridge
     bridge = CvBridge()
@@ -241,8 +275,12 @@ if __name__ == "__main__":
     global vis_pub_full
     vis_pub_full = rospy.Publisher('/vis_continuous_full', sImage, queue_size=10)
 
-    global controller
-    controller = ControlInterface()
+    if not use_waypoint:
+        global controller
+        controller = ControlInterface()
+    else:
+        global waypoint_pub
+        waypoint_pub = rospy.Publisher('waypoints', Waypoints, queue_size=1)
 
     global driving_model
     # BDD Driving model related

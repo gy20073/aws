@@ -8,11 +8,12 @@
     <arg name="gps_traj_file" default="traj1.txt" />
 
     <arg name="use_left_right" default="false" />
+    <arg name="use_waypoint" default="false" />
 
     <group ns="vehicle">
 
         <node name="run_drive_MKZ" pkg="mkz_intel" type="drive_MKZ.py" output="screen"
-              args="$(arg exp_id) $(arg use_auto_traj) $(arg gps_traj_file) $(arg use_left_right)"> </node>
+              args="$(arg exp_id) $(arg use_auto_traj) $(arg gps_traj_file) $(arg use_left_right) $(arg use_waypoint)"> </node>
 
         <node name="run_keyboard_reader" pkg="mkz_intel" type="keyboard_input.py" output="screen"> </node>
 
