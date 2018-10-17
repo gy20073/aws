@@ -18,12 +18,12 @@ from sensor_msgs.msg import NavSatFix
 # standard system packages
 import sys, os, time
 import numpy as np
+from multiprocessing import Process, Pipe
 
-sys.path.append("TODO: the path to the path_follower")
-from path_follower.msg import Waypoints, Point2D
+from mkz_intel.msg import Waypoints, Point2D
 
 # some constants
-CONTROL_MODE = 'CARLA0.9.X' #''GTAV' #'CARLA0.9.X'
+CONTROL_MODE = 'CARLA0.9.X' #'CARLA0.9.X' #''GTAV' #'CARLA0.9.X'
 
 KEYBOARD_TOPIC = "mkz_key_command"
 INPUT_IMAGE_TOPIC = "/image_sender_0"
@@ -59,6 +59,10 @@ def initialize_control_constants(control_mode):
         STEERING_CONSTANT = -12.1
     elif control_mode == 'CARLA0.9.X':
         SAFETY_SPEED = 8.0  # km/h
+        THROTTLE_CONSTANT = 0.4
+        STEERING_CONSTANT = -3.5
+    elif control_mode == 'WAYPOINTS_REAL_CAR':
+        SAFETY_SPEED = 15.0  # km/h
         THROTTLE_CONSTANT = 0.4
         STEERING_CONSTANT = -3.5
     else: # default is carla 0.8 autopilot
@@ -99,10 +103,29 @@ def on_image_received_right(data):
     right_cache = img
     right_lock.release()
 
+
+def worker(exp_id, use_left_right, conn):
+    print("begin initialization")
+    from carla_machine import *
+    driving_model = CarlaMachine("0", exp_id, get_driver_config(), 0.1,
+                                 gpu_perception=[0, 1],
+                                 perception_paths="path_docker_newseg",
+                                 batch_size=3 if use_left_right else 1)
+    print("initialization finished")
+    while True:
+        # there should be a communication protocol
+        print("waiting to recive")
+        param = conn.recv()
+        print("I received somthing")
+        control, vis = driving_model.compute_action(*param, save_image_to_disk=False, return_vis=True)
+        print("compute finishe")
+        conn.send([{"throttle": control.throttle, "brake": control.brake, "steer": control.steer}, vis])
+        print("aftet sendoing out the message")
+
 # this is the center image
 def on_image_received(data):
     # this would directly receive the raw image from the driver
-    if driving_model is None or vehicle_real_speed_kmh is None:
+    if vehicle_real_speed_kmh is None:
         return
 
     global count_middle
@@ -111,7 +134,7 @@ def on_image_received(data):
         return
 
     time0 = time.time()
-    global bridge, driving_model, vis_pub_full, controller, waypoint_pub
+    global bridge, driving_model, vis_pub_full, controller, waypoint_pub, parent_conn
 
     img = bridge.imgmsg_to_cv2(data, "bgr8")
     #img = cv2.resize(img, (IM_WIDTH, IM_HEIGHT))
@@ -130,6 +153,18 @@ def on_image_received(data):
     else:
         sensors = [img]
     t00 = time.time()
+
+    '''
+    print("before sending out the images")
+    parent_conn.send([sensors, vehicle_real_speed_kmh, direction])
+    print("before receving")
+    control_dict, vis = parent_conn.recv()
+    control = lambda : None
+    control.steer = control_dict["steer"]
+    control.throttle = control_dict["throttle"]
+    control.brake = control_dict["brake"]
+    print("after receiving")
+    '''
     control, vis = driving_model.compute_action(sensors, vehicle_real_speed_kmh, direction,
                                                 save_image_to_disk=False, return_vis=True)
     #print("time for compute action is ", time.time() - t00)
@@ -145,7 +180,7 @@ def on_image_received(data):
 
         wp0 = np.interp(desired_time, time_list, control[:, 0])
         wp1 = np.interp(desired_time, time_list, control[:, 1])
-        control = np.stack([wp0, wp1], axis=0)
+        control = np.stack([wp0, wp1], axis=1)
 
         # TODO: have a manner to control the safety speed
         waypoints = Waypoints()
@@ -173,6 +208,9 @@ def on_image_received(data):
         controller.set_break(control.brake * 0.0)
         controller.set_steer(control.steer * STEERING_CONSTANT)  # 8.2 in range
         print('>>> Steering value = {} | Steering constant = {}'.format(control.steer * STEERING_CONSTANT, STEERING_CONSTANT))
+
+    #cv2.imshow("Cameras", vis)
+    #cv2.waitKey(5)
 
     vis_pub_full.publish(bridge.cv2_to_imgmsg(vis, "rgb8"))
 
@@ -273,25 +311,35 @@ if __name__ == "__main__":
     initialize_control_constants(CONTROL_MODE)
 
     global vis_pub_full
-    vis_pub_full = rospy.Publisher('/vis_continuous_full', sImage, queue_size=10)
+    vis_pub_full = rospy.Publisher('/vis_continuous_full', sImage, queue_size=1)
 
     if not use_waypoint:
         global controller
         controller = ControlInterface()
     else:
         global waypoint_pub
-        waypoint_pub = rospy.Publisher('waypoints', Waypoints, queue_size=1)
+        waypoint_pub = rospy.Publisher('/waypoints', Waypoints, queue_size=1)
 
-    global driving_model
+    global driving_model, parent_conn
     # BDD Driving model related
     driving_model_code_path = os.path.join(os.path.dirname(get_file_real_path()), "../../CIL_modular/")
     os.chdir(driving_model_code_path)
     sys.path.append("drive_interfaces/carla/comercial_cars")
     from carla_machine import *
+
     driving_model = CarlaMachine("0", exp_id, get_driver_config(), 0.1,
                                  gpu_perception=[0, 1],
                                  perception_paths="path_docker_newseg",
                                  batch_size=3 if use_left_right else 1)
+
+    '''
+    # TODO: start the worker
+    parent_conn, child_conn = Pipe()
+    p = Process(target=worker, args=(exp_id, use_left_right, child_conn))
+    p.start()
+    time.sleep(30)
+    print("by now, the perception stack should finished starting")
+    '''
 
     # subscribe to many topics
     rospy.Subscriber(INPUT_IMAGE_TOPIC, sImage, on_image_received, queue_size=1)
