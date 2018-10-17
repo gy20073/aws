@@ -1,0 +1,2 @@
+- setup-file:
+    local-name: /home/bdd/intel/aws/catkin_ws_mkz/devel/setup.sh
