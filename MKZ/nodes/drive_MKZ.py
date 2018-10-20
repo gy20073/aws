@@ -117,7 +117,7 @@ def worker(exp_id, use_left_right, conn):
         print("waiting to recive")
         param = conn.recv()
         print("I received somthing")
-        control, vis = driving_model.compute_action(*param, save_image_to_disk=False, return_vis=True)
+        control, vis = driving_model.compute_action(*param, save_image_to_disk=False, return_vis=True, return_extra=False)
         print("compute finishe")
         conn.send([{"throttle": control.throttle, "brake": control.brake, "steer": control.steer}, vis])
         print("aftet sendoing out the message")
@@ -166,7 +166,7 @@ def on_image_received(data):
     print("after receiving")
     '''
     control, vis = driving_model.compute_action(sensors, vehicle_real_speed_kmh, direction,
-                                                save_image_to_disk=False, return_vis=True)
+                                                save_image_to_disk=False, return_vis=True, return_extra=False)
     #print("time for compute action is ", time.time() - t00)
     #control, vis = driving_model.compute_action(sensors, 0.0, direction, save_image_to_disk=False, return_vis=True)
     global use_waypoint
