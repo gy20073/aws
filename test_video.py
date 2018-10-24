@@ -66,6 +66,41 @@ def vis_all(x, wrapper):
         viz_output.append(wrapper.visualize(pred, i))
     return viz_output
 
+def vis_all_half(x, wrapper):
+    batch_size = len(x)
+    x = np.stack(x, axis=0)
+
+    # center zoom
+    #x = x[:,x.shape[1]//4:x.shape[1]*3//4, x.shape[2] // 4:x.shape[2] * 3 // 4, :]
+
+    print("before compute")
+    pred = wrapper.compute(x)
+    print("after compute")
+    viz_output = []
+    for i in range(batch_size):
+        vz = wrapper.visualize(pred, i)
+        vz = vz[:, vz.shape[1]//2:, :]
+        viz_output.append(vz)
+    return viz_output
+
+def vis_all_half_zoom(x, wrapper):
+    batch_size = len(x)
+    x=[item[item.shape[0]//4:item.shape[0]*3//4, item.shape[1]//4:item.shape[1]*3//4, :] for item in x]
+    x = np.stack(x, axis=0)
+
+    # center zoom
+    #x = x[:,x.shape[1]//4:x.shape[1]*3//4, x.shape[2] // 4:x.shape[2] * 3 // 4, :]
+
+    print("before compute")
+    pred = wrapper.compute(x)
+    print("after compute")
+    viz_output = []
+    for i in range(batch_size):
+        vz = wrapper.visualize(pred, i)
+        vz = vz[:, vz.shape[1]//2:, :]
+        viz_output.append(vz)
+    return viz_output
+
 def vis_async(x, input_queue):
     batch_size = len(x)
     x = np.stack(x, axis=0)
@@ -154,7 +189,7 @@ if __name__ == "__main__":
                         temp_down_factor=1,
                         batch_size=batch_size)
 
-    if True:
+    if False:
         # test within the docker
         video_path = "/scratch/yang/aws_data/carla_collect/gta/gta_batch1/train/gta_00035.h5.mp4"
         batch_size = 4
@@ -248,3 +283,28 @@ if __name__ == "__main__":
                                   "num_replicates":{"det_COCO": 6, "det_TL": 6, "det_TS": -1, "seg": 4, "depth": 4},
                                   "path_config":"path_jormungandr"})
         p.start()
+
+    # Testing the performance of the segmentation
+    if True:
+        # test within the docker
+        video_path = "/scratch/yang/aws_data/mkz/mkz_large_fov/output_0.avi"
+        batch_size = 8
+
+        from all_perceptions import Perceptions
+
+        perceptions = Perceptions(det_COCO=False,
+                                  det_TL=False,
+                                  det_TS=False,
+                                  seg=True,
+                                  depth=False,
+                                  batch_size=batch_size,
+                                  gpu_assignment=[0],
+                                  compute_methods={},
+                                  viz_methods={},
+                                  path_config="path_jormungandr_newseg")
+
+        loop_over_video(video_path,
+                        lambda x: vis_all_half_zoom(x, perceptions),
+                        temp_down_factor=1,
+                        batch_size=batch_size)
+        # done
