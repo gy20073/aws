@@ -10,6 +10,10 @@ class Perceptions:
     @staticmethod
     def worker(initializer, params, conn):
         print("begin initialization")
+        if initializer == "seg_abn":
+            from inplace_abn.interface_abn import SegmenterABN
+            initializer = SegmenterABN
+
         instance = initializer(**params)
         print("initialization finished")
         while True:
@@ -50,6 +54,7 @@ class Perceptions:
                  det_TS=True,
                  seg=True,
                  depth=True,
+                 seg_abn=False,
                  batch_size=1, # batch_size could also be a dict
                  gpu_assignment=[0,1],
                  compute_methods={},
@@ -68,7 +73,8 @@ class Perceptions:
                       "det_TL": det_TL,
                       "det_TS": det_TS,
                       "seg": seg,
-                      "depth": depth}
+                      "depth": depth,
+                      "seg_abn": seg_abn}
 
         if isinstance(gpu_assignment, list):
             out = {}
@@ -83,14 +89,23 @@ class Perceptions:
         for key in gpu_assignment:
             gpu_assignment[key] = str(gpu_assignment[key])
 
-        from LinkNet.interface_segmentation import Segmenter
+        if seg:
+            from LinkNet.interface_segmentation import Segmenter
+        else:
+            Segmenter = None
         from monodepth.interface_depth import Depth
         from yolo.interface_darknet import YoloDetector
+        if seg_abn:
+            SegmenterABN = "seg_abn"
+        else:
+            SegmenterABN = None
         interfaces = {"det_COCO": YoloDetector,
                       "det_TL": YoloDetector,
                       "det_TS": YoloDetector,
                       "seg": Segmenter,
-                      "depth": Depth}
+                      "depth": Depth,
+                      "seg_abn": SegmenterABN}
+
 
         self.instances = {}
         self._batch_size = {}
@@ -152,6 +167,7 @@ class Perceptions:
                              "mean_path": "/scratch/yang/aws_data/mapillary/cache_old/576_768/stat.t7"}
         self.paths["depth"] = {"model_path": "/home/yang/monodepth/models/model_city2eigen/model_city2eigen",
                                "python_path": "/home/yang/monodepth"}
+        self.paths["seg_abn"] = {"model_path": "/scratch/yang/aws_data/mapillary/inplace_abn/wide_resnet38_deeplab_vistas.pth.tar",}
 
     def path_jormungandr_newseg(self):
         self.path_jormungandr()
@@ -174,6 +190,8 @@ class Perceptions:
                              "mean_path": "/root/models/Segmentation_LinkNet_576_768.stat.t7"}
         self.paths["depth"] = {"model_path": "/root/models/model_city2eigen",
                                "python_path": "/root/monodepth"}
+        # TODO: update the docker to enable it has the support for ABN
+        self.paths["seg_abn"] = {"TODO",}
 
     def path_docker_newseg(self):
         self.path_docker()
@@ -415,6 +433,13 @@ class Perceptions:
                 cropped = cropped * factor
 
                 res.append(cropped)
+            elif key == "seg_abn":
+                factor = 2
+                size = (det_sz[0] * factor, det_sz[1] * factor)
+                resized = resize_images(logits_dict[key], size, interpolation=cv2.INTER_NEAREST)
+                resized *= 0.1
+                resized = self._space2depth(resized, factor)
+                res.append(resized)
 
         concat = np.concatenate(res, axis=3)
 
@@ -490,3 +515,4 @@ class Perceptions:
             print("destroying process ", key)
             p = self.processes[key]
             p.terminate()
+

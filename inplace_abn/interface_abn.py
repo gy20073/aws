@@ -43,7 +43,8 @@ class SegmenterABN:
                  compute_method="compute_logits",
                  viz_method="visualize_logits",
                  batch_size=1,
-                 output_downsample_factor=4):
+                 output_downsample_factor=4,
+                 input_downsample=1):
         # Torch stuff
         torch.cuda.set_device(int(GPU))
         cudnn.benchmark = True
@@ -59,8 +60,8 @@ class SegmenterABN:
 
         self.compute_method = compute_method
         self.viz_method = viz_method
-        self.height = 576
-        self.width = 768
+        self.height = 576//input_downsample
+        self.width = 768//input_downsample
         # TODO: see if we need to downsample it depending on the output size
         self.output_downsample_factor = output_downsample_factor
 
@@ -91,7 +92,6 @@ class SegmenterABN:
             img.div_(img.new(rgb_std).view(1, -1, 1, 1))
 
             sem_logits = self.model(img)
-            print("the output torch tensor size is ", sem_logits.size())
             # this logits has size of batch*nclass*H*W
 
             # compute the visualization within cuda
@@ -110,7 +110,6 @@ class SegmenterABN:
         img.putpalette(_PALETTE)
         img = img.convert("RGB")
         out = np.array(img)
-        print("visualized image shape ", out.shape)
         return out
 
 def get_current_folder():
@@ -226,9 +225,10 @@ if __name__ == "__main__":
         img = np.array(img)
         img = np.expand_dims(img, 0)
 
-        img = np.concatenate((img, img, img, img), 0)
+        img = np.concatenate([img]*1, 0)
         for i in range(10):
             pred = seg.compute(img)
+        print(np.max(pred), np.min(pred), np.mean(pred), np.median(pred))
 
         colored = seg.visualize(pred, 3)
         colored = Image.fromarray(colored)
@@ -237,3 +237,4 @@ if __name__ == "__main__":
         ori.save(id+"-original.jpg")
 
     print("elapsed time:", time.time() - start)
+

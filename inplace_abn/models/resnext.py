@@ -4,6 +4,8 @@ from functools import partial
 
 import torch.nn as nn
 
+sys.path.append("../")
+sys.path.append("inplace_abn")
 from modules import IdentityResidualBlock, ABN, GlobalAvgPool2d
 from ._util import try_index
 
@@ -130,3 +132,4 @@ for name, params in _NETS.items():
     net_name = "net_resnext" + name
     setattr(sys.modules[__name__], net_name, partial(ResNeXt, **params))
     __all__.append(net_name)
+
