@@ -98,7 +98,7 @@ class SegmenterABN:
             max_value, argmax = sem_logits.max(1)
             # the output has size of batch*H*W
             self.argmax = argmax.cpu().numpy()
-
+            sem_logits = sem_logits.permute(0, 2, 3, 1)
             sem_logits = sem_logits.cpu().numpy()
 
         # out has shape batch * nclass * H * W: [1, 65, 72, 96]

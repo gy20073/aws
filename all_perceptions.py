@@ -1,5 +1,5 @@
 import numpy as np
-import copy, math, time, cv2, threading, Queue
+import copy, math, time, cv2, threading, Queue, os
 from multiprocessing import Process, Pipe
 from multiprocessing import Queue as mQueue
 from common import resize_images
@@ -11,6 +11,8 @@ class Perceptions:
     def worker(initializer, params, conn):
         print("begin initialization")
         if initializer == "seg_abn":
+            os.environ["CUDA_VISIBLE_DEVICES"] = str(params["GPU"])
+            params["GPU"] = 0
             from inplace_abn.interface_abn import SegmenterABN
             initializer = SegmenterABN
 
@@ -146,9 +148,9 @@ class Perceptions:
 
                     self.processes[mode_name_i] = p
 
-                    if "det" in mode:
-                        print("sleeping to stable create det models")
-                        time.sleep(1)
+                    if "det" in mode or "abn" in mode:
+                        print("sleeping to stable create det models", mode)
+                        time.sleep(2)
 
                     self.instances[mode_name_i] = parent_conn
 

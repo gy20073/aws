@@ -1,11 +1,12 @@
-import sys
+import sys, os, inspect
 from collections import OrderedDict
 from functools import partial
 
 import torch.nn as nn
 
-sys.path.append("../")
-sys.path.append("inplace_abn")
+def get_current_folder():
+    return os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
+sys.path.append(get_current_folder()+"/../")
 from modules import IdentityResidualBlock, ABN, GlobalAvgPool2d
 from ._util import try_index
 
