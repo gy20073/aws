@@ -22,6 +22,7 @@ def loop_over_video(path, func, temp_down_factor=10, batch_size=1):
             i += 1
             continue
         print(i)
+        frame=frame[:,:,::-1] # bgr to rgb
         batch_frames.append(frame)
         if len(batch_frames) == batch_size:
             # frame is the one
@@ -35,6 +36,7 @@ def loop_over_video(path, func, temp_down_factor=10, batch_size=1):
                 print("in test_video.loop_over_video, loop function output size:", frame_seq[0].shape)
                 video_init = True
             for frame in frame_seq:
+                frame = frame[:, :, ::-1] # rgb to bgr
                 video.write(frame)
             batch_frames = []
         i += 1
@@ -305,8 +307,8 @@ if __name__ == "__main__":
     # Testing the performance of the segmentation
     if True:
         # test within the docker
-        #video_path = "/scratch/yang/aws_data/mkz/mkz_large_fov/output_0.avi"
-        batch_size = 1
+        video_path = "/scratch/yang/aws_data/mkz/mkz_large_fov/output_0.avi"
+        batch_size = 8
 
         from all_perceptions import Perceptions
 
@@ -317,14 +319,14 @@ if __name__ == "__main__":
                                   depth=False,
                                   seg_abn=True,
                                   batch_size=batch_size,
-                                  gpu_assignment=[0],
+                                  gpu_assignment=[5],
                                   compute_methods={},
                                   viz_methods={},
-                                  path_config="path_docker_newseg")
+                                  path_config="path_jormungandr_newseg")
         time.sleep(15)
 
         loop_over_video(video_path,
-                        lambda x: vis_all_half_96(x, perceptions),
+                        lambda x: vis_all(x, perceptions),
                         temp_down_factor=1,
                         batch_size=batch_size)
         # done
