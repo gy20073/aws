@@ -137,6 +137,7 @@ def on_image_received(data):
     global bridge, driving_model, vis_pub_full, controller, waypoint_pub, parent_conn
 
     img = bridge.imgmsg_to_cv2(data, "bgr8")
+    # deliberately not resizing the image, since it might be zoomed later
     #img = cv2.resize(img, (IM_WIDTH, IM_HEIGHT))
     # flip because the camera is flipped
     img = img[::-1, ::-1, :]
