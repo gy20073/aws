@@ -305,8 +305,8 @@ if __name__ == "__main__":
     # Testing the performance of the segmentation
     if True:
         # test within the docker
-        video_path = "/scratch/yang/aws_data/mkz/mkz_large_fov/output_0.avi"
-        batch_size = 8
+        #video_path = "/scratch/yang/aws_data/mkz/mkz_large_fov/output_0.avi"
+        batch_size = 1
 
         from all_perceptions import Perceptions
 
@@ -320,7 +320,7 @@ if __name__ == "__main__":
                                   gpu_assignment=[0],
                                   compute_methods={},
                                   viz_methods={},
-                                  path_config="path_jormungandr_newseg")
+                                  path_config="path_docker_newseg")
         time.sleep(15)
 
         loop_over_video(video_path,

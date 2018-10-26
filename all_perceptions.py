@@ -192,8 +192,7 @@ class Perceptions:
                              "mean_path": "/root/models/Segmentation_LinkNet_576_768.stat.t7"}
         self.paths["depth"] = {"model_path": "/root/models/model_city2eigen",
                                "python_path": "/root/monodepth"}
-        # TODO: update the docker to enable it has the support for ABN
-        self.paths["seg_abn"] = {"TODO",}
+        self.paths["seg_abn"] = {"model_path": "/root/models/abn_wideres38.pth.tar",}
 
     def path_docker_newseg(self):
         self.path_docker()
