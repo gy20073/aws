@@ -11,11 +11,17 @@ output_base="/root/mount/home/bdd/intel/data"
 # run this in a seperate window, since we need to record all the time
 #bash ./record_rosbag_and_video.bash $output_base &
 
+# mm45_v4_base_newseg_noiser_TL_lane_structure02_goodsteer_waypoint_zoom_stdnorm_v5_3cam.py
+# mm45_v4_base_newseg_noiser_TL_lane_structure02_goodsteer_waypoint_zoom_stdnorm_v5.py
+# mm45_v4_base_newseg_noiser_TL_lane_structure02_goodsteer_waypoint_zoom_stdnorm_v5_abn
+# mm45_v4_base_newseg_noiser_TL_lane_structure02_goodsteer_waypoint_zoom_stdnorm_v5_abn_nozoom
+# mm45_v4_base_newseg_noiser_TL_lane_structure02_goodsteer_waypoint_zoom_stdnorm_v5_3cam_abn
+
 roslaunch mkz_intel CIL.launch \
-    exp_id:="mm45_v4_base_newseg_noiser_TL_lane_structure02_goodsteer_waypoint_zoom_stdnorm" \
+    exp_id:="mm45_v4_base_newseg_noiser_TL_lane_structure02_goodsteer_waypoint_zoom_stdnorm_v5_3cam" \
     use_fake_image:="false" \
     fake_video_path:="/scratch/yang/aws_data/mkz/mkz2/inverted_compress.avi" \
     use_auto_traj:="false" \
     gps_traj_file:="traj1.txt" \
-    use_left_right:="false" \
+    use_left_right:="true" \
     use_waypoint:="true"

@@ -13,6 +13,8 @@ from cv_bridge import CvBridge
 from std_msgs.msg import String
 from geometry_msgs.msg import Vector3
 from dbw_mkz_msgs.msg import SteeringReport
+
+
 from sensor_msgs.msg import NavSatFix
 
 # standard system packages
@@ -20,12 +22,11 @@ import sys, os, time
 import numpy as np
 from multiprocessing import Process, Pipe
 
-from mkz_intel.msg import Waypoints, Point2D
 
-# some constants
-CONTROL_MODE = 'CARLA0.9.X' #'CARLA0.9.X' #''GTAV' #'CARLA0.9.X'
-
+from path_follower.msg import Waypoints, Point2D
+CONTROL_MODE = 'WAYPOINTS_REAL_CAR' #'CARLA0.9.X' #'CARLA0.9.X' #''GTAV' #'CARLA0.9.X'
 KEYBOARD_TOPIC = "mkz_key_command"
+
 INPUT_IMAGE_TOPIC = "/image_sender_0"
 INPUT_IMAGE_TOPIC_LEFT = "/camera_array/cam1/image_raw"
 INPUT_IMAGE_TOPIC_RIGHT = "/camera_array/cam2/image_raw"
@@ -62,9 +63,9 @@ def initialize_control_constants(control_mode):
         THROTTLE_CONSTANT = 0.4
         STEERING_CONSTANT = -3.5
     elif control_mode == 'WAYPOINTS_REAL_CAR':
-        SAFETY_SPEED = 15.0  # km/h
+        SAFETY_SPEED = 9.0  # km/h
         THROTTLE_CONSTANT = 0.4
-        STEERING_CONSTANT = -3.5
+        STEERING_CONSTANT = -7
     else: # default is carla 0.8 autopilot
         SAFETY_SPEED = 17.0  #km/h
         THROTTLE_CONSTANT = 0.8

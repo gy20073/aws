@@ -65,7 +65,7 @@ def on_image_received(data):
     left_lock.release()
     right_lock.release()
 
-    vis_pub_full.publish(bridge.cv2_to_imgmsg(sensors, "rgb8"))
+    vis_pub_full.publish(bridge.cv2_to_imgmsg(sensors, "bgr8"))
 
 
 if __name__ == "__main__":
@@ -76,7 +76,7 @@ if __name__ == "__main__":
     bridge = CvBridge()
 
     global vis_pub_full
-    vis_pub_full = rospy.Publisher('/sync_3cam', sImage, queue_size=10)
+    vis_pub_full = rospy.Publisher('sync_3cam', sImage, queue_size=10)
 
     # subscribe to many topics
     rospy.Subscriber(INPUT_IMAGE_TOPIC, sImage, on_image_received, queue_size=1)
