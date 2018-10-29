@@ -1,0 +1,13 @@
+<launch>
+  
+  <node pkg="path_follower" name="cmd_converter" type="cmd_converter_node"/>
+
+  <node pkg="path_follower" name="toy_planner_smooth" type="toy_planner_smooth.py"/>
+
+  <node pkg="path_follower" name="plotter" type="plotter.py"/>
+
+  <node pkg="path_follower" name="simu" type="simu.py"/>
+
+</launch>
+
+
