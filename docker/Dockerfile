@@ -151,3 +151,7 @@ RUN apt-get install -y ninja-build
 RUN /root/gdown.pl/gdown.pl  https://drive.google.com/file/d/1SJJx5-LFG3J3M99TrPMU-z6ZmgWynxo-/view /root/models/abn_wideres38.pth.tar
 
 ENV CPLUS_INCLUDE_PATH "/usr/include/python2.7"
+
+
+https://drive.google.com/file/d/1FUP222BcbLCKAD-tcYewODMlIIlKSuNg/view model_74.pth
+https://drive.google.com/file/d/1VpYSZgzYNvuYVBpMahdUV5m-QBqizvfd/view train_mean_42140.tensor

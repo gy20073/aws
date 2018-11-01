@@ -15,9 +15,15 @@ class Perceptions:
             params["GPU"] = 0
             from inplace_abn.interface_abn import SegmenterABN
             initializer = SegmenterABN
+        elif initializer == "0intersection":
+            from intersection_detector.interface_intersection import Intersection
+            initializer = Intersection
+        elif initializer == 'seg':
+            from LinkNet.interface_segmentation import Segmenter
+            initializer = Segmenter
 
         instance = initializer(**params)
-        print("initialization finished")
+        print(initializer, "initialization finished")
         while True:
             # there should be a communication protocol
             cmd, data = conn.recv()
@@ -57,6 +63,7 @@ class Perceptions:
                  seg=True,
                  depth=True,
                  seg_abn=False,
+                 intersection=False,
                  batch_size=1, # batch_size could also be a dict
                  gpu_assignment=[0,1],
                  compute_methods={},
@@ -76,7 +83,8 @@ class Perceptions:
                       "det_TS": det_TS,
                       "seg": seg,
                       "depth": depth,
-                      "seg_abn": seg_abn}
+                      "seg_abn": seg_abn,
+                      "0intersection": intersection}
 
         if isinstance(gpu_assignment, list):
             out = {}
@@ -92,21 +100,27 @@ class Perceptions:
             gpu_assignment[key] = str(gpu_assignment[key])
 
         if seg:
-            from LinkNet.interface_segmentation import Segmenter
+            Segmenter = "seg"
         else:
             Segmenter = None
         from monodepth.interface_depth import Depth
         from yolo.interface_darknet import YoloDetector
+
         if seg_abn:
             SegmenterABN = "seg_abn"
         else:
             SegmenterABN = None
+        if intersection:
+            Intersection = "0intersection"
+        else:
+            Intersection = None
         interfaces = {"det_COCO": YoloDetector,
                       "det_TL": YoloDetector,
                       "det_TS": YoloDetector,
                       "seg": Segmenter,
                       "depth": Depth,
-                      "seg_abn": SegmenterABN}
+                      "seg_abn": SegmenterABN,
+                      "0intersection": Intersection}
 
 
         self.instances = {}
@@ -148,7 +162,7 @@ class Perceptions:
 
                     self.processes[mode_name_i] = p
 
-                    if "det" in mode or "abn" in mode:
+                    if "det" in mode or "abn" in mode or "intersection" in mode:
                         print("sleeping to stable create det models", mode)
                         time.sleep(2)
 
@@ -170,6 +184,9 @@ class Perceptions:
         self.paths["depth"] = {"model_path": "/home/yang/monodepth/models/model_city2eigen/model_city2eigen",
                                "python_path": "/home/yang/monodepth"}
         self.paths["seg_abn"] = {"model_path": "/scratch/yang/aws_data/mapillary/inplace_abn/wide_resnet38_deeplab_vistas.pth.tar",}
+        self.paths["0intersection"] = {
+                            "model_path": "/scratch/yang/aws_data/intersection_detection/model_74.pth",
+                            "mean_path": "/scratch/yang/aws_data/intersection_detection/train_mean_42140.tensor"}
 
     def path_jormungandr_newseg(self):
         self.path_jormungandr()
@@ -193,6 +210,9 @@ class Perceptions:
         self.paths["depth"] = {"model_path": "/root/models/model_city2eigen",
                                "python_path": "/root/monodepth"}
         self.paths["seg_abn"] = {"model_path": "/root/models/abn_wideres38.pth.tar",}
+        self.paths["0intersection"] = {
+            "model_path": "TODO",
+            "mean_path": "TODO"}
 
     def path_docker_newseg(self):
         self.path_docker()
@@ -440,6 +460,14 @@ class Perceptions:
                 resized = resize_images(logits_dict[key], size, interpolation=cv2.INTER_NEAREST)
                 resized *= 0.1
                 resized = self._space2depth(resized, factor)
+                res.append(resized)
+            elif key == "0intersection":
+                factor = 1
+                size = (det_sz[0] * factor, det_sz[1] * factor)
+                # replicate the image to the size
+                expanded = np.reshape(logits_dict[key], (-1, 1, 1, 1))
+                resized = np.tile(expanded, (1, size[0], size[1], 1))
+
                 res.append(resized)
 
         concat = np.concatenate(res, axis=3)
