@@ -69,7 +69,9 @@ class Intersection:
 
     def compute_logits(self, images):
         # might be zoomed images
-        images = resize_images(images, [512*3//4, 512])
+        #images = resize_images(images, [512*3//4, 512])
+        images = resize_images(images, [400*3//4, 400])
+
         [N, H, W, C] = images.shape
 
         assert H >= self._resolution[0]

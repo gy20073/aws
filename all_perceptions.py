@@ -420,6 +420,7 @@ class Perceptions:
     def _merge_logits_all_perception(self, logits_dict):
         res = []
         det_sz = (39, 52)
+        print(sorted(logits_dict.keys()))
         for key in sorted(logits_dict.keys()):
             if key == "seg":
                 factor = 3

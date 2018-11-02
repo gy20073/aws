@@ -307,7 +307,8 @@ if __name__ == "__main__":
     # Testing the performance of the segmentation
     if True:
         # test within the docker
-        video_path = "/scratch/yang/aws_data/mkz/mkz_large_fov/output_0.avi"
+        #video_path = "/scratch/yang/aws_data/mkz/mkz_large_fov/output_0.avi"
+        video_path = "/scratch/yang/aws_data/mkz/mkz_large_fov/data_00000.h5.mp4"
         batch_size = 8
 
         from all_perceptions import Perceptions
@@ -315,7 +316,7 @@ if __name__ == "__main__":
         perceptions = Perceptions(det_COCO=False,
                                   det_TL=False,
                                   det_TS=False,
-                                  seg=True,
+                                  seg=False,
                                   depth=False,
                                   seg_abn=False,
                                   intersection=True,
