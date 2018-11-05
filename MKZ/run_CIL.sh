@@ -16,9 +16,10 @@ output_base="/root/mount/home/bdd/intel/data"
 # mm45_v4_base_newseg_noiser_TL_lane_structure02_goodsteer_waypoint_zoom_stdnorm_v5_abn
 # mm45_v4_base_newseg_noiser_TL_lane_structure02_goodsteer_waypoint_zoom_stdnorm_v5_abn_nozoom
 # mm45_v4_base_newseg_noiser_TL_lane_structure02_goodsteer_waypoint_zoom_stdnorm_v5_3cam_abn
+# mm45_v4_base_newseg_noiser_TL_lane_structure02_goodsteer_waypoint_zoom_stdnorm_v5_3cam_2town.py
 
 roslaunch mkz_intel CIL.launch \
-    exp_id:="mm45_v4_base_newseg_noiser_TL_lane_structure02_goodsteer_waypoint_zoom_stdnorm_v5_3cam" \
+    exp_id:="mm45_v4_base_newseg_noiser_TL_lane_structure02_goodsteer_waypoint_zoom_stdnorm_v5_3cam_2town" \
     use_fake_image:="false" \
     fake_video_path:="/scratch/yang/aws_data/mkz/mkz2/inverted_compress.avi" \
     use_auto_traj:="false" \

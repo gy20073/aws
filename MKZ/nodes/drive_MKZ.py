@@ -65,7 +65,7 @@ def initialize_control_constants(control_mode):
     elif control_mode == 'WAYPOINTS_REAL_CAR':
         SAFETY_SPEED = 9.0  # km/h
         THROTTLE_CONSTANT = 0.4
-        STEERING_CONSTANT = -7
+        STEERING_CONSTANT = -6.5
     else: # default is carla 0.8 autopilot
         SAFETY_SPEED = 17.0  #km/h
         THROTTLE_CONSTANT = 0.8
