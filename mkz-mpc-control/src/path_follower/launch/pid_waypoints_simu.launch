@@ -1,0 +1,13 @@
+<launch>
+
+  <node pkg="path_follower" name="toy_planner_waypoints" type="toy_planner_waypoints.py"/>
+
+  <node pkg="path_follower" name="plotter" type="plotter.py"/>
+
+  <node pkg="path_follower" name="simu" type="simu.py"/>
+
+  <node pkg="path_follower" name="pid" type="pid.py" output="screen"/>
+
+</launch>
+
+

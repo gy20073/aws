@@ -5,6 +5,7 @@ import os, rospkg
 from path_follower.msg import state_Dynamic, Trajectory2D, TrajectoryPoint2D
 import matplotlib.pyplot as plt
 from math import cos, sin
+import numpy as np
 
 axis_range = 20
 ini_flag = False
@@ -18,13 +19,13 @@ Y3 = 0
 
 def callback(data):
     global axis_range, ax, ini_flag, ini_flag2, X2, X3
-    if ini_flag2:
+    if ini_flag2 == False:
         if ini_flag:
             while len(ax.lines)>1:     
                 ax.lines.pop(1) 
         ini_flag = True
-        ax.plot(X2, Y2, color='blue', marker='.', markersize = 3, linewidth=2)
-        ax.plot([data.X, data.X + 2.85 * cos(data.psi)], [data.Y, data.Y + 2.85 * sin(data.psi)], color = 'red', marker = '*', markersize = 8)
+        ax.plot(np.array(X2), np.array(Y2), color='blue', marker='.', markersize = 3, linewidth=2)
+        ax.plot([data.X - 0.5 * cos(data.psi), data.X + (2.85 + 0.5) * cos(data.psi)], [ data.Y - 0.5 * sin(data.psi), data.Y + (2.85 + 0.5) * sin(data.psi)], color = 'red', marker = '*', markersize = 8)
         ax.axis([data.X - axis_range, data.X + axis_range, data.Y - axis_range, data.Y + axis_range])
         plt.draw()
 
@@ -38,7 +39,7 @@ def ref_traj_callback(data) :
     X2tem = []
     Y2tem = []
     ini_flag2 = True
-    for index in range(0, len(data.point), 50):
+    for index in range(0, len(data.point)):
         X2tem.append(data.point[index].x)
         Y2tem.append(data.point[index].y)
     X2 = X2tem
@@ -49,7 +50,7 @@ def plotter():
     # initialize node
     rospy.init_node('plotter', anonymous=True)
     rospack = rospkg.RosPack()
-    reference = scipy.io.loadmat(os.path.join(rospack.get_path("path_follower"), "scripts", "waypoint_loader", "Tra_4.mat"))['Tra_4']
+    reference = scipy.io.loadmat(os.path.join(rospack.get_path("path_follower"), "scripts", "waypoint_loader", "Tra_3.mat"))['Tra_3']
     ref_x = reference[0][:]
     ref_y = reference[1][:]
     ax.plot(ref_x, ref_y)

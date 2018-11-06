@@ -23,7 +23,7 @@ def main(dt, dt_ros, horizon):
     global X, Y, psi, stateEstimate_mark
 
     # import track file
-    track = Tra('Tra_1', horizon)
+    track = Tra('Tra_3', horizon)
     rospy.init_node('toy_planner_waypoints', anonymous=True)
     rospy.Subscriber('state_estimate', state_Dynamic, stateEstimateCallback)
     pub = rospy.Publisher('waypoints', Waypoints, queue_size=1)
@@ -61,4 +61,4 @@ def main(dt, dt_ros, horizon):
         rate.sleep()
 
 if __name__ == '__main__':
-    main(0.2, 0.2, 50)
+    main(0.2, 0.2, 500)

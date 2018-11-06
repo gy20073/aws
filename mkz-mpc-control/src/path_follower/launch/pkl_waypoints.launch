@@ -1,0 +1,15 @@
+<launch>
+  
+  <node pkg="path_follower" name="cmd_converter" type="cmd_converter_node"/>
+
+  <node pkg="path_follower" name="waypoints_from_pkl" type="waypoints_from_pkl.py"/>
+
+  <node pkg="path_follower" name="waypoints_interface" type="waypoints_interface.py"/>
+
+  <node pkg="path_follower" name="plotter" type="plotter.py"/>
+
+  <node pkg="path_follower" name="simu" type="simu.py"/>
+
+</launch>
+
+

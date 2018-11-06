@@ -68,6 +68,9 @@ find_package(catkin REQUIRED COMPONENTS
   Point2D.msg
   Time.msg
   Uout.msg
+  vehicleinfo.msg
+  vehicleinfomation.msg
+  Waypoints_state.msg
  )
 
 ## Generate services in the 'srv' folder

@@ -114,8 +114,7 @@ namespace vlr {
     }
 
     void MPCController::controlLoop() {
-
-        if (!received_trajectory_) 
+        if (!received_trajectory_)
             return; 
         received_trajectory_ = false;  
         if (!received_applanix_state_) 
@@ -131,6 +130,7 @@ namespace vlr {
         else 
             getDesiredStates();
         
+        //cout << mpc_flag << endl;
         controls_.block(0, 0, NUM_CONTROLS, p_horizon - i_horizon) = controls_.block(0, i_horizon, NUM_CONTROLS, p_horizon - i_horizon);  
         if (mpc_flag) {
             if (mpc_pub_flag > 0) { 
@@ -152,7 +152,7 @@ namespace vlr {
             	steering_cmd_.steering_wheel_angle_cmd = steering_angle;
             	steering_cmd_.steering_wheel_angle_velocity = (steering_angle - steering_current_) * p_hertz;
            		steering_pub_.publish(steering_cmd_);
-            	twist_.twist.linear.x = des_states_(3, i);
+            	twist_.twist.linear.x = des_states_(3, i+1);
             	twist_pub_.publish(twist_);
     		    if (i < i_horizon - 1)
             	    sleep(dt);
@@ -200,8 +200,8 @@ namespace vlr {
             des_states_(0, i) = (1 - alpha) * p1.x + alpha * p2.x;
             des_states_(1, i) = (1 - alpha) * p1.y + alpha * p2.y;
             des_states_(2, i) = (1 - alpha) * p1.theta + alpha * p2.theta;
-            des_states_(0, i) += cos(des_states_(2, i)) * ra_to_cg;
-            des_states_(1, i) += sin(des_states_(2, i)) * ra_to_cg;
+            //des_states_(0, i) += cos(des_states_(2, i)) * ra_to_cg;
+            //des_states_(1, i) += sin(des_states_(2, i)) * ra_to_cg;
             des_states_(3, i) = (1 - alpha) * p1.v + alpha * p2.v;
             des_states_(4, i) = 0.0;
             if(!kappa_flag)
@@ -220,12 +220,17 @@ namespace vlr {
             if (getdistance(traj_.point[node], state_)> getdistance(traj_.point[i], state_))
                 node = i;
         }   
-        start_time = Time::current();
+        double start_time_np = t;
         int j = node;
+
+        if ((traj_.point[(int)traj_.point.size()-1].t - traj_.point[node].t) < (p_horizon * dt)) {
+        	cout << traj_.point[(int)traj_.point.size()-1].t<<endl;
+            cout << traj_.point[node].t<<endl;
+            //mpc_flag = false;
+        }
+
         for (int i = 0; i < p_horizon + 1; i++) {
-            if (i==0 && (traj_.point[(int)traj_.point.size()-1].t - traj_.point[node].t) < (start_time-t))
-                mpc_flag = false;
-            while ((traj_.point[j + 1].t - traj_.point[node].t) < (t - start_time) && j < (int)traj_.point.size() - 2)
+            while ((traj_.point[j + 1].t - traj_.point[node].t) < (t - start_time_np) && j < (int)traj_.point.size() - 2)
                 j++;
             path_follower::TrajectoryPoint2D& p1 = traj_.point[j];       
             path_follower::TrajectoryPoint2D& p2 = traj_.point[j + 1]; 
@@ -233,14 +238,14 @@ namespace vlr {
                 p2.theta -= 2 * M_PI;
             while (p2.theta - p1.theta < -M_PI)
                 p2.theta += 2 * M_PI;
-            alpha = (t - p1.t -start_time+ traj_.point[node].t) / (p2.t - p1.t);
+            alpha = (t - p1.t - start_time_np + traj_.point[node].t) / (p2.t - p1.t);
             if (alpha > 1) alpha = 1;
             if (alpha < 0) alpha = 0;
             des_states_(0, i) = (1 - alpha) * p1.x + alpha * p2.x;
             des_states_(1, i) = (1 - alpha) * p1.y + alpha * p2.y;
             des_states_(2, i) = (1 - alpha) * p1.theta + alpha * p2.theta;
-            des_states_(0, i) += cos(des_states_(2, i)) * ra_to_cg;
-            des_states_(1, i) += sin(des_states_(2, i)) * ra_to_cg;
+            //des_states_(0, i) += cos(des_states_(2, i)) * ra_to_cg;
+            //des_states_(1, i) += sin(des_states_(2, i)) * ra_to_cg;
             des_states_(3, i) = (1 - alpha) * p1.v + alpha * p2.v;
             des_states_(4, i) = 0.0;
             if (!kappa_flag)

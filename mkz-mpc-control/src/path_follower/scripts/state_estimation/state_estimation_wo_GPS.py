@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import rospy
-from numpy import zeros, array, append, eye, diag
+from numpy import zeros, array, append, eye, diag, pi
 from math import sqrt
 from tf import transformations
 from ekf import ekf
@@ -36,11 +36,15 @@ delta_meas    = 0
 quaternion          = (0,0,0,0)
 IMU_start           = 0
 
+steering_received = False
+imu_received = False
+
 def SteeringReportCallback(data):
     global Vx_meas
-    global delta_meas
+    global delta_meas, steering_received
     Vx_meas = data.speed
     delta_meas = data.steering_wheel_angle / 14.8
+    steering_received = True
 
 def IMUCallback(data):
     global Yaw_meas, Yaw_meas_prev, Yawrate_meas
@@ -48,6 +52,7 @@ def IMUCallback(data):
     global Yaw_initialize, IMU_start
     global ax_meas, ay_meas
     global quaternion
+    global imu_received
 
     ori        = data.orientation
     quaternion = (ori.x, ori.y, ori.z, ori.w)
@@ -66,20 +71,22 @@ def IMUCallback(data):
     ax_meas          = data.linear_acceleration.x
     ay_meas          = data.linear_acceleration.y
 
+    imu_received = True
+
 def state_estimation():
-    global Vx_meas, Yaw_meas, delta_meas
-    global start_X, start_Y, pub_flag
+    global Vx_meas, Yaw_meas, delta_meas, ax_meas, ay_meas
+    global start_X, start_Y, pub_flag, steering_received, imu_received
 
     # initialize node
     rospy.init_node('state_estimation', anonymous=True)
 
     # topic subscriptions / publications
-    rospy.Subscriber('/xsens/imu_data', Imu, IMUCallback)
+    rospy.Subscriber('/xsens/imu/data', Imu, IMUCallback)
     rospy.Subscriber('vehicle/steering_report', SteeringReport, SteeringReportCallback)
-    state_pub = rospy.Publisher('state_estimate', state_Dynamic, queue_size = 10)
+    state_pub = rospy.Publisher('state_estimate', state_Dynamic, queue_size = 1)
 
     # set node rate
-    loop_rate = 100
+    loop_rate = 50
     dt        = 1.0 / loop_rate
     rate      = rospy.Rate(loop_rate)
 
@@ -92,42 +99,57 @@ def state_estimation():
 
     # estimation variables for EKF
     var_v     = 1.0e-04
-    var_psi   = 1.0e-06
+    var_psi   = 1.0e-03
 
-    var_ax    = 1.0e-04
-    var_delta = 1.0e-04
-    var_noise = 1.0e-04
+    var_ax    = 1.0e-02
+    var_ay    = 1.0e-02
+    var_delta = 1.0e-02
+    var_noise = 1.0e-01
 
     P         = eye(6)    # initial dynamics coveriance matrix
     Q         = diag(array([var_ax, var_delta, var_noise, var_noise, var_noise, var_noise]))     # process noise coveriance matrix
-    R1         = diag(array([var_v, var_psi]))
+    R1         = diag(array([var_v, var_psi, var_ay]))
 
     while (rospy.is_shutdown() != 1):
+        if steering_received and imu_received:
+            steering_received = False
+            imu_received = False
+            if state_initialize == 0:
+                #z_EKF            = array([Vx_meas, 0, 0, 0, Yaw_meas, Yawrate_meas])
+                z_EKF            = array([0, 0, 0, 0, Yaw_meas, 0])
+                state_est        = z_EKF
+                state_initialize = 1
+            else:
+                factor = 1.0
+                if abs(Vx_meas) < 0.01:
+                    factor = 0.0
 
-        if state_initialize == 0:
-            z_EKF            = array([Vx_meas, 0, 0, 0, Yaw_meas, Yawrate_meas])
-            state_est        = z_EKF
-            state_initialize = 1
+                while (Yaw_meas - state_est[4] > pi):
+                    Yaw_meas -= 2 * pi
+                while (Yaw_meas - state_est[4] < -pi):
+                    Yaw_meas += 2 * pi
 
-        else:
-            u_ekf      = array([ax_meas, delta_meas])
-            w_ekf      = array([0., 0., 0., 0., 0., 0.])
-            args       = (u_ekf, vhMdl, trMdl, dt)
-            z_EKF_prev = z_EKF
+                u_ekf      = array([ax_meas*factor, delta_meas*factor])
+                w_ekf      = array([0., 0., 0., 0., 0., 0.])
+                args       = (u_ekf, vhMdl, trMdl, dt)
+                z_EKF_prev = z_EKF
 
-            y_ekf      = array([Vx_meas, Yaw_meas])
-            v_ekf      = array([0.,0.])
-            (z_EKF, P) = ekf(f_BicycleModel, z_EKF, w_ekf, v_ekf, P, h_BicycleModel_withoutGPS, y_ekf, Q, R1, args)
-            state_est  = z_EKF
+                y_ekf      = array([Vx_meas*factor, Yaw_meas*factor + z_EKF[4]*(1.-factor), ay_meas*factor])
+                v_ekf      = array([0.,0.,0.])
+                (z_EKF, P) = ekf(f_BicycleModel, z_EKF, w_ekf, v_ekf, P, h_BicycleModel_withoutGPS, y_ekf, Q, R1, args)
+                z_EKF[4]   = z_EKF[4] % (2 * pi)
+                if z_EKF[4] > pi:
+                    z_EKF[4] -= 2 * pi
+                state_est  = z_EKF
 
-        state_est_obj.vx = state_est[0]
-        state_est_obj.vy = state_est[1]
-        state_est_obj.X  = state_est[2]
-        state_est_obj.Y  = state_est[3]
-        state_est_obj.psi= state_est[4]
-        state_est_obj.wz = state_est[5]
-        state_pub.publish(state_est_obj)    
-        rate.sleep()
+            state_est_obj.vx = state_est[0]
+            state_est_obj.vy = state_est[1]
+            state_est_obj.X  = state_est[2]
+            state_est_obj.Y  = state_est[3]
+            state_est_obj.psi= state_est[4]
+            state_est_obj.wz = state_est[5]
+            state_pub.publish(state_est_obj)    
+            rate.sleep()
 
 if __name__ == '__main__':
     try:

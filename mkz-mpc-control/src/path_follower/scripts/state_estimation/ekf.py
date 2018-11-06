@@ -49,9 +49,9 @@ def ekf(f, mx_k, mw_k, mv_k, P_k, h, y_kp1, Q, R, args):
     A       = numerical_jac_x(f, mx_k, mw_k, *args)          # linearize process model about current state
     L       = numerical_jac_w(f, mx_k, mw_k, *args)          # linearize process model about process noise
     P_kp1   = dot(dot(A,P_k),A.T) + dot(dot(L,Q),L.T)        # proprogate variance
-    my_kp1  = h(mx_kp1, mv_k)                                # predict future output
-    H       = numerical_jac_x(h, mx_kp1, mv_k)               # linearize measurement model about predicted next state
-    M       = numerical_jac_w(h, mx_kp1, mv_k)               # linearize measurement model about measurement noise
+    my_kp1  = h(mx_kp1, mv_k, *args)                         # predict future output
+    H       = numerical_jac_x(h, mx_kp1, mv_k, *args)        # linearize measurement model about predicted next state
+    M       = numerical_jac_w(h, mx_kp1, mv_k, *args)        # linearize measurement model about measurement noise
     P12     = dot(P_kp1, H.T)                                # cross covariance
     K       = dot(P12, inv(dot(H,P12) + dot(dot(M, R),M.T))) # Kalman filter gain
     mx_km1  = mx_kp1 + dot(K,(y_kp1 - my_kp1))               # state estimate

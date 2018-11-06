@@ -1,0 +1,9 @@
+<launch>
+
+  <node pkg="path_follower" name="state_estimation" type="state_estimation_wo_GPS.py"/>
+
+  <node pkg="path_follower" name="pid" type="pid.py" output="screen"/>
+
+</launch>
+
+

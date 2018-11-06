@@ -12,13 +12,14 @@ from math import cos, sin
 action = [0, 0]
 dt = 0.02
 car = vehicle(dt, 10, False, 0, 0, 0, False)
-state = [558640.9252, 4196656.6405, 1.20719921, 3.9, 0, 0, 0]  
+state = [558640.9252, 4196656.6405+1, 1.20719921+0.2, 3.9, 0, 0, 0]  
 #state = [558641.0886, 4196656.1972, 1.2337, 4.6, 0, 0, 0]  
 car.setState(state)
 
 def cmd_vel_stampedCallback(data):
     global action, car
     action[0] = (data.twist.linear.x - car.state[3])/ dt / car.maxDvxdt
+
 
 def steering_cmdCallback(data):
     global action, car

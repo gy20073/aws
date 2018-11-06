@@ -1,0 +1,21 @@
+<launch>
+
+  <node pkg="path_follower" name="nmea_to_UTM" type="nmea_to_UTM"/>
+  
+  <node pkg="path_follower" name="cmd_converter" type="cmd_converter_node"/>
+
+  <node pkg="path_follower" name="pose_estimation" type="pose_estimation"/>
+
+  <node pkg="path_follower" name="toy_planner_smooth" type="toy_planner_smooth.py"/>
+
+  <node pkg="path_follower" name="state_estimation" type="state_estimation.py"/>
+
+  <node pkg="path_follower" name="plotter_rviz" type="plotter_rviz.py"/>
+
+  <node pkg="path_follower" name="transfer" type="transfer.py"/>
+
+  <node pkg="path_follower" name="trans" type="trans.py"/>
+
+</launch>
+
+

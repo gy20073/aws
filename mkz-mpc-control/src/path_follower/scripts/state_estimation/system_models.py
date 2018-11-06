@@ -199,28 +199,34 @@ def f_BicycleModel(z, w, u, vhMdl, trMdl, dt):
     Fyr = -Car * atan2(Vy - wz*b, max(Vx, mph2ms(5)))
 
     # compute next state
-    Vx_next  = Vx + dt*(ax + w[0])
-    Vy_next  = Vy + dt*(tan(delta)*(ax - wz*Vy) + (Fyf/cos(delta) + Fyr)/m - wz*Vx + w[1])
+    Vx_next  = Vx + dt*(wz*Vy + ax + w[0])
+    #Vy_next  = Vy + dt*(tan(delta)*(ax - wz*Vy) + (Fyf/cos(delta) + Fyr)/m - wz*Vx + w[1])
+    Vy_next  = Vy + dt*(- wz*Vx + 1/m*(Fyf*cos(delta) + Fyr) + w[1])
     X_next   = X + dt*(Vx*cos(psi) - Vy*sin(psi) + w[2])
     Y_next   = Y + dt*(Vx*sin(psi) + Vy*cos(psi) + w[3])
     psi_next = psi + dt*(wz + w[4])
-    wz_next  = wz + dt*(m*a/I*tan(delta)*(ax - wz*Vy) + a*Fyf/(I*cos(delta)) - b*Fyr/I + w[5])
-
+    #wz_next  = wz + dt*(m*a/I*tan(delta)*(ax - wz*Vy) + a*Fyf/(I*cos(delta)) - b*Fyr/I + w[5])
+    wz_next  = wz + dt*(1/I*(a*Fyf*cos(delta) - b*Fyr) + w[5])
+    
     return array([Vx_next, Vy_next, X_next, Y_next, psi_next, wz_next])
 
-def h_BicycleModel_withoutGPS(z, v):
-    return array([z[0] + v[0], z[4] + v[1]])
+def h_BicycleModel_withoutGPS(z, v, u, vhMdl, trMdl, dt):
+    (a,b,m,I) = vhMdl
+    (Caf, Car) = trMdl
+    Fyf = -Caf * (atan2(z[1] + z[5]*a, max(z[0], mph2ms(5))) - u[1])
+    Fyr = -Car * atan2(z[1] - z[5]*b, max(z[0], mph2ms(5)))
+    return array([z[0] + v[0], z[4] + v[1], 1/m*(Fyf*cos(u[1]) + Fyr)])
 
-def h_BicycleModel_withGPS(z, v):
+def h_BicycleModel_withGPS(z, v, *args):
     return array([z[0] + v[0], z[2] + v[1], z[3] + v[2], z[4] + v[3]])
 
-def h_PointMass_withoutGPS(z, v):
+def h_PointMass_withoutGPS(z, v, *args):
 	return array([z[0] + v[0], z[4] + v[1]])
 
-def h_PointMass_withGPS(z, v):
+def h_PointMass_withGPS(z, v, *args):
 	return array([z[0] + v[0], z[2] + v[1], z[3] + v[2], z[4] + v[3]])
 
-def h_2s(x):
+def h_2s(x, *args):
     """
     measurement model
     state: z := [beta, r], (i.e. slip angle and yaw rate)
@@ -229,7 +235,7 @@ def h_2s(x):
     C = array([[0, 1]])
     return dot(C, x)
  
-def h_3s(x):
+def h_3s(x, args):
     """
     measurement model
     input   := state z at time k, z[k] := [v_x[k], v_y[k], r[k]])

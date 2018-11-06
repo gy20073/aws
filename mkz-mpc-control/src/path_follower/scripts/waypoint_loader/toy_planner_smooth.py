@@ -21,7 +21,7 @@ def main(dt, horizon):
     global vx, vy, X, Y, psi, wz, d_f,stateEstimate_mark
 
     # import track file
-    track = Tra('Tra_4', horizon)
+    track = Tra('Tra_1', horizon)
     rospy.init_node('toy_planner', anonymous=True)
     rospy.Subscriber('state_estimate', state_Dynamic, stateEstimateCallback)
     pub = rospy.Publisher('final_trajectory', Trajectory2D, queue_size=1)
