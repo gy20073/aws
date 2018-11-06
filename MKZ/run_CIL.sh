@@ -18,6 +18,12 @@ output_base="/root/mount/home/bdd/intel/data"
 # mm45_v4_base_newseg_noiser_TL_lane_structure02_goodsteer_waypoint_zoom_stdnorm_v5_3cam_abn
 # mm45_v4_base_newseg_noiser_TL_lane_structure02_goodsteer_waypoint_zoom_stdnorm_v5_3cam_2town.py
 
+# mm45_v4_wp2town3cam_rawcontrol
+# mm45_v4_wp2town3cam_parallel_control
+# mm45_v4_wp2town3cam_rawcontrol_1cam
+# mm45_v4_wp2town3cam_stacked_control
+# the waypoint model with right turns
+
 roslaunch mkz_intel CIL.launch \
     exp_id:="mm45_v4_base_newseg_noiser_TL_lane_structure02_goodsteer_waypoint_zoom_stdnorm_v5_3cam_2town" \
     use_fake_image:="false" \

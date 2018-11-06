@@ -24,7 +24,6 @@ from multiprocessing import Process, Pipe
 
 
 from path_follower.msg import Waypoints, Point2D
-CONTROL_MODE = 'WAYPOINTS_REAL_CAR' #'CARLA0.9.X' #'CARLA0.9.X' #''GTAV' #'CARLA0.9.X'
 KEYBOARD_TOPIC = "mkz_key_command"
 
 INPUT_IMAGE_TOPIC = "/image_sender_0"
@@ -45,32 +44,10 @@ count_middle = 0
 IM_WIDTH = 768
 IM_HEIGHT = 576
 last_computation = time.time()
-
-from control_interface import ControlInterface
+raw_control_pub = None
 
 left_cache = None
 left_lock = threading.Lock()
-
-def initialize_control_constants(control_mode):
-    global SAFETY_SPEED, THROTTLE_CONSTANT, STEERING_CONSTANT
-
-    if control_mode == 'GTAV':
-        SAFETY_SPEED = 17.0  #km/h
-        THROTTLE_CONSTANT = 0.8
-        STEERING_CONSTANT = -12.1
-    elif control_mode == 'CARLA0.9.X':
-        SAFETY_SPEED = 8.0  # km/h
-        THROTTLE_CONSTANT = 0.4
-        STEERING_CONSTANT = -3.5
-    elif control_mode == 'WAYPOINTS_REAL_CAR':
-        SAFETY_SPEED = 9.0  # km/h
-        THROTTLE_CONSTANT = 0.4
-        STEERING_CONSTANT = -6.5
-    else: # default is carla 0.8 autopilot
-        SAFETY_SPEED = 17.0  #km/h
-        THROTTLE_CONSTANT = 0.8
-        STEERING_CONSTANT = -20.1
-
 
 def on_image_received_left(data):
     global count_left
@@ -195,21 +172,13 @@ def on_image_received(data):
         waypoint_pub.publish(waypoints)
 
     else:
-        # safty guards to guard against dangerous situation
-        if vehicle_real_speed_kmh > SAFETY_SPEED:
-            print "speed still larger than safty speed, cropped. (It will affect performance)"
-            control.throttle = 0.0
-
-        print('>>>>>> Real speed = {} km/h'.format(vehicle_real_speed_kmh))
-        # convert the output to the format of vehicle format
-        # the meaning of the predicted value
-        # the meaning of the required value
-        # TODO: right now no smoother
-
-        controller.set_throttle(control.throttle * THROTTLE_CONSTANT)
-        controller.set_break(control.brake * 0.0)
-        controller.set_steer(control.steer * STEERING_CONSTANT)  # 8.2 in range
-        print('>>> Steering value = {} | Steering constant = {}'.format(control.steer * STEERING_CONSTANT, STEERING_CONSTANT))
+        v = Vector3()
+        v.x = control.steer
+        v.y = control.throttle
+        v.z = control.brake
+        global raw_control_pub
+        if raw_control_pub != None:
+            raw_control_pub.publish(v)
 
     #cv2.imshow("Cameras", vis)
     #cv2.waitKey(5)
@@ -310,14 +279,11 @@ if __name__ == "__main__":
     global bridge
     bridge = CvBridge()
 
-    initialize_control_constants(CONTROL_MODE)
-
     global vis_pub_full
     vis_pub_full = rospy.Publisher('/vis_continuous_full', sImage, queue_size=1)
 
     if not use_waypoint:
-        global controller
-        controller = ControlInterface()
+        pass
     else:
         global waypoint_pub
         waypoint_pub = rospy.Publisher('/waypoints', Waypoints, queue_size=1)
@@ -363,4 +329,8 @@ if __name__ == "__main__":
     else:
         rospy.Subscriber(KEYBOARD_TOPIC, String, on_key_received, queue_size=10)
     rospy.Subscriber("/vehicle/steering_report", SteeringReport, on_speed_received, queue_size=1)
+
+    global raw_control_pub
+    raw_control_pub = rospy.Publisher('/raw_controls', Vector3, queue_size=1)
+
     rospy.spin()
