@@ -82,12 +82,13 @@ def main(dt, t_vel, ref_index, p_k, p_d, p_i):
                 weighting = np.array([2, 4, 6, 6, 3, 2, 1]) # 7 values
                 weighting = weighting * 1.0 / np.sum(weighting) * weighting.size
 
-                for i in range(num_steps_received):
+                factor = 2
+                for i in range(num_steps_received//factor):
                     wp = Waypoints_received.points[i]  # 0.8 seconds in the future
                     wp = [wp.x, wp.y]
                     theta = math.atan2(max(wp[0], 0.01), wp[1]) - math.pi / 2  # range from -pi/2 to pi/2
                     theta_tot += theta * weighting[i]
-                error_theta = theta_tot / num_steps_received
+                error_theta = theta_tot / (num_steps_received//factor)
 
             for i in range(num_steps_received):
                 points[0, i] = Waypoints_received.points[i].x * cos(psi_ref) - Waypoints_received.points[i].y * sin(psi_ref) + X_ref
@@ -101,7 +102,8 @@ def main(dt, t_vel, ref_index, p_k, p_d, p_i):
             spl_y_dot_val = spl_y_dot(t_vel)
             #spl_v_val = 1.0 * np.sqrt(spl_x_dot_val**2 + spl_y_dot_val**2)
 
-            spl_v_val = 3.0
+            #spl_v_val = 3.0 #this is for left turn
+            spl_v_val = 2.0 # for the right turns
 
             twist_cmd = TwistStamped()
             twist_cmd.twist.linear.x = spl_v_val
@@ -140,4 +142,6 @@ if __name__ == '__main__':
     # for left turns
     #main(0.01, 0.2, 3, p_k=0.9, p_d=0.0, p_i=0.0)
     # for right turns
-    main(0.01, 0.2, 3, p_k=0.9, p_d=0.0, p_i=0.0)
+    #main(0.01, 0.2, 3, p_k=0.9, p_d=0.0, p_i=0.0)
+    main(0.01, 0.2, 3, p_k=1.35, p_d=0.0, p_i=0.0)
+    #main(0.01, 0.2, 3, p_k=0.9, p_d=0.0, p_i=0.0)
