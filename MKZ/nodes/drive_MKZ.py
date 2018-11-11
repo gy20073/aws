@@ -11,6 +11,7 @@ import rospy, importlib, inspect, threading
 from sensor_msgs.msg import Image as sImage
 from cv_bridge import CvBridge
 from std_msgs.msg import String
+from std_msgs.msg import Bool
 from geometry_msgs.msg import Vector3
 from dbw_mkz_msgs.msg import SteeringReport
 
@@ -112,7 +113,7 @@ def on_image_received(data):
         return
 
     time0 = time.time()
-    global bridge, driving_model, vis_pub_full, controller, waypoint_pub, parent_conn
+    global bridge, driving_model, vis_pub_full, controller, waypoint_pub, parent_conn, dbw_enable, vis_pub_full_enabled
 
     img = bridge.imgmsg_to_cv2(data, "bgr8")
     # deliberately not resizing the image, since it might be zoomed later
@@ -183,7 +184,11 @@ def on_image_received(data):
     #cv2.imshow("Cameras", vis)
     #cv2.waitKey(5)
 
-    vis_pub_full.publish(bridge.cv2_to_imgmsg(vis, "rgb8"))
+    msg = bridge.cv2_to_imgmsg(vis, "rgb8")
+    vis_pub_full.publish(msg)
+    if dbw_enable:
+        print("enabling, republishing the message to a second topic")
+        vis_pub_full_enabled.publish(msg)
 
     time_now = time.time()
     global last_computation
@@ -252,6 +257,10 @@ def get_driver_config():
     driver_conf.carla_config = None  # This is not used by CarlaMachine but it's required
     return driver_conf
 
+def on_dbw_enable_changed(data):
+    global dbw_enable
+    dbw_enable = data.data
+
 if __name__ == "__main__":
     rospy.init_node('BDD_Driving_Model')
     exp_id = sys.argv[1]
@@ -279,8 +288,10 @@ if __name__ == "__main__":
     global bridge
     bridge = CvBridge()
 
-    global vis_pub_full
+    global vis_pub_full, vis_pub_full_enabled
     vis_pub_full = rospy.Publisher('/vis_continuous_full', sImage, queue_size=1)
+    rospy.Subscriber("/vehicle/dbw_enabled", Bool, on_dbw_enable_changed, queue_size=1)
+    vis_pub_full_enabled = rospy.Publisher('/vis_continuous_full_enabled', sImage, queue_size=1)
 
     if not use_waypoint:
         pass

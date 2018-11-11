@@ -10,6 +10,10 @@ OUTPUT_BAG=$OUTPUT_PREFIX"/recording.bag"
 # also the visualization image with a video
 VIZ_IMAGE_TOPIC="/vis_continuous_full"
 OUTPUT_VIZ_VIDEO=$OUTPUT_PREFIX"/visualization_images.avi"
+# and the subpart that the vehicle is actually driving itself
+VIZ_IMAGE_TOPIC_ENABLE="/vis_continuous_full_enabled"
+OUTPUT_VIZ_VIDEO_ENABLE=$OUTPUT_PREFIX"/visualization_images_enabled.avi"
+
 
 # rosbag command goes here
 rosbag record \
@@ -33,3 +37,5 @@ $DOWNSAMPLED_IMAGE_TOPIC &
 rosrun image_view video_recorder image:=$ORIGINAL_IMAGE_TOPIC _filename:=$OUTPUT_ORIGINAL_VIDEO _codec:="X264" &
 
 rosrun image_view video_recorder image:=$VIZ_IMAGE_TOPIC _filename:=$OUTPUT_VIZ_VIDEO _codec:="X264" &
+
+rosrun image_view video_recorder image:=$VIZ_IMAGE_TOPIC_ENABLE _filename:=$OUTPUT_VIZ_VIDEO_ENABLE _codec:="X264" &
