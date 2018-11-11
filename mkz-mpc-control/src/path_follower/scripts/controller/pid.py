@@ -17,6 +17,9 @@ def WaypointsCallback(data):
     Waypoints_received = data
     Waypoints_mark = True
 
+global condition
+condition = "s"
+
 def on_key_received(data):
     key = data.data
     global condition

@@ -7,9 +7,24 @@ roslib.load_manifest('dbw_mkz_msgs')
 # messages related
 from dbw_mkz_msgs.msg import SteeringReport
 from geometry_msgs.msg import Vector3
+from std_msgs.msg import String
+
+global condition
+condition = "s"
+
+def on_key_received(data):
+    key = data.data
+    global condition
+    condition = key
+    print("received key in pid ", key)
+    global CONTROL_MODE
+    initialize_control_constants(CONTROL_MODE)
+
 
 def initialize_control_constants(control_mode):
-    global SAFETY_SPEED, THROTTLE_CONSTANT, STEERING_CONSTANT
+    global SAFETY_SPEED, THROTTLE_CONSTANT, STEERING_CONSTANT, condition
+
+    # TODO: condition has values in [s, a, d, w], change the params below
 
     if control_mode == 'GTAV':
         SAFETY_SPEED = 17.0  #km/h
@@ -76,6 +91,7 @@ def on_speed_received(data):
 if __name__ == "__main__":
     rospy.init_node('raw_control_pid')
 
+    global CONTROL_MODE
     CONTROL_MODE= 'WAYPOINTS_REAL_CAR_RIGHT' #'WAYPOINTS_REAL_CAR_RIGHT' #"WAYPOINTS_REAL_CAR"
     initialize_control_constants(CONTROL_MODE)
 
@@ -84,4 +100,5 @@ if __name__ == "__main__":
 
     rospy.Subscriber("/vehicle/steering_report", SteeringReport, on_speed_received, queue_size=1)
     rospy.Subscriber('/raw_controls', Vector3, on_stb_received, queue_size=1)
+    rospy.Subscriber("/vehicle/mkz_key_command", String, on_key_received, queue_size=10)
     rospy.spin()
