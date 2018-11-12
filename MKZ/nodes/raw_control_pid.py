@@ -8,9 +8,14 @@ roslib.load_manifest('dbw_mkz_msgs')
 from dbw_mkz_msgs.msg import SteeringReport
 from geometry_msgs.msg import Vector3
 from std_msgs.msg import String
+from geometry_msgs.msg import TwistStamped
 
-global condition
+
+global condition, use_twist_speed_control
 condition = "s"
+use_twist_speed_control = True
+if use_twist_speed_control:
+    pub = rospy.Publisher('/vehicle/cmd_vel_stamped', TwistStamped, queue_size=1)
 
 def on_key_received(data):
     key = data.data
@@ -41,7 +46,28 @@ def initialize_control_constants(control_mode):
     elif control_mode == 'WAYPOINTS_REAL_CAR_RIGHT':
         SAFETY_SPEED = 9.0  # km/h
         THROTTLE_CONSTANT = 0.3
-        STEERING_CONSTANT = -8.0
+        STEERING_CONSTANT = -6.5
+    elif control_mode == 'PID_DYNAMIC':
+        print('>>>>>>>> CONDITION = [{}]'.format(condition))
+        if condition == 'w' or condition == 's':
+            SAFETY_SPEED = 12.0  # km/h
+            THROTTLE_CONSTANT = 0.8
+            STEERING_CONSTANT = -3.5
+        elif condition == 'd':
+            # going right
+            SAFETY_SPEED = 6.0  # km/h
+            THROTTLE_CONSTANT = 0.3
+            STEERING_CONSTANT = -8.5
+        elif condition == 'a':
+            # going left
+            SAFETY_SPEED = 7.0  # km/h
+            THROTTLE_CONSTANT = 0.3
+            STEERING_CONSTANT = -6.5
+        else:
+            #somethig unexpected
+            SAFETY_SPEED = 5.0  # km/h
+            THROTTLE_CONSTANT = 1.0
+            STEERING_CONSTANT = -6.5
     else: # default is carla 0.8 autopilot
         SAFETY_SPEED = 17.0  #km/h
         THROTTLE_CONSTANT = 0.8
@@ -62,10 +88,12 @@ def on_stb_received(data):
     steer = data.x
     throttle = data.y
     brake = data.z
-
-    if vehicle_real_speed_kmh > SAFETY_SPEED:
-        print "speed still larger than safty speed, cropped. (It will affect performance)"
-        throttle = 0.0
+    if use_twist_speed_control:
+        controller.set_twist_speed(SAFETY_SPEED / 3.6)
+    else:
+        if vehicle_real_speed_kmh > SAFETY_SPEED:
+            print "speed still larger than safty speed, cropped. (It will affect performance)"
+            throttle = 0.0
 
     # convert the output to the format of vehicle format
     # the meaning of the predicted value
@@ -92,11 +120,11 @@ if __name__ == "__main__":
     rospy.init_node('raw_control_pid')
 
     global CONTROL_MODE
-    CONTROL_MODE= 'WAYPOINTS_REAL_CAR_RIGHT' #'WAYPOINTS_REAL_CAR_RIGHT' #"WAYPOINTS_REAL_CAR"
+    CONTROL_MODE= 'PID_DYNAMIC' #'WAYPOINTS_REAL_CAR_RIGHT' #"WAYPOINTS_REAL_CAR"
     initialize_control_constants(CONTROL_MODE)
 
     global controller
-    controller = ControlInterface()
+    controller = ControlInterface(use_twist_speed_control)
 
     rospy.Subscriber("/vehicle/steering_report", SteeringReport, on_speed_received, queue_size=1)
     rospy.Subscriber('/raw_controls', Vector3, on_stb_received, queue_size=1)

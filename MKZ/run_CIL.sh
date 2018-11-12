@@ -24,11 +24,17 @@ output_base="/root/mount/home/bdd/intel/data"
 # mm45_v4_wp2town3cam_stacked_control
 # the waypoint model with right turns
 
+# mm45_v4_wp2town3cam_correct_town2
+# mm45_v4_wp2town3cam_parallel_control_correct_town2
+# mm45_v4_wp2town3cam_3town
+# mm45_v4_wp2town3cam_parallel_control_3towns
+# mm45_v4_wp2town3cam_2p2town
+
 roslaunch mkz_intel CIL.launch \
-    exp_id:="mm45_v4_wp2town3cam_parallel_control" \
+    exp_id:="mm45_v4_wp2town3cam_3town" \
     use_fake_image:="false" \
     fake_video_path:="/scratch/yang/aws_data/mkz/mkz2/inverted_compress.avi" \
     use_auto_traj:="false" \
     gps_traj_file:="traj1.txt" \
     use_left_right:="true" \
-    use_waypoint:="false"
+    use_waypoint:="true"

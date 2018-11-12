@@ -49,7 +49,7 @@ raw_control_pub = None
 
 left_cache = None
 left_lock = threading.Lock()
-
+dbw_enable = False
 def on_image_received_left(data):
     global count_left
     count_left += 1

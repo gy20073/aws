@@ -4,14 +4,20 @@ import rospy, time, threading
 # messages related
 from dbw_mkz_msgs.msg import ThrottleCmd, BrakeCmd, SteeringCmd
 
+from geometry_msgs.msg import TwistStamped
+
 class ControlInterface(object):
-    def __init__(self):
+    def __init__(self, no_speed_control = False):
         self._throttle = 0.0
         self._throttle_pub = rospy.Publisher('/vehicle/throttle_cmd', ThrottleCmd, queue_size=10)
         self._brake = 0.0
         self._brake_pub = rospy.Publisher('/vehicle/brake_cmd', BrakeCmd, queue_size=10)
         self._steer = 0.0
         self._steer_pub = rospy.Publisher('/vehicle/steering_cmd', SteeringCmd, queue_size=10)
+        self.no_speed_control = no_speed_control
+        if no_speed_control:
+            self._twist_speed = 0.0
+            self._twist_pub = rospy.Publisher('/vehicle/cmd_vel_stamped', TwistStamped, queue_size=1)
 
         self.counter = 0
         self.last_time = time.time()
@@ -29,18 +35,27 @@ class ControlInterface(object):
         # range -8.2 to 8.2
         self._steer = new_steer
 
-    def pub_once(self):
-        throttle_cmd = ThrottleCmd()
-        throttle_cmd.enable = True
-        throttle_cmd.pedal_cmd_type = 2 # percentage
-        throttle_cmd.pedal_cmd = self._throttle
-        self._throttle_pub.publish(throttle_cmd)
+    def set_twist_speed(self, new_speed):
+        self._twist_speed = new_speed
 
-        brake_cmd = BrakeCmd()
-        brake_cmd.enable = True
-        brake_cmd.pedal_cmd_type = 2 # percentage
-        brake_cmd.pedal_cmd = self._brake
-        self._brake_pub.publish(brake_cmd)
+    def pub_once(self):
+        if not self.no_speed_control:
+            throttle_cmd = ThrottleCmd()
+            throttle_cmd.enable = True
+            throttle_cmd.pedal_cmd_type = 2 # percentage
+            throttle_cmd.pedal_cmd = self._throttle
+            self._throttle_pub.publish(throttle_cmd)
+
+            brake_cmd = BrakeCmd()
+            brake_cmd.enable = True
+            brake_cmd.pedal_cmd_type = 2 # percentage
+            brake_cmd.pedal_cmd = self._brake
+            self._brake_pub.publish(brake_cmd)
+        else:
+            twist_cmd = TwistStamped()
+            print('===== Twist_sped = {}'.format(self._twist_speed))
+            twist_cmd.twist.linear.x = self._twist_speed
+            self._twist_pub.publish(twist_cmd)
 
         steer_cmd = SteeringCmd()
         steer_cmd.enable = True

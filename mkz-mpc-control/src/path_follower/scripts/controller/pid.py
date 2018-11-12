@@ -51,6 +51,7 @@ def main(dt):
                 pass
             elif condition == "a":
                 # left
+                use_those_waypoints = range(len(Waypoints_received.points) - 6)
                 p_k = 0.9
                 spl_v_val = 3.0
             elif condition == "d":
