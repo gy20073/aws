@@ -51,12 +51,14 @@ def main(dt):
                 pass
             elif condition == "a":
                 # left
-                use_those_waypoints = range(len(Waypoints_received.points) - 6)
+                use_those_waypoints = range(len(Waypoints_received.points) - 1)
                 p_k = 0.9
                 spl_v_val = 3.0
             elif condition == "d":
                 # right
-                p_k = 1.35
+                #p_k = 1.35
+                #p_k = 0.6
+                p_k = 0.9
                 spl_v_val = 2.0
                 use_those_waypoints = range(len(Waypoints_received.points)//2 - 1)
             elif condition == "s":
@@ -92,7 +94,7 @@ def main(dt):
             steering_cmd.enable = True
             steering_cmd.steering_wheel_angle_cmd = steering_angle * steering_ratio
             pub2.publish(steering_cmd)
-            rospy.loginfo('error: %f m, pk %f, speed %f', lateral_error, p_k, spl_v_val)
+            rospy.loginfo('error: %f m, pk %f, speed %f, mode %s', lateral_error, p_k, spl_v_val, condition)
             print("using those waypoints ", use_those_waypoints)
 
         rate.sleep()
