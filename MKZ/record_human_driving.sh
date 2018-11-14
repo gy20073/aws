@@ -6,7 +6,7 @@ timestamp() {
 
 ts=$(timestamp)
 
-OUTPUT_PREFIX="/home/bdd/intel/data/human/"$ts
+OUTPUT_PREFIX="/media/bdd/Samsung_T5/human/"$ts
 mkdir $OUTPUT_PREFIX
 
 OUTPUT_BAG=$OUTPUT_PREFIX"/bag"
@@ -20,6 +20,7 @@ python nodes/image_downsampler_compressed.py &
 rosbag record \
 --split --duration 5m \
 -b 30720 \
+--lz4 \
 --output-name $OUTPUT_BAG \
 /nmea_sentence \
 /vehicle/joint_states /vehicle/req_accel /vehicle/suspension_report \
@@ -33,5 +34,6 @@ rosbag record \
 /vehicle/tire_pressure_report \
 /vehicle/wheel_position_report /vehicle/wheel_speed_report \
 /vehicle/twist /vehicle/twist_controller/parameter_descriptions /vehicle/twist_controller/parameter_updates \
-/xsens/fix /xsens/imu/data /xsens/imu/mag /xsens/imu_data_str /xsens/time_reference \
+/vehicle/filtered_accel /vehicle/req_accel \
+/xsens/fix /xsens/imu/data /xsens/imu/mag /xsens/imu_data_str /xsens/pressure /xsens/time_reference /xsens/velocity \
 $IMAGE_MIDDLE $IMAGE_LEFT $IMAGE_RIGHT
