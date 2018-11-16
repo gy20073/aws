@@ -101,6 +101,12 @@ def worker(exp_id, use_left_right, conn):
         conn.send([{"throttle": control.throttle, "brake": control.brake, "steer": control.steer}, vis])
         print("aftet sendoing out the message")
 
+global message_from_controller
+message_from_controller = ""
+def on_controller_message_received(data):
+    global message_from_controller
+    message_from_controller = data.data
+
 # this is the center image
 def on_image_received(data):
     # this would directly receive the raw image from the driver
@@ -145,8 +151,14 @@ def on_image_received(data):
     control.brake = control_dict["brake"]
     print("after receiving")
     '''
+    # TODO: fill the model name and current parameters
+    exp_id = sys.argv[1]
+    global message_from_controller
+    extra_extra = exp_id + "\n" + \
+                  message_from_controller + \
+                  "real_speed={:.2f} m/s \n".format(vehicle_real_speed_kmh/3.6)
     control, vis = driving_model.compute_action(sensors, vehicle_real_speed_kmh, direction,
-                                                save_image_to_disk=False, return_vis=True, return_extra=False)
+                                                save_image_to_disk=False, return_vis=True, return_extra=False, extra_extra=extra_extra)
     #print("time for compute action is ", time.time() - t00)
     #control, vis = driving_model.compute_action(sensors, 0.0, direction, save_image_to_disk=False, return_vis=True)
     global use_waypoint
@@ -343,5 +355,7 @@ if __name__ == "__main__":
 
     global raw_control_pub
     raw_control_pub = rospy.Publisher('/raw_controls', Vector3, queue_size=1)
+
+    rospy.Subscriber("/controller_hyper_param", String, on_controller_message_received, queue_size=1)
 
     rospy.spin()

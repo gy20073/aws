@@ -105,6 +105,14 @@ def on_stb_received(data):
     controller.set_steer(steer * STEERING_CONSTANT)  # 8.2 in range
     print('>>> Steering value = {} | real speed = {}'.format(steer * STEERING_CONSTANT, vehicle_real_speed_kmh))
 
+    message = "P={:.2f} \nSteer={:.2f} \nTarget Speed={:.2f} m/s \nController Condition=%s\n".format(
+        STEERING_CONSTANT,
+        steer * STEERING_CONSTANT,
+        SAFETY_SPEED / 3.6,
+        condition)
+    global controller_message_pub
+    controller_message_pub.publish(message)
+
 def on_speed_received(data):
     global vehicle_real_speed_kmh
     speed = data.speed
@@ -129,4 +137,8 @@ if __name__ == "__main__":
     rospy.Subscriber("/vehicle/steering_report", SteeringReport, on_speed_received, queue_size=1)
     rospy.Subscriber('/raw_controls', Vector3, on_stb_received, queue_size=1)
     rospy.Subscriber("/vehicle/mkz_key_command", String, on_key_received, queue_size=10)
+
+    global controller_message_pub
+    controller_message_pub = rospy.Publisher("/controller_hyper_param", String, queue_size=10)
+
     rospy.spin()

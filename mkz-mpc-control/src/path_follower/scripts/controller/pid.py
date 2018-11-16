@@ -97,7 +97,19 @@ def main(dt):
             rospy.loginfo('error: %f m, pk %f, speed %f, mode %s', lateral_error, p_k, spl_v_val, condition)
             print("using those waypoints ", use_those_waypoints)
 
+            # collecting useful info and publish to a message topic
+            message = "P={:.2f} \nSteer={:.2f} \nTarget Speed={:.2f} m/s \nActiveWP=%s \nController Condition=%s\n".format(
+                                                                                        p_k,
+                                                                                        steering_cmd.steering_wheel_angle_cmd,
+                                                                                        spl_v_val,
+                                                                                        str(use_those_waypoints),
+                                                                                        condition)
+            global controller_message_pub
+            controller_message_pub.publish(message)
         rate.sleep()
 
 if __name__ == '__main__':
+    global controller_message_pub
+    controller_message_pub = rospy.Publisher("/controller_hyper_param", String, queue_size=10)
+
     main(0.01)
