@@ -80,8 +80,7 @@ def quaternion_to_yaw(msg):
     yaw = math.atan2(2 * (q.x * q.w + q.y * q.z), 1 - 2 * (q.y ** 2 + q.z ** 2))
     return yaw
 
-
-def main(ss, recorder, yaw_now, pos):
+def main(ss, recorder, pos):
     best_key = "left"
     for key in ss:
         if len(ss[key]) < len(ss[best_key]):
@@ -93,11 +92,12 @@ def main(ss, recorder, yaw_now, pos):
         ss_nn[key] = NN(ss[key])
 
     last_i_yaw = 0
-    #yaw_now = 0.0
-    #pos = [0.0, 0.0]
 
-    yaw_rate = ss["yaw_rate"]
+    #yaw_rate = ss["yaw_rate"]
     speed_ms = ss["speed"]
+    yaw_xsens = ss["yaw_xsens"]
+
+    speed_ms_NN2 = NN(ss["speed"])
 
     for i in range(len(ss[best_key])):
         # we are going to issue one for each of this key
@@ -112,13 +112,14 @@ def main(ss, recorder, yaw_now, pos):
 
         # we finished the sensor dict
         # now we move on to the yaw rate integration (to yaw) and combined with speed to get the positions
-        this_i_yaw = indexes["yaw_rate"]
-
+        this_i_yaw = indexes["yaw_xsens"]
 
         for j in range(last_i_yaw, this_i_yaw):
-            yaw_now += (yaw_rate[j + 1][0] - yaw_rate[j][0]) * 1.0e-9 * (yaw_rate[j + 1][1] + yaw_rate[j][1]) / 2
-            pos[0] += np.cos(yaw_now) * speed_ms[j][1] * (yaw_rate[j + 1][0] - yaw_rate[j][0]) * 1.0e-9
-            pos[1] += np.sin(yaw_now) * speed_ms[j][1] * (yaw_rate[j + 1][0] - yaw_rate[j][0]) * 1.0e-9
+            k = speed_ms_NN2.find_time(yaw_xsens[j][0])
+            yaw_now = yaw_xsens[j][1]
+            pos[0] += np.cos(yaw_now) * speed_ms[k][1] * (yaw_xsens[j + 1][0] - yaw_xsens[j][0]) * 1.0e-9
+            pos[1] += np.sin(yaw_now) * speed_ms[k][1] * (yaw_xsens[j + 1][0] - yaw_xsens[j][0]) * 1.0e-9
+        # done
         last_i_yaw = this_i_yaw
         sensors["pos"] = pos
         sensors["yaw"] = yaw_now
@@ -149,7 +150,6 @@ def main(ss, recorder, yaw_now, pos):
 
             mapping = {"up": 5.0, "down": 2.0, "left": 3.0, "right": 4.0}
 
-            print(measurements.game_timestamp)
             recorder.record(measurements,
                             {'CameraLeft': sensors["left"],
                              'CameraMiddle': sensors["middle"],
@@ -162,7 +162,7 @@ def main(ss, recorder, yaw_now, pos):
         else:
             pass
             #print("it is noise")
-    return yaw_now, pos
+    return pos
 
 def read_a_bag(bag_path, last_direction, last_noise):
     print("start reading bag")
@@ -173,7 +173,7 @@ def read_a_bag(bag_path, last_direction, last_noise):
     imR = read_topic(bag, "/compressed2", image_converter)
 
     # this yaw is not used, but I will leave it here
-    yaw = read_topic(bag, "/xsens/imu/data", quaternion_to_yaw)
+    yaw_xsens = read_topic(bag, "/xsens/imu/data", quaternion_to_yaw)
 
     yaw_rate = read_topic(bag, "/vehicle/twist", lambda msg: msg.twist.angular.z)
     speed_ms = read_topic(bag, "/vehicle/twist", lambda msg: msg.twist.linear.x)
@@ -206,7 +206,8 @@ def read_a_bag(bag_path, last_direction, last_noise):
     # find the image key with least number of images
     ss = {"left": imL, "middle": im, "right": imR,
           "steer": steer, "brake": brake, "throttle": throttle,
-          "speed": speed_ms, "yaw_rate": yaw_rate, "direction": directions, "noise": have_noise}
+          "speed": speed_ms, "yaw_rate": yaw_rate, "direction": directions, "noise": have_noise,
+          "yaw_xsens": yaw_xsens}
     print("reading rosbag done")
     return ss
 
@@ -214,14 +215,13 @@ def read_a_bag(bag_path, last_direction, last_noise):
 if __name__ == "__main__":
     base = "/scratch/yang/aws_data/human_driving/2018-11-14_09-37-53/"
     output_path = "/scratch/yang/aws_data/human_driving/converted/"
-    debug_num_bags = range(4, 5)
+    debug_num_bags = range(4, 31)
     # end of paramters
 
     recorder = Recorder(output_path, [768, 576], image_cut=[0, 10000000])
 
     last_direction = "down"
     last_noise = "dec"
-    yaw_now = 0.0
     pos = [0.0, 0.0]
 
     for i in debug_num_bags:
@@ -230,6 +230,6 @@ if __name__ == "__main__":
         last_direction = ss["direction"][-1][1]
         last_noise = ss["noise"][-1][1]
 
-        yaw_now, pos = main(ss, recorder, yaw_now, pos)
+        pos = main(ss, recorder, pos)
 
     recorder.close()
