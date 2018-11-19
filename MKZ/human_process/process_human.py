@@ -77,8 +77,10 @@ def btns_to_seq(btns, default_action="down"):
 
 def quaternion_to_yaw(msg):
     q = msg.orientation
-    yaw = math.atan2(2 * (q.x * q.w + q.y * q.z), 1 - 2 * (q.y ** 2 + q.z ** 2))
-    return yaw
+    #yaw = math.atan2(2 * (q.x * q.w + q.y * q.z), 1 - 2 * (q.z ** 2 + q.w ** 2))
+    pitch = math.atan2(2*(q.x*q.y + q.z*q.w), 1-2*(q.y**2 + q.z**2))
+    #roll = math.asin(2*(q.x*q.z - q.y*q.w))
+    return pitch
 
 def main(ss, recorder, pos):
     best_key = "left"
@@ -215,6 +217,7 @@ def read_a_bag(bag_path, last_direction, last_noise):
 if __name__ == "__main__":
     base = "/scratch/yang/aws_data/human_driving/2018-11-14_09-37-53/"
     output_path = "/scratch/yang/aws_data/human_driving/converted/"
+    #debug_num_bags = range(4, 31)
     debug_num_bags = range(4, 31)
     # end of paramters
 
