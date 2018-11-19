@@ -68,6 +68,10 @@ def initialize_control_constants(control_mode):
             SAFETY_SPEED = 5.0  # km/h
             THROTTLE_CONSTANT = 1.0
             STEERING_CONSTANT = -6.5
+    elif control_mode == "human_demo":
+        SAFETY_SPEED = 10.0  # km/h
+        THROTTLE_CONSTANT = 1.0 # not used
+        STEERING_CONSTANT = 8.2
     else: # default is carla 0.8 autopilot
         SAFETY_SPEED = 17.0  #km/h
         THROTTLE_CONSTANT = 0.8
@@ -128,7 +132,7 @@ if __name__ == "__main__":
     rospy.init_node('raw_control_pid')
 
     global CONTROL_MODE
-    CONTROL_MODE= 'PID_DYNAMIC' #'WAYPOINTS_REAL_CAR_RIGHT' #"WAYPOINTS_REAL_CAR"
+    CONTROL_MODE= "human_demo" #'PID_DYNAMIC' #'WAYPOINTS_REAL_CAR_RIGHT' #"WAYPOINTS_REAL_CAR"
     initialize_control_constants(CONTROL_MODE)
 
     global controller
