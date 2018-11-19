@@ -98,7 +98,7 @@ def main(dt):
             print("using those waypoints ", use_those_waypoints)
 
             # collecting useful info and publish to a message topic
-            message = "P={:.2f} \nSteer={:.2f} \nTarget Speed={:.2f} m/s \nActiveWP=%s \nController Condition=%s\n".format(
+            message = "P={:.2f} Steer={:.2f} Target Speed={:.2f} m/s \nActiveWP={} \nController Condition={}\n".format(
                                                                                         p_k,
                                                                                         steering_cmd.steering_wheel_angle_cmd,
                                                                                         spl_v_val,

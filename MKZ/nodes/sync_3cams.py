@@ -52,7 +52,7 @@ def on_image_received_right(data):
     right_lock.release()
 
 
-conditon = "s"
+condition = "s"
 def on_key_received(data):
     key = data.data
     global condition

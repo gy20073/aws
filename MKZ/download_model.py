@@ -2,7 +2,7 @@ import os, copy, sys
 from subprocess import call
 
 if __name__ == "__main__":
-    exp_id = "mm45_v4_wp2town3cam_2p2town"
+    exp_id = "mm45_v4_wp2town3cam_parallel_control_human3hours"
 
 
     remote_path = "/scratch/yang/aws_data/CIL_modular_data/models/" + exp_id

@@ -109,11 +109,11 @@ def on_stb_received(data):
     controller.set_steer(steer * STEERING_CONSTANT)  # 8.2 in range
     print('>>> Steering value = {} | real speed = {}'.format(steer * STEERING_CONSTANT, vehicle_real_speed_kmh))
 
-    message = "P={:.2f} \nSteer={:.2f} \nTarget Speed={:.2f} m/s \nController Condition=%s\n".format(
+    message = "P={:.2f} | Steer={:.2f} | Target Speed={:.2f} m/s | Controller Condition=".format(
         STEERING_CONSTANT,
         steer * STEERING_CONSTANT,
-        SAFETY_SPEED / 3.6,
-        condition)
+        SAFETY_SPEED / 3.6
+        ) + condition + "\n"
     global controller_message_pub
     controller_message_pub.publish(message)
 
