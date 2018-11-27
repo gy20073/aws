@@ -17,6 +17,7 @@ from dbw_mkz_msgs.msg import SteeringReport
 
 
 from sensor_msgs.msg import NavSatFix
+from sensor_msgs.msg import Imu
 
 # standard system packages
 import sys, os, time
@@ -96,7 +97,8 @@ def worker(exp_id, use_left_right, conn):
         print("waiting to recive")
         param = conn.recv()
         print("I received somthing")
-        control, vis = driving_model.compute_action(*param, save_image_to_disk=False, return_vis=True, return_extra=False)
+        control, vis = driving_model.compute_action(*param, save_image_to_disk=False, return_vis=True, return_extra=False,
+                                                    mapping_support={"town_id": "rfs", "pos": vehicle_pos, "ori": vehicle_yaw})
         print("compute finishe")
         conn.send([{"throttle": control.throttle, "brake": control.brake, "steer": control.steer}, vis])
         print("aftet sendoing out the message")
@@ -158,7 +160,8 @@ def on_image_received(data):
                   message_from_controller + \
                   "real_speed={:.2f} m/s \n".format(vehicle_real_speed_kmh/3.6)
     control, vis = driving_model.compute_action(sensors, vehicle_real_speed_kmh, direction,
-                                                save_image_to_disk=False, return_vis=True, return_extra=False, extra_extra=extra_extra)
+                                                save_image_to_disk=False, return_vis=True, return_extra=False, extra_extra=extra_extra,
+                                                mapping_support={"town_id": "rfs", "pos": vehicle_pos, "ori": vehicle_yaw})
     #print("time for compute action is ", time.time() - t00)
     #control, vis = driving_model.compute_action(sensors, 0.0, direction, save_image_to_disk=False, return_vis=True)
     global use_waypoint
@@ -273,6 +276,27 @@ def on_dbw_enable_changed(data):
     global dbw_enable
     dbw_enable = data.data
 
+
+vehicle_pos = [37.918355, -122.338461]
+def on_gps_received_2(data):
+    lat = data.latitude
+    lng = data.longitude
+    global vehicle_pos
+    vehicle_pos = [lat, lng]
+
+vehicle_yaw = 0.0
+def quaternion_to_yaw(msg):
+    q = msg.orientation
+    #yaw = math.atan2(2 * (q.x * q.w + q.y * q.z), 1 - 2 * (q.z ** 2 + q.w ** 2))
+    pitch = math.atan2(2*(q.x*q.y + q.z*q.w), 1-2*(q.y**2 + q.z**2))
+    #roll = math.asin(2*(q.x*q.z - q.y*q.w))
+    return -pitch + np.pi / 2
+
+def on_imu_received(data):
+    global vehicle_yaw
+    vehicle_yaw = quaternion_to_yaw(data)
+
+
 if __name__ == "__main__":
     rospy.init_node('BDD_Driving_Model')
     exp_id = sys.argv[1]
@@ -357,5 +381,11 @@ if __name__ == "__main__":
     raw_control_pub = rospy.Publisher('/raw_controls', Vector3, queue_size=1)
 
     rospy.Subscriber("/controller_hyper_param", String, on_controller_message_received, queue_size=1)
+
+    # the mapping related
+    global vehicle_pos, vehicle_yaw
+    rospy.Subscriber("/vehicle/gps/fix", NavSatFix, on_gps_received_2, queue_size=10)
+    rospy.Subscriber("/xsens/imu/data", Imu, on_imu_received, queue_size=10)
+
 
     rospy.spin()
