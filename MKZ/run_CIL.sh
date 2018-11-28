@@ -40,8 +40,14 @@ output_base="/root/mount/home/bdd/intel/data"
 
 # mm45_v4_wp2town3cam_parallel_control_human3hours
 
+# models with map and with sensor dropout
+# mm45_v4_wp2town3cam_2p3town_map
+# mm45_v4_wp2town3cam_2p3town_map_sensor_dropout
+# mm45_v4_wp2town3cam_parallel_control_2p3town_map
+# mm45_v4_wp2town3cam_parallel_control_2p3town_sensor_dropout
+
 roslaunch mkz_intel CIL.launch \
-    exp_id:="mm45_v4_wp2town3cam_2p3town" \
+    exp_id:="mm45_v4_wp2town3cam_2p3town_map_sensor_dropout" \
     use_fake_image:="false" \
     fake_video_path:="/scratch/yang/aws_data/mkz/mkz2/inverted_compress.avi" \
     use_auto_traj:="false" \

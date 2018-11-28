@@ -45,20 +45,20 @@ def main(dt):
             spl_v_val = 3.0
             p_d = 0.0
             p_i = 0.0
-            p_k = 0.9
-            use_those_waypoints = range(len(Waypoints_received.points) - 1)
+            p_k = 1.2
+            use_those_waypoints = range(len(Waypoints_received.points)//2 - 1)
             if condition == "w":
                 pass
             elif condition == "a":
                 # left
-                use_those_waypoints = range(len(Waypoints_received.points) - 1)
-                p_k = 0.9
+                use_those_waypoints = range(len(Waypoints_received.points)//2 - 1)
+                #p_k = 0.9
                 spl_v_val = 3.0
             elif condition == "d":
                 # right
                 #p_k = 1.35
                 #p_k = 0.6
-                p_k = 0.9
+                #p_k = 0.9
                 spl_v_val = 2.0
                 use_those_waypoints = range(len(Waypoints_received.points)//2 - 1)
             elif condition == "s":
