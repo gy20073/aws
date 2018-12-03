@@ -4,9 +4,6 @@
     <arg name="viz_output_path" default="/home/yang/video" />
 
     <group ns="vehicle">
-
-        <node name="run_3cam_concat" pkg="mkz_intel" type="sync_3cams.py" output="screen" args="$(arg viz_output_path)"> </node>
-
         <node name="record_visualizations" pkg="image_view" type="video_recorder" output="screen">
             <remap to="sync_3cam" from="image"/>
             <param name="filename" value="$(arg viz_output_path).avi" />
@@ -19,7 +16,6 @@
             <param name="codec" value="X264" />
         </node>
 
-
         <node name="record_visualizations_info" pkg="image_view" type="video_recorder" output="screen">
             <remap to="/vis_continuous_full" from="image"/>
             <param name="filename" value="$(arg viz_output_path)_info.avi" />
@@ -31,6 +27,8 @@
             <param name="filename" value="$(arg viz_output_path)_info_enable.avi" />
             <param name="codec" value="X264" />
         </node>
+
+        <node name="run_3cam_concat" pkg="mkz_intel" type="sync_3cams.py" output="screen" args="$(arg viz_output_path)"> </node>
 
     </group>
 
