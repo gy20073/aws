@@ -5,7 +5,7 @@
 # roslib related
 import roslib, math, cv2
 roslib.load_manifest('dbw_mkz_msgs')
-import rospy, importlib, inspect, threading
+import rospy, importlib, inspect, threading, pynmea2
 
 # messages related
 from sensor_msgs.msg import Image as sImage
@@ -18,6 +18,7 @@ from dbw_mkz_msgs.msg import SteeringReport
 
 from sensor_msgs.msg import NavSatFix
 from sensor_msgs.msg import Imu
+from nmea_msgs.msg import Sentence
 
 # standard system packages
 import sys, os, time
@@ -284,6 +285,19 @@ def on_gps_received_2(data):
     global vehicle_pos
     vehicle_pos = [lat, lng]
 
+def on_gps_received_nmea(data):
+    if data.sentence[:4] != "[USB":
+        #print("throw awaw sentence ", data.sentence)
+        return
+    else:
+        pass
+        #print("keep sentence ", data.sentence)
+
+    msg = pynmea2.parse(data.sentence[6:])
+    global vehicle_pos
+    vehicle_pos=[float(msg.latitude), float(msg.longitude)]
+    #print(vehicle_pos)
+
 vehicle_yaw = 0.0
 def quaternion_to_yaw(msg):
     q = msg.orientation
@@ -384,7 +398,11 @@ if __name__ == "__main__":
 
     # the mapping related
     global vehicle_pos, vehicle_yaw
-    rospy.Subscriber("/vehicle/gps/fix", NavSatFix, on_gps_received_2, queue_size=10)
+    use_dgps = True
+    if use_dgps:
+        rospy.Subscriber("/nmea_sentence", Sentence, on_gps_received_nmea, queue_size=1)
+    else:
+        rospy.Subscriber("/vehicle/gps/fix", NavSatFix, on_gps_received_2, queue_size=10)
     rospy.Subscriber("/xsens/imu/data", Imu, on_imu_received, queue_size=10)
 
 

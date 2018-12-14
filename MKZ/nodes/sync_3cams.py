@@ -3,7 +3,7 @@
 # This file put (1)driving model, (2)keyboard input (3)publish twist command (4)receive image together
 
 # roslib related
-import roslib, cv2, pickle, sys, math
+import roslib, cv2, pickle, sys, math, pynmea2
 import rospy, threading
 
 # messages related
@@ -15,6 +15,7 @@ from dbw_mkz_msgs.msg import SteeringReport
 from std_msgs.msg import Bool
 from sensor_msgs.msg import NavSatFix
 from sensor_msgs.msg import Imu
+from nmea_msgs.msg import Sentence
 
 INPUT_IMAGE_TOPIC = "/image_sender_0"
 INPUT_IMAGE_TOPIC_LEFT = "/camera_array/cam1/image_raw"
@@ -97,7 +98,7 @@ def on_image_received(data):
     # hashed image value to (speed and command)
     global vehicle_real_speed_kmh, condition
 
-    infos.append([vehicle_real_speed_kmh/3.6, condition, vehicle_pos, vehicle_yaw])
+    infos.append([vehicle_real_speed_kmh/3.6, condition, vehicle_pos, vehicle_yaw, vehicle_pos_nmea])
     # pickle this out to a file
     with open(pickle_path+ ".pkl", 'wb') as f:
         pickle.dump(infos, f, protocol=2)
@@ -106,7 +107,7 @@ def on_image_received(data):
     if dbw_enable:
         global vis_pub_full_enable
         vis_pub_full_enable.publish(img_msg)
-        infos_enable.append([vehicle_real_speed_kmh / 3.6, condition, vehicle_pos, vehicle_yaw])
+        infos_enable.append([vehicle_real_speed_kmh / 3.6, condition, vehicle_pos, vehicle_yaw, vehicle_pos_nmea])
         # pickle this out to a file
         with open(pickle_path+"_enable.pkl", 'wb') as f:
             pickle.dump(infos_enable, f, protocol=2)
@@ -118,6 +119,20 @@ def on_gps_received(data):
     lng = data.longitude
     global vehicle_pos
     vehicle_pos = [lat, lng]
+
+vehicle_pos_nmea = [37.918355, -122.338461]
+def on_gps_received_nmea(data):
+    if data.sentence[:4] != "[USB":
+        #print("throw awaw sentence ", data.sentence)
+        return
+    else:
+        pass
+        #print("keep sentence ", data.sentence)
+
+    msg = pynmea2.parse(data.sentence[6:])
+    global vehicle_pos_nmea
+    vehicle_pos_nmea=[float(msg.latitude), float(msg.longitude)]
+
 
 vehicle_yaw = 0.0
 def quaternion_to_yaw(msg):
@@ -161,5 +176,7 @@ if __name__ == "__main__":
     global vehicle_pos, vehicle_yaw
     rospy.Subscriber("/vehicle/gps/fix", NavSatFix, on_gps_received, queue_size=10)
     rospy.Subscriber("/xsens/imu/data", Imu, on_imu_received, queue_size=10)
+
+    rospy.Subscriber("/nmea_sentence", Sentence, on_gps_received_nmea, queue_size=1)
 
     rospy.spin()

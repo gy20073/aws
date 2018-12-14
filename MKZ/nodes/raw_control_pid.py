@@ -52,7 +52,7 @@ def initialize_control_constants(control_mode):
         if condition == 'w' or condition == 's':
             SAFETY_SPEED = 12.0  # km/h
             THROTTLE_CONSTANT = 0.8
-            STEERING_CONSTANT = -3.5
+            STEERING_CONSTANT = -5.5
         elif condition == 'd':
             # going right
             SAFETY_SPEED = 6.0  # km/h

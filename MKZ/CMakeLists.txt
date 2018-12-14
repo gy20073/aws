@@ -4,9 +4,11 @@ project(mkz_intel)
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
+
 find_package(catkin REQUIRED COMPONENTS
     rospy
     std_msgs
+    nmea_msgs
     message_generation)
 
 ## System dependencies are found with CMake's conventions
@@ -74,6 +76,7 @@ catkin_python_setup()
 generate_messages(
    DEPENDENCIES
    std_msgs  # Or other packages containing msgs
+   nmea_msgs
 )
 
 ################################################

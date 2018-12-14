@@ -5,5 +5,6 @@
 ;;  FROM /data/yang/code/aws/catkin_ws_docker/src/mkz_intel/package.xml (0.0.0)
 ;; USING /opt/ros/kinetic/lib/python2.7/dist-packages/geneus/geneus_main.pyc /opt/ros/kinetic/share/geneus/package.xml (2.2.6)
 ;;
+(ros::load-ros-package "nmea_msgs")
 (ros::load-ros-package "std_msgs")
 (ros::load-ros-package "mkz_intel")

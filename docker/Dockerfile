@@ -155,3 +155,6 @@ ENV CPLUS_INCLUDE_PATH "/usr/include/python2.7"
 # TODO: finish the intersection detection support
 #https://drive.google.com/file/d/1FUP222BcbLCKAD-tcYewODMlIIlKSuNg/view model_74.pth
 #https://drive.google.com/file/d/1VpYSZgzYNvuYVBpMahdUV5m-QBqizvfd/view train_mean_42140.tensor
+RUN pip install pynmea2
+RUN apt-get update
+RUN apt-get install ros-kinetic-nmea-msgs
