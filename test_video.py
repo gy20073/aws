@@ -316,16 +316,16 @@ if __name__ == "__main__":
         perceptions = Perceptions(det_COCO=False,
                                   det_TL=False,
                                   det_TS=False,
-                                  seg=False,
+                                  seg=True,
                                   depth=False,
                                   seg_abn=False,
-                                  intersection=True,
+                                  intersection=False,
                                   batch_size=batch_size,
-                                  gpu_assignment=[7],
+                                  gpu_assignment=[1],
                                   compute_methods={},
                                   viz_methods={},
                                   path_config="path_jormungandr_newseg")
-        time.sleep(15)
+        time.sleep(5)
 
         loop_over_video(video_path,
                         lambda x: vis_all(x, perceptions),
