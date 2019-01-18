@@ -60,7 +60,7 @@ class Perceptions:
                  det_COCO=True,
                  det_TL=True,
                  det_TS=True,
-                 seg=True,
+                 seg=True, add_lane_color=False,
                  depth=True,
                  seg_abn=False,
                  intersection=False,
@@ -155,6 +155,8 @@ class Perceptions:
                         params.update({"viz_method": viz_methods[mode]})
                     if mode == "det_COCO":
                         params.update({"prune_coco": True})
+                    if mode == "seg" and add_lane_color:
+                        params.update({"attach_lane_color": True})
 
                     parent_conn, child_conn = Pipe()
                     p = Process(target=self.worker, args=(initializer, params, child_conn))
