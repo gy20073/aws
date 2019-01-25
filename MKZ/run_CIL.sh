@@ -50,8 +50,17 @@ output_base="/root/mount/home/bdd/intel/data"
 # mm45_v4_wp2town3cam_parallel_control_2p3town_map_sensor_dropout_rfssim
 # mm45_v4_wp2town3cam_parallel_control_2p3town_map_sensor_dropout_rfssim_moremap
 
+# "mm45_v4_wp2town3cam_parallel_control_2p3town_map_sensor_dropout_rfssim_lessmap_simv2"
+# "mm45_v4_wp2town3cam_parallel_control_2p3town_map_sensor_dropout_rfssim_moremap_simv2"
+# "mm45_v4_wp2town3cam_parallel_control_2p3town_map_sensor_dropout_moremap"
+# "mm45_v4_wp2town3cam_parallel_control_2p3town_map_sensor_dropout_rfssim_moremap"
+
+# 2019-01-18
+# mm45_v4_PcSensordropLessmap_rfsv4_extra_structure_noise_lanecolor
+# mm45_v4_PcSensordropLessmap_rfsv4_extra_structure_noise
+
 roslaunch mkz_intel CIL.launch \
-    exp_id:="mm45_v4_wp2town3cam_2p3town_map_sensor_dropout_rfssim" \
+    exp_id:="mm45_v4_wp2town3cam_parallel_control_2p3town_map_sensor_dropout_rfssim_lessmap_simv2" \
     use_fake_image:="false" \
     fake_video_path:="/scratch/yang/aws_data/mkz/mkz2/inverted_compress.avi" \
     use_auto_traj:="false" \
