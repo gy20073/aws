@@ -305,7 +305,7 @@ if __name__ == "__main__":
         p.start()
 
     # Testing the performance of the segmentation
-    if True:
+    if False:
         # test within the docker
         #video_path = "/scratch/yang/aws_data/mkz/mkz_large_fov/output_0.avi"
         video_path = "/scratch/yang/aws_data/mkz/mkz_large_fov/data_00000.h5.mp4"
@@ -332,3 +332,18 @@ if __name__ == "__main__":
                         temp_down_factor=1,
                         batch_size=batch_size)
         # done
+
+    if True:
+        # segmentation interface
+        from drivable_area.interface_drivable_area import DrivableArea
+        batch_size = 16
+        seg = DrivableArea(model_path="/data/yang_cache/aws_data/drn_d_22_drivable-e5d3dc9c.pth",
+                        GPU="3",
+                        batch_size=batch_size,
+                        output_downsample_factor=4)
+
+        loop_over_video(video_path,
+                        lambda x: vis_all(x, seg),
+                        temp_down_factor=1,
+                        batch_size=batch_size)
+

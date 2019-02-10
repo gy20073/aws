@@ -1,0 +1,10 @@
+/data/yang/code/aws/drivable_area/data_mkz/0008.jpg
+/data/yang/code/aws/drivable_area/data_mkz/0018.jpg
+/data/yang/code/aws/drivable_area/data_mkz/0028.jpg
+/data/yang/code/aws/drivable_area/data_mkz/0038.jpg
+/data/yang/code/aws/drivable_area/data_mkz/0048.jpg
+/data/yang/code/aws/drivable_area/data_mkz/0058.jpg
+/data/yang/code/aws/drivable_area/data_mkz/0068.jpg
+/data/yang/code/aws/drivable_area/data_mkz/0078.jpg
+/data/yang/code/aws/drivable_area/data_mkz/0088.jpg
+/data/yang/code/aws/drivable_area/data_mkz/0098.jpg
