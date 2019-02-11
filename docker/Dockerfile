@@ -158,3 +158,7 @@ ENV CPLUS_INCLUDE_PATH "/usr/include/python2.7"
 RUN pip install pynmea2
 RUN apt-get update
 RUN apt-get install ros-kinetic-nmea-msgs
+
+RUN /root/gdown.pl/gdown.pl https://drive.google.com/open?id=1fDpj_V5xHdNVmahNcHC7tBinVZfRxtPw /root/models/drivable.pth
+RUN /root/gdown.pl/gdown.pl https://drive.google.com/file/d/1HUV3eQXLpE5HkN7XPQkpik2e8xl9lk-S/view?usp=sharing /root/models/drivable_python2.pth
+

@@ -336,13 +336,13 @@ if __name__ == "__main__":
                                   depth=False,
                                   seg_abn=False,
                                   intersection=False,
-                                  drivable_area=True,
+                                  drivable_area=False,
                                   batch_size=batch_size,
                                   gpu_assignment=[1],
                                   compute_methods={},
                                   viz_methods={},
-                                  path_config="path_jormungandr_newseg")
-        time.sleep(5)
+                                  path_config="path_docker_newseg") #""path_jormungandr_newseg")
+        #time.sleep(5)
 
         loop_over_video(video_path,
                         lambda x: vis_all(x, perceptions),

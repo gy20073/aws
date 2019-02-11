@@ -229,7 +229,7 @@ class Perceptions:
             "model_path": "TODO",
             "mean_path": "TODO"}
         self.paths["drivable_area"] = {
-            "model_path": "TODO"}
+            "model_path": "/root/models/drivable_python2.pth"}
 
     def path_docker_newseg(self):
         self.path_docker()
