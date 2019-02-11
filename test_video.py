@@ -63,10 +63,26 @@ def vis_all(x, wrapper):
     print("before compute")
     pred = wrapper.compute(x)
     print("after compute")
+
     viz_output = []
     for i in range(batch_size):
         viz_output.append(wrapper.visualize(pred, i))
     return viz_output
+
+
+count = 0
+x_acc = np.array([0.0, 0.0, 0.0])
+x2_acc = np.array([0.0, 0.0, 0.0])
+def compute_mean_std(x):
+    global count, x_acc, x2_acc
+    x = np.stack(x, axis=0)
+    print(x.shape, x.size)
+    count += x.size // 3
+    x_acc += np.sum(x, axis=(0,1,2))
+    x2_acc += np.sum(1.0*x*x, axis=(0,1,2))
+
+    return np.zeros((x.shape[0], 1,1,3))
+
 
 def vis_all_half(x, wrapper):
     batch_size = len(x)
@@ -305,7 +321,7 @@ if __name__ == "__main__":
         p.start()
 
     # Testing the performance of the segmentation
-    if False:
+    if True:
         # test within the docker
         #video_path = "/scratch/yang/aws_data/mkz/mkz_large_fov/output_0.avi"
         video_path = "/scratch/yang/aws_data/mkz/mkz_large_fov/data_00000.h5.mp4"
@@ -320,6 +336,7 @@ if __name__ == "__main__":
                                   depth=False,
                                   seg_abn=False,
                                   intersection=False,
+                                  drivable_area=True,
                                   batch_size=batch_size,
                                   gpu_assignment=[1],
                                   compute_methods={},
@@ -333,17 +350,34 @@ if __name__ == "__main__":
                         batch_size=batch_size)
         # done
 
-    if True:
+    if False:
         # segmentation interface
         from drivable_area.interface_drivable_area import DrivableArea
-        batch_size = 16
+        batch_size = 4
         seg = DrivableArea(model_path="/data/yang_cache/aws_data/drn_d_22_drivable-e5d3dc9c.pth",
                         GPU="3",
+                        mean=[0.3930478 , 0.44596469, 0.52638272],
+                        std=[0.23479487, 0.22210911, 0.24706927],
                         batch_size=batch_size,
                         output_downsample_factor=4)
 
+        video_path = "/scratch/yang/aws_data/mkz/mkz_large_fov/data_00000.h5.mp4"
         loop_over_video(video_path,
                         lambda x: vis_all(x, seg),
                         temp_down_factor=1,
                         batch_size=batch_size)
 
+    if False:
+        # compute mean and std
+        video_path = "/scratch/yang/aws_data/mkz/video_lowres.mkv"
+        #video_path = "/scratch/yang/aws_data/mkz/mkz_large_fov/data_00000.h5.mp4"
+        #video_path = "/scratch/yang/aws_data/mkz/output_0_768.avi"
+
+        batch_size = 16
+        loop_over_video(video_path,
+                        lambda x: compute_mean_std(x),
+                        temp_down_factor=1,
+                        batch_size=batch_size)
+        mean = x_acc/count
+        print("mean is ", mean/255.0)
+        print("std is ", np.sqrt(x2_acc / count - mean*mean)/ 255.0)

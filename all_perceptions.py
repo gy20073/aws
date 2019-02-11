@@ -21,6 +21,9 @@ class Perceptions:
         elif initializer == 'seg':
             from LinkNet.interface_segmentation import Segmenter
             initializer = Segmenter
+        elif initializer == "drivable_area":
+            from drivable_area.interface_drivable_area import DrivableArea
+            initializer = DrivableArea
 
         instance = initializer(**params)
         print(initializer, "initialization finished")
@@ -64,6 +67,7 @@ class Perceptions:
                  depth=True,
                  seg_abn=False,
                  intersection=False,
+                 drivable_area=False,
                  batch_size=1, # batch_size could also be a dict
                  gpu_assignment=[0,1],
                  compute_methods={},
@@ -84,7 +88,8 @@ class Perceptions:
                       "seg": seg,
                       "depth": depth,
                       "seg_abn": seg_abn,
-                      "0intersection": intersection}
+                      "0intersection": intersection,
+                      "drivable_area": drivable_area}
 
         if isinstance(gpu_assignment, list):
             out = {}
@@ -114,13 +119,19 @@ class Perceptions:
             Intersection = "0intersection"
         else:
             Intersection = None
+        if drivable_area:
+            DrivableArea = "drivable_area"
+        else:
+            DrivableArea = None
+
         interfaces = {"det_COCO": YoloDetector,
                       "det_TL": YoloDetector,
                       "det_TS": YoloDetector,
                       "seg": Segmenter,
                       "depth": Depth,
                       "seg_abn": SegmenterABN,
-                      "0intersection": Intersection}
+                      "0intersection": Intersection,
+                      "drivable_area": DrivableArea}
 
 
         self.instances = {}
@@ -189,6 +200,8 @@ class Perceptions:
         self.paths["0intersection"] = {
                             "model_path": "/scratch/yang/aws_data/intersection_detection/model_74.pth",
                             "mean_path": "/scratch/yang/aws_data/intersection_detection/train_mean_42140.tensor"}
+        self.paths["drivable_area"] = {
+                            "model_path": "/data/yang_cache/aws_data/drn_d_22_drivable-e5d3dc9c.pth"}
 
     def path_jormungandr_newseg(self):
         self.path_jormungandr()
@@ -215,6 +228,8 @@ class Perceptions:
         self.paths["0intersection"] = {
             "model_path": "TODO",
             "mean_path": "TODO"}
+        self.paths["drivable_area"] = {
+            "model_path": "TODO"}
 
     def path_docker_newseg(self):
         self.path_docker()
@@ -472,7 +487,13 @@ class Perceptions:
                 resized = np.tile(expanded, (1, size[0], size[1], 1))
 
                 res.append(resized)
-
+            elif key == "drivable_area":
+                factor = 3
+                size = (det_sz[0] * factor, det_sz[1] * factor)
+                resized = resize_images(logits_dict[key], size, interpolation=cv2.INTER_NEAREST)
+                resized *= 0.1
+                resized = self._space2depth(resized, factor)
+                res.append(resized)
         concat = np.concatenate(res, axis=3)
 
         return concat
