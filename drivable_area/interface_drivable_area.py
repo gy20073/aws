@@ -15,7 +15,7 @@ class DrivableArea:
                  std=[0.2454775432519874, 0.26320519893368627, 0.2730747230872623], #[0.23479487, 0.22210911, 0.24706927], #
                  GPU="0",
                  batch_size=1,
-                 output_downsample_factor=4,
+                 output_downsample_factor=2,
                  compute_method="compute_logits",
                  viz_method="visualize_logits"):
         self.batch_size = batch_size
@@ -42,6 +42,9 @@ class DrivableArea:
 
     def compute_logits(self, image):
         image = resize_images(image, [self.height, self.width])
+
+        image=image[:,::2, ::2, :]
+
         # normalize with mean and std
         image = (image / 255.0 - self.mean) / self.std
         image = image.astype(np.float32)

@@ -2,15 +2,7 @@ import os, copy, sys
 from subprocess import call
 
 if __name__ == "__main__":
-    exp_id = "mm45_v4_PcSensordropLessmap_rfsv4_extra_structure_noise"
-    # "mm45_v4_wp2town3cam_parallel_control_2p3town_map_sensor_dropout_rfssim_lessmap_simv2"
-    # "mm45_v4_wp2town3cam_parallel_control_2p3town_map_sensor_dropout_rfssim_moremap_simv2"
-    # "mm45_v4_wp2town3cam_parallel_control_2p3town_map_sensor_dropout_moremap"
-    # "mm45_v4_wp2town3cam_parallel_control_2p3town_map_sensor_dropout_rfssim_moremap"
-
-    # 2019-01-18
-    # mm45_v4_PcSensordropLessmap_rfsv4_extra_structure_noise_lanecolor
-    # mm45_v4_PcSensordropLessmap_rfsv4_extra_structure_noise
+    exp_id = "mm45_v4_PcSensordropLessmap_rfsv45_extra_structure_noise_lanecolor_drivable"
 
     remote_path = "/scratch/yang/aws_data/CIL_modular_data/models/" + exp_id
     local_path = "/root/mount/home/bdd/intel/data/CIL_modular_data/models/" + exp_id

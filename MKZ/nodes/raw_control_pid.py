@@ -50,9 +50,9 @@ def initialize_control_constants(control_mode):
     elif control_mode == 'PID_DYNAMIC':
         print('>>>>>>>> CONDITION = [{}]'.format(condition))
         if condition == 'w' or condition == 's':
-            SAFETY_SPEED = 15.0 #12.0  # km/h
+            SAFETY_SPEED = 15.0  # km/h
             THROTTLE_CONSTANT = 0.8
-            STEERING_CONSTANT = -8.0 #-5.5
+            STEERING_CONSTANT = -5.5
         elif condition == 'd':
             # going right
             SAFETY_SPEED = 6.0  # km/h

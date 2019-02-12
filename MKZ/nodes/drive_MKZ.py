@@ -356,7 +356,7 @@ if __name__ == "__main__":
     sys.path.append("drive_interfaces/carla/comercial_cars")
     from carla_machine import *
 
-    driving_model = CarlaMachine("0", exp_id, get_driver_config(), 0.1,
+    driving_model = CarlaMachine("1", exp_id, get_driver_config(), 0.1,
                                  gpu_perception=[0, 1],
                                  perception_paths="path_docker_newseg",
                                  batch_size=3 if use_left_right else 1)
