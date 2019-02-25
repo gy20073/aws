@@ -50,23 +50,34 @@ output_base="/root/mount/home/bdd/intel/data"
 # mm45_v4_wp2town3cam_parallel_control_2p3town_map_sensor_dropout_rfssim
 # mm45_v4_wp2town3cam_parallel_control_2p3town_map_sensor_dropout_rfssim_moremap
 
+# 2019-01-11
 # "mm45_v4_wp2town3cam_parallel_control_2p3town_map_sensor_dropout_rfssim_lessmap_simv2"
 # "mm45_v4_wp2town3cam_parallel_control_2p3town_map_sensor_dropout_rfssim_moremap_simv2"
 # "mm45_v4_wp2town3cam_parallel_control_2p3town_map_sensor_dropout_moremap"
 # "mm45_v4_wp2town3cam_parallel_control_2p3town_map_sensor_dropout_rfssim_moremap"
 
-# 2019-01-18
+# 2019-01-18: swing a lot, the center camera rotation is bad
 # mm45_v4_PcSensordropLessmap_rfsv4_extra_structure_noise_lanecolor
 # mm45_v4_PcSensordropLessmap_rfsv4_extra_structure_noise
 
-# 2019-02-01
+# 2019-01-25 TODO, debug the swing problem and adjusted the P parameter
+# the 01-11 and the 01-18 models
+
+# 2019-02-01, missing on my laptop, since it's stored on the MKZ
 # mm45_v4_PcSensordropLessmap_rfsv5_lanecolor_accurate_map
 # mm45_v4_PcSensordropLessmap_rfsv5_extra_structure_noise_lanecolor
 # mm45_v4_PcSensordropLessmap_rfsv5_extra_structure_noise
 
-# 2019-02-11
+# 2019-02-11 TODO
 # mm45_v4_PcSensordropLessmap_rfsv45_extra_structure_noise_lanecolor
 # mm45_v4_PcSensordropLessmap_rfsv45_extra_structure_noise_lanecolor_drivable
+
+# 2019-02-20 TODO
+# mm45_v4_PcSensordropLessmap_rfsv45_extra_structure_noise_nocolor_drivable
+# mm45_v4_PcSensordropLessmap_rfsv45_extra_structure_noise_nocolor_onroad
+# mm45_v4_PcSensordropLessmap_rfsv45_extra_structure_noise_nocolor_onroad_accurate_map
+# mm45_v4_PcSensordropLessmap_rfsv45_extra_structure_noise_nocolor_shoulder
+# mm45_v4_PcSensordropLessmap_rfsv45_extra_structure_noise_nocolor_shoulder_accurate_map
 
 roslaunch mkz_intel CIL.launch \
     exp_id:="mm45_v4_PcSensordropLessmap_rfsv45_extra_structure_noise_lanecolor_drivable" \
