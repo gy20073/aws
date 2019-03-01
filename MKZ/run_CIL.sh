@@ -79,8 +79,14 @@ output_base="/root/mount/home/bdd/intel/data"
 # mm45_v4_PcSensordropLessmap_rfsv45_extra_structure_noise_nocolor_shoulder
 # mm45_v4_PcSensordropLessmap_rfsv45_extra_structure_noise_nocolor_shoulder_accurate_map
 
+# 2019-03-01
+# mm45_v4_SqnoiseShoulder_rfsv2
+# mm45_v4_SqnoiseShoulder_rfsv25
+# mm45_v4_SqnoiseShoulder_rfsv25_accuratemap
+# mm45_v4_SqnoiseShoulder_rfsv2_accuratemap
+
 roslaunch mkz_intel CIL.launch \
-    exp_id:="mm45_v4_PcSensordropLessmap_rfsv45_extra_structure_noise_lanecolor_drivable" \
+    exp_id:="mm45_v4_PcSensordropLessmap_rfsv4_extra_structure_noise" \
     use_fake_image:="false" \
     fake_video_path:="/scratch/yang/aws_data/mkz/mkz2/inverted_compress.avi" \
     use_auto_traj:="false" \
