@@ -53,8 +53,8 @@ class ControlInterface(object):
             self._brake_pub.publish(brake_cmd)
         else:
             twist_cmd = TwistStamped()
-            print('===== Twist_sped = {}'.format(self._twist_speed))
-            twist_cmd.twist.linear.x = self._twist_speed
+            #print('===== Twist_sped = {}'.format(self._twist_speed))
+            twist_cmd.twist.linear.x = self._twist_speed * self._throttle
             self._twist_pub.publish(twist_cmd)
 
         steer_cmd = SteeringCmd()

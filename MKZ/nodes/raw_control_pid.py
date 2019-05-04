@@ -52,7 +52,8 @@ def initialize_control_constants(control_mode):
         if condition == 'w' or condition == 's':
             SAFETY_SPEED = 15.0  # km/h
             THROTTLE_CONSTANT = 0.8
-            STEERING_CONSTANT = -5.5
+            STEERING_CONSTANT = -3.0
+            # the original set of parameter is speed=15, steer_constant=-5.5
         elif condition == 'd':
             # going right
             SAFETY_SPEED = 6.0  # km/h
@@ -68,6 +69,23 @@ def initialize_control_constants(control_mode):
             SAFETY_SPEED = 5.0  # km/h
             THROTTLE_CONSTANT = 1.0
             STEERING_CONSTANT = -6.5
+    elif control_mode == 'PID_DYNAMIC_SPEED_CONTROL':
+        print('>>>>>>>> CONDITION = [{}]'.format(condition))
+        THROTTLE_CONSTANT = 1.0
+        if condition == 'w' or condition == 's':
+            SAFETY_SPEED = 3.0  # km/h
+            STEERING_CONSTANT = -3.0
+            # the original set of parameter is speed=15, steer_constant=-5.5
+        elif condition == 'd':
+            # going right
+            SAFETY_SPEED = 6.0  # km/h
+            STEERING_CONSTANT = -14.0 #-8.5
+        elif condition == 'a':
+            # going left
+            SAFETY_SPEED = 7.0  # km/h
+            STEERING_CONSTANT = -14.0 #-6.5
+        else:
+            print("unexpected condition", condition)
     elif control_mode == "human_demo":
         SAFETY_SPEED = 10.0  # km/h
         THROTTLE_CONSTANT = 1.0 # not used
@@ -107,7 +125,7 @@ def on_stb_received(data):
     controller.set_throttle(throttle * THROTTLE_CONSTANT)
     controller.set_break(brake * 0.0)
     controller.set_steer(steer * STEERING_CONSTANT)  # 8.2 in range
-    print('>>> Steering value = {} | real speed = {}'.format(steer * STEERING_CONSTANT, vehicle_real_speed_kmh))
+    #print('>>> Steering value = {} | real speed = {}'.format(steer * STEERING_CONSTANT, vehicle_real_speed_kmh))
 
     message = "P={:.2f} | Steer={:.2f} | Target Speed={:.2f} m/s | Controller Condition=".format(
         STEERING_CONSTANT,
@@ -132,7 +150,7 @@ if __name__ == "__main__":
     rospy.init_node('raw_control_pid')
 
     global CONTROL_MODE
-    CONTROL_MODE= "PID_DYNAMIC" #'PID_DYNAMIC' #'WAYPOINTS_REAL_CAR_RIGHT' #"WAYPOINTS_REAL_CAR"
+    CONTROL_MODE= "PID_DYNAMIC_SPEED_CONTROL" #'PID_DYNAMIC' #'WAYPOINTS_REAL_CAR_RIGHT' #"WAYPOINTS_REAL_CAR"
     initialize_control_constants(CONTROL_MODE)
 
     global controller

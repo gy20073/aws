@@ -85,8 +85,13 @@ output_base="/root/mount/home/bdd/intel/data"
 # mm45_v4_SqnoiseShoulder_rfsv25_accuratemap
 # mm45_v4_SqnoiseShoulder_rfsv2_accuratemap
 
+#2019-05-03
+# mm45_v4_SqnoiseShoulder_rfsv6_goodv2map
+# mm45_v4_SqnoiseShoulder_rfsv6_notown0102
+# mm45_v4_SqnoiseShoulder_rfsv6_withTL
+
 roslaunch mkz_intel CIL.launch \
-    exp_id:="mm45_v4_PcSensordropLessmap_rfsv4_extra_structure_noise" \
+    exp_id:="mm45_v4_SqnoiseShoulder_rfsv6_goodv2map" \
     use_fake_image:="false" \
     fake_video_path:="/scratch/yang/aws_data/mkz/mkz2/inverted_compress.avi" \
     use_auto_traj:="false" \
