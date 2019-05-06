@@ -54,7 +54,15 @@ class ControlInterface(object):
         else:
             twist_cmd = TwistStamped()
             #print('===== Twist_sped = {}'.format(self._twist_speed))
-            twist_cmd.twist.linear.x = self._twist_speed * self._throttle
+            #compute a scale factor from self.throttle
+            t = self._throttle
+            if t > 0.8:
+                factor = 1.0
+            elif t< 0.2:
+                factor = 0.0
+            else:
+                factor = (t-0.2) / 0.6
+            twist_cmd.twist.linear.x = self._twist_speed * factor
             self._twist_pub.publish(twist_cmd)
 
         steer_cmd = SteeringCmd()
