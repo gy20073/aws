@@ -73,7 +73,7 @@ def initialize_control_constants(control_mode):
         print('>>>>>>>> CONDITION = [{}]'.format(condition))
         THROTTLE_CONSTANT = 1.0
         if condition == 'w' or condition == 's':
-            SAFETY_SPEED = 3.0  # km/h
+            SAFETY_SPEED = 8.0  # km/h
             STEERING_CONSTANT = -3.0
             # the original set of parameter is speed=15, steer_constant=-5.5
         elif condition == 'd':
