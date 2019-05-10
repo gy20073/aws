@@ -13,9 +13,11 @@ def loop_over_video(path, func, temp_down_factor=10, batch_size=1):
     i = 0
     batch_frames = []
     video_init = False
+    print("cap opening", cap.isOpened())
     while (cap.isOpened()):
         ret, frame = cap.read()
         if not ret:
+            print("breaking")
             break
 
         if i % temp_down_factor:
@@ -324,24 +326,24 @@ if __name__ == "__main__":
     if True:
         # test within the docker
         #video_path = "/scratch/yang/aws_data/mkz/mkz_large_fov/output_0.avi"
-        video_path = "/scratch/yang/aws_data/mkz/mkz_large_fov/data_00000.h5.mp4"
-        batch_size = 8
+        video_path = "/data1/yang/aws_data/iphone/iphone5_undis.mp4"
+        batch_size = 4
 
         from all_perceptions import Perceptions
 
         perceptions = Perceptions(det_COCO=False,
-                                  det_TL=False,
+                                  det_TL=True,
                                   det_TS=False,
                                   seg=True,
                                   depth=False,
-                                  seg_abn=False,
+                                  seg_abn=True,
                                   intersection=False,
                                   drivable_area=False,
                                   batch_size=batch_size,
-                                  gpu_assignment=[1],
+                                  gpu_assignment=[0,1, 3],
                                   compute_methods={},
                                   viz_methods={},
-                                  path_config="path_docker_newseg") #""path_jormungandr_newseg")
+                                  path_config="path_jormungandr_newseg") #""path_jormungandr_newseg")
         #time.sleep(5)
 
         loop_over_video(video_path,

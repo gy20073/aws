@@ -6,6 +6,7 @@ from torch.autograd.function import once_differentiable
 from torch.utils.cpp_extension import load
 
 _src_path = path.join(path.dirname(path.abspath(__file__)), "src")
+print(_src_path)
 _backend = load(name="inplace_abn",
                 extra_cflags=["-O3"],
                 sources=[path.join(_src_path, f) for f in [
