@@ -2,7 +2,7 @@ import os, copy, sys
 from subprocess import call
 
 if __name__ == "__main__":
-    exp_id = "mm45_v4_SqnoiseShoulder_rfsv6_notown0102_lessmap"
+    exp_id = "mm45_v4_SqnoiseShoulder_rfsv6_notown0102_mergefollowstraight"
 
     remote_path = "/scratch/yang/aws_data/CIL_modular_data/models/" + exp_id
     local_path = "/root/mount/home/bdd/intel/data/CIL_modular_data/models/" + exp_id

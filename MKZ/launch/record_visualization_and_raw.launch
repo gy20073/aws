@@ -18,13 +18,13 @@
             <param name="codec" value="X264" />
         </node>
 
-         <!--
+
         <node name="record_visualizations_info" pkg="image_view" type="video_recorder" output="screen">
             <remap to="/vis_continuous_full" from="image"/>
             <param name="filename" value="$(arg viz_output_path)_info.avi" />
             <param name="codec" value="X264" />
         </node>
-        -->
+
 
         <node name="record_visualizations_info_enabled" pkg="image_view" type="video_recorder" output="screen">
             <remap to="/vis_continuous_full_enabled" from="image"/>
