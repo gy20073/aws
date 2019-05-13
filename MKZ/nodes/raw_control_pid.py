@@ -125,6 +125,7 @@ def on_stb_received(data):
     controller.set_throttle(throttle * THROTTLE_CONSTANT)
     controller.set_break(brake * 0.0)
     controller.set_steer(steer * STEERING_CONSTANT)  # 8.2 in range
+    controller.set_speed_features(brake=brake, throttle=throttle)
     #print('>>> Steering value = {} | real speed = {}'.format(steer * STEERING_CONSTANT, vehicle_real_speed_kmh))
 
     message = "P={:.2f} | Steer={:.2f} | Target Speed={:.2f} m/s | Controller Condition=".format(

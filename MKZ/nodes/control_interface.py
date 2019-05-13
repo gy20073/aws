@@ -2,9 +2,9 @@
 
 import rospy, time, threading
 # messages related
-from dbw_mkz_msgs.msg import ThrottleCmd, BrakeCmd, SteeringCmd
-
-from geometry_msgs.msg import TwistStamped
+from dbw_mkz_msgs.msg import ThrottleCmd, BrakeCmd, SteeringCmd, TwistCmd
+from std_msgs.msg import Float64
+#from geometry_msgs.msg import TwistStamped
 
 class ControlInterface(object):
     def __init__(self, no_speed_control = False):
@@ -17,7 +17,13 @@ class ControlInterface(object):
         self.no_speed_control = no_speed_control
         if no_speed_control:
             self._twist_speed = 0.0
-            self._twist_pub = rospy.Publisher('/vehicle/cmd_vel_stamped', TwistStamped, queue_size=1)
+            #self._twist_pub = rospy.Publisher('/vehicle/cmd_vel_stamped', TwistStamped, queue_size=1)
+            self._twist_pub = rospy.Publisher('/vehicle/cmd_vel_with_limits', TwistCmd, queue_size=1)
+            self._speed_state = "GO" # or "STOP"
+            self._speed_counter = 0
+            # TODO: the naming might be bad
+            self._accel_kp_pub = rospy.Publisher('/vehicle/accel_kp', Float64, queue_size=1)
+            self._accel_ki_pub = rospy.Publisher('/vehicle/accel_ki', Float64, queue_size=1)
 
         self.counter = 0
         self.last_time = time.time()
@@ -38,6 +44,35 @@ class ControlInterface(object):
     def set_twist_speed(self, new_speed):
         self._twist_speed = new_speed
 
+    def _should_stop_score(self, dict):
+        # return 1.0 if should stop, 0.0 if should go
+        score = dict["brake"] - dict["throttle"]
+        return (score + 1.0) / 2.0
+
+    def set_speed_features(self, **dict):
+        should_stop = self._should_stop_score(dict)
+
+        if self._speed_state == "GO":
+            if should_stop > 0.6: # correspond to throttle 0, brake 0.2
+                self._speed_counter += 1
+            else:
+                self._speed_counter = 0
+            if self._speed_counter >= 2:
+                # decide to stop
+                print("change to stop mode")
+                self._speed_state = "STOP"
+                self._speed_counter = 0
+        else: # STOP mode
+            if should_stop < 0.1: # correspond to throttle 0.8, brake 0.0
+                self._speed_counter += 1
+            else:
+                self._speed_counter = 0
+            if self._speed_counter >= 4:
+                print("change to go mode")
+                self._speed_state = "GO"
+                self._speed_counter = 0
+
+
     def pub_once(self):
         if not self.no_speed_control:
             throttle_cmd = ThrottleCmd()
@@ -52,18 +87,17 @@ class ControlInterface(object):
             brake_cmd.pedal_cmd = self._brake
             self._brake_pub.publish(brake_cmd)
         else:
-            twist_cmd = TwistStamped()
+            twist_cmd = TwistCmd()
             #print('===== Twist_sped = {}'.format(self._twist_speed))
-            #compute a scale factor from self.throttle
-            t = self._throttle
-            if t > 0.8:
-                factor = 1.0
-            elif t< 0.2:
-                factor = 0.0
-            else:
-                factor = (t-0.2) / 0.6
-            twist_cmd.twist.linear.x = self._twist_speed * factor
+            if self._speed_state == "GO":
+                twist_cmd.twist.linear.x = self._twist_speed
+            else: # STOP
+                twist_cmd.twist.linear.x = 0.0
+            twist_cmd.accel_limit = 1.0 # m/s^2
+            twist_cmd.decel_limit = 3.0 # m/s^2
             self._twist_pub.publish(twist_cmd)
+            self._accel_kp_pub.publish(0.2) # default is 0.4
+            self._accel_ki_pub.publish(0.1)  # default is 0.1
 
         steer_cmd = SteeringCmd()
         steer_cmd.enable = True
