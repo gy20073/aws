@@ -46,7 +46,7 @@ class ControlInterface(object):
         self._twist_speed = new_speed
 
     def set_speed_features(self, **dict):
-        s = dict["throttle"]
+        s = dict["throttle"] / 3.6
         if s > 4.0:
             if self._speed_next_state == "GO":
                 self._speed_counter += 1
@@ -67,6 +67,8 @@ class ControlInterface(object):
                 self._speed_counter = 1
 
         if self._speed_counter >= 3:
+            if self._speed_state != self._speed_next_state:
+                print("change to state", self._speed_next_state)
             self._speed_state = self._speed_next_state
             self._speed_counter = 0
 
@@ -93,7 +95,7 @@ class ControlInterface(object):
             else: # STOP
                 twist_cmd.twist.linear.x = 0.0
             twist_cmd.accel_limit = 1.0 # m/s^2
-            twist_cmd.decel_limit = 2.0 # m/s^2
+            twist_cmd.decel_limit = 1.0 # m/s^2
             self._twist_pub.publish(twist_cmd)
             #self._dclient.update_configuration({"accel_ki":0.1, "accel_kp":0.4})
             
