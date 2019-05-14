@@ -98,9 +98,10 @@ output_base="/root/mount/home/bdd/intel/data"
 
 # 2019-05-11, retest above and the following
 # mm45_v4_SqnoiseShoulder_rfsv6_notown0102_mergefollowstraight
+# mm45_v4_SqnoiseShoulder_rfsv6_mergefollowstraight
 
 roslaunch mkz_intel CIL.launch \
-    exp_id:="mm45_v4_SqnoiseShoulder_rfsv6_withTL_lessmap" \
+    exp_id:="mm45_v4_SqnoiseShoulder_rfsv6_mergefollowstraight" \
     use_fake_image:="false" \
     fake_video_path:="/scratch/yang/aws_data/mkz/mkz2/inverted_compress.avi" \
     use_auto_traj:="false" \

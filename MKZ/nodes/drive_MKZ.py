@@ -191,7 +191,7 @@ def on_image_received(data):
     else:
         v = Vector3()
         v.x = control.steer
-        v.y = control.throttle
+        v.y = control.predicted_speed #control.throttle
         v.z = control.brake
         global raw_control_pub
         if raw_control_pub != None:

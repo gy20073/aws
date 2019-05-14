@@ -4,6 +4,7 @@ import rospy, time, threading
 # messages related
 from dbw_mkz_msgs.msg import ThrottleCmd, BrakeCmd, SteeringCmd, TwistCmd
 from std_msgs.msg import Float64
+import dynamic_reconfigure.client
 #from geometry_msgs.msg import TwistStamped
 
 class ControlInterface(object):
@@ -22,9 +23,8 @@ class ControlInterface(object):
             self._speed_state = "GO" # or "STOP"
             self._speed_counter = 0
             # TODO: the naming might be bad
-            self._accel_kp_pub = rospy.Publisher('/vehicle/accel_kp', Float64, queue_size=1)
-            self._accel_ki_pub = rospy.Publisher('/vehicle/accel_ki', Float64, queue_size=1)
-
+            #self._dclient = dynamic_reconfigure.client.Client("dbw_mkz_twist_controller", timeout=15)
+            
         self.counter = 0
         self.last_time = time.time()
         self.start_loop()
@@ -43,11 +43,6 @@ class ControlInterface(object):
 
     def set_twist_speed(self, new_speed):
         self._twist_speed = new_speed
-
-    def _should_stop_score(self, dict):
-        # return 1.0 if should stop, 0.0 if should go
-        score = dict["brake"] - dict["throttle"]
-        return (score + 1.0) / 2.0
 
     def set_speed_features(self, **dict):
         should_stop = self._should_stop_score(dict)
@@ -94,11 +89,10 @@ class ControlInterface(object):
             else: # STOP
                 twist_cmd.twist.linear.x = 0.0
             twist_cmd.accel_limit = 1.0 # m/s^2
-            twist_cmd.decel_limit = 3.0 # m/s^2
+            twist_cmd.decel_limit = 2.0 # m/s^2
             self._twist_pub.publish(twist_cmd)
-            self._accel_kp_pub.publish(0.2) # default is 0.4
-            self._accel_ki_pub.publish(0.1)  # default is 0.1
-
+            #self._dclient.update_configuration({"accel_ki":0.1, "accel_kp":0.4})
+            
         steer_cmd = SteeringCmd()
         steer_cmd.enable = True
         # rad, range -8.2 to 8.2
