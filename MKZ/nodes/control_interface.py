@@ -21,6 +21,7 @@ class ControlInterface(object):
             #self._twist_pub = rospy.Publisher('/vehicle/cmd_vel_stamped', TwistStamped, queue_size=1)
             self._twist_pub = rospy.Publisher('/vehicle/cmd_vel_with_limits', TwistCmd, queue_size=1)
             self._speed_state = "GO" # or "STOP"
+            self._speed_next_state = "GO"
             self._speed_counter = 0
             # TODO: the naming might be bad
             #self._dclient = dynamic_reconfigure.client.Client("dbw_mkz_twist_controller", timeout=15)
@@ -45,28 +46,29 @@ class ControlInterface(object):
         self._twist_speed = new_speed
 
     def set_speed_features(self, **dict):
-        should_stop = self._should_stop_score(dict)
-
-        if self._speed_state == "GO":
-            if should_stop > 0.6: # correspond to throttle 0, brake 0.2
+        s = dict["throttle"]
+        if s > 4.0:
+            if self._speed_next_state == "GO":
                 self._speed_counter += 1
             else:
-                self._speed_counter = 0
-            if self._speed_counter >= 2:
-                # decide to stop
-                print("change to stop mode")
-                self._speed_state = "STOP"
-                self._speed_counter = 0
-        else: # STOP mode
-            if should_stop < 0.1: # correspond to throttle 0.8, brake 0.0
+                self._speed_next_state = "GO"
+                self._speed_counter = 1
+        elif s > 2.5:
+            if self._speed_next_state == "SLOW":
                 self._speed_counter += 1
             else:
-                self._speed_counter = 0
-            if self._speed_counter >= 4:
-                print("change to go mode")
-                self._speed_state = "GO"
-                self._speed_counter = 0
+                self._speed_next_state = "SLOW"
+                self._speed_counter = 1
+        else: # < 2.5
+            if self._speed_next_state == "STOP":
+                self._speed_counter += 1
+            else:
+                self._speed_next_state = "STOP"
+                self._speed_counter = 1
 
+        if self._speed_counter >= 3:
+            self._speed_state = self._speed_next_state
+            self._speed_counter = 0
 
     def pub_once(self):
         if not self.no_speed_control:
@@ -86,6 +88,8 @@ class ControlInterface(object):
             #print('===== Twist_sped = {}'.format(self._twist_speed))
             if self._speed_state == "GO":
                 twist_cmd.twist.linear.x = self._twist_speed
+            elif self._speed_state == "SLOW":
+                twist_cmd.twist.linear.x = self._twist_speed / 2.0
             else: # STOP
                 twist_cmd.twist.linear.x = 0.0
             twist_cmd.accel_limit = 1.0 # m/s^2
