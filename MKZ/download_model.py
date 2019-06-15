@@ -1,34 +1,39 @@
 import os, copy, sys
 from subprocess import call
+import sys
 
 if __name__ == "__main__":
-    exp_id = "mm45_v4_SqnoiseShoulder_rfsv6_mergefollowstraight"
+    exp_id_list = sys.argv[1] #"mm45_v4_SqnoiseShoulder_exptownv3_notown0102_mergefollowstraight"
 
-    remote_path = "/scratch/yang/aws_data/CIL_modular_data/models/" + exp_id
-    local_path = "/root/mount/home/bdd/intel/data/CIL_modular_data/models/" + exp_id
-    if not os.path.exists(local_path):
-        os.mkdir(local_path, 0777)
+    sp = exp_id_list.split(",")
+    for id in sp:
+        exp_id = id.strip()
 
-    scp_cmd = ["scp", "-i", "/root/mount/home/bdd/yang/yang_private", "yang@jormungandr.ist.berkeley.edu:"]
+        remote_path = "/scratch/yang/aws_data/CIL_modular_data/models/" + exp_id
+        local_path = "/root/mount/home/bdd/intel/data/CIL_modular_data/models/" + exp_id
+        if not os.path.exists(local_path):
+            os.mkdir(local_path, 0777)
 
-    scp_now = copy.deepcopy(scp_cmd)
-    scp_now[-1] += remote_path + "/checkpoint"
+        scp_cmd = ["scp", "-i", "/root/mount/home/bdd/yang/yang_private", "yang@jormungandr.ist.berkeley.edu:"]
 
-    scp_now.append(local_path)
+        scp_now = copy.deepcopy(scp_cmd)
+        scp_now[-1] += remote_path + "/checkpoint"
 
-    call(" ".join(scp_now), shell=True)
+        scp_now.append(local_path)
 
-    with open(local_path+"/checkpoint", "r") as f:
-        line = f.readline()
+        call(" ".join(scp_now), shell=True)
 
-    model = line.split("\"")[-2]
-    print(model)
+        with open(local_path+"/checkpoint", "r") as f:
+            line = f.readline()
+
+        model = line.split("\"")[-2]
+        print(model)
 
 
-    scp_now = copy.deepcopy(scp_cmd)
-    scp_now[-1] += remote_path + "/" + model + "*"
+        scp_now = copy.deepcopy(scp_cmd)
+        scp_now[-1] += remote_path + "/" + model + "*"
 
-    scp_now.append(local_path)
+        scp_now.append(local_path)
 
-    call(" ".join(scp_now), shell=True)
+        call(" ".join(scp_now), shell=True)
 
