@@ -182,54 +182,42 @@ class Perceptions:
                     self.instances[mode_name_i] = parent_conn
 
     def path_jormungandr(self):
-        self.paths = {}
-        self.paths["det_COCO"] = {"path_cfg": "/data/yang/code/aws/coco_original/yolov3.cfg",
-                                  "path_weights": "/data/yang/code/aws/data/yolov3.weights",
-                                  "path_meta": "/data/yang/code/aws/coco_original/coco.data"}
-        self.paths["det_TL"] = {"path_cfg": "/data/yang/code/aws/traffic_light/yolov3-TL.cfg.test",
-                                "path_weights": "/scratch/yang/aws_data/bdd100k/yolo_format/backup/yolov3-TL.backup",
-                                "path_meta": "/data/yang/code/aws/traffic_light/TL.data"}
-        self.paths["det_TS"] = {"path_cfg": "/data/yang/code/aws/traffic_sign/yolov3-CL.cfg.test",
-                                "path_weights": "/scratch/yang/aws_data/coco_lisa_v2/backup/yolov3-CL.backup",
-                                "path_meta": "/data/yang/code/aws/traffic_sign/CL.data"}
-        self.paths["seg"] = {"model_path": "/scratch/yang/aws_data/mapillary/linknet_output2/model-last.net",
-                             "mean_path": "/scratch/yang/aws_data/mapillary/cache_old/576_768/stat.t7"}
-        self.paths["depth"] = {"model_path": "/home/yang/monodepth/models/model_city2eigen/model_city2eigen",
-                               "python_path": "/home/yang/monodepth"}
-        self.paths["seg_abn"] = {"model_path": "/scratch/yang/aws_data/mapillary/inplace_abn/wide_resnet38_deeplab_vistas.pth.tar",}
-        self.paths["0intersection"] = {
-                            "model_path": "/scratch/yang/aws_data/intersection_detection/model_74.pth",
-                            "mean_path": "/scratch/yang/aws_data/intersection_detection/train_mean_42140.tensor"}
-        self.paths["drivable_area"] = {
-                            "model_path": "/data/yang_cache/aws_data/drn_d_22_drivable-e5d3dc9c.pth"}
+        self.path_docker(codebase="/home/yang/code/aws/",
+                         model_base="/home/yang/data/aws_data/models/",
+                         monodepth_python_path="/shared/yang/software/monodepth")
 
     def path_jormungandr_newseg(self):
         self.path_jormungandr()
-        self.paths["seg"] = {"model_path": "/scratch/yang/aws_data/mapillary/linknet_output3/model-last.net",
-                             "mean_path": "/scratch/yang/aws_data/mapillary/cache/576_768/stat.t7"}
 
-    def path_docker(self):
+        model_base = "/home/yang/data/aws_data/models/"
+        self.paths["seg"] = {"model_path": model_base + "seg_v2.net",
+                             "mean_path": model_base + "seg_stat_v2.t7"}
+
+    def path_docker(self,
+                    codebase="/root/aws/",
+                    monodepth_python_path="/root/monodepth",
+                    model_base = "/root/models/"):
         self.paths = {}
-        codebase = "/root/aws/"
+
         self.paths["det_COCO"] = {"path_cfg": codebase+"coco_original/yolov3.cfg",
-                                  "path_weights": "/root/models/COCO-yolov3.weights",
+                                  "path_weights": model_base + "COCO-yolov3.weights",
                                   "path_meta": codebase+"coco_original/coco.data.docker"}
         self.paths["det_TL"] = {"path_cfg": codebase+"traffic_light/yolov3-TL.cfg.test",
-                                "path_weights": "/root/models/TrafficLight-yolov3-TL.backup",
+                                "path_weights": model_base + "TrafficLight-yolov3-TL.backup",
                                 "path_meta": codebase+"traffic_light/TL.data.docker"}
         self.paths["det_TS"] = {"path_cfg": codebase+"traffic_sign/yolov3-CL.cfg.test",
-                                "path_weights": "/root/models/TrafficSign-yolov3-CL.backup",
+                                "path_weights": model_base + "TrafficSign-yolov3-CL.backup",
                                 "path_meta": codebase+"traffic_sign/CL.data.docker"}
-        self.paths["seg"] = {"model_path": "/root/models/Segmentation-LinkNet-model-152.net",
-                             "mean_path": "/root/models/Segmentation_LinkNet_576_768.stat.t7"}
-        self.paths["depth"] = {"model_path": "/root/models/model_city2eigen",
-                               "python_path": "/root/monodepth"}
-        self.paths["seg_abn"] = {"model_path": "/root/models/abn_wideres38.pth.tar",}
+        self.paths["seg"] = {"model_path": model_base + "Segmentation-LinkNet-model-152.net",
+                             "mean_path": model_base + "Segmentation_LinkNet_576_768.stat.t7"}
+        self.paths["depth"] = {"model_path": model_base + "model_city2eigen",
+                               "python_path": monodepth_python_path}
+        self.paths["seg_abn"] = {"model_path": model_base + "abn_wideres38.pth.tar",}
         self.paths["0intersection"] = {
             "model_path": "TODO",
             "mean_path": "TODO"}
         self.paths["drivable_area"] = {
-            "model_path": "/root/models/drivable_python2.pth"}
+            "model_path": model_base + "drivable_python2.pth"}
 
     def path_docker_newseg(self):
         self.path_docker()
