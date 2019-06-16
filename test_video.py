@@ -332,15 +332,15 @@ if __name__ == "__main__":
         from all_perceptions import Perceptions
 
         perceptions = Perceptions(det_COCO=False,
-                                  det_TL=True,
+                                  det_TL=False,
                                   det_TS=False,
                                   seg=True,
                                   depth=False,
-                                  seg_abn=True,
+                                  seg_abn=False,
                                   intersection=False,
                                   drivable_area=False,
                                   batch_size=batch_size,
-                                  gpu_assignment=[0,1, 3],
+                                  gpu_assignment=[0],
                                   compute_methods={},
                                   viz_methods={},
                                   path_config="path_jormungandr_newseg") #""path_jormungandr_newseg")
