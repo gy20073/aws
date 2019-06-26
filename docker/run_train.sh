@@ -3,7 +3,7 @@
 # begin of path specifications
 CODE_PATH="/home/yang/aws"
 DATA="/home/yang/data/aws_data2/"
-mount_dataset_base="/shared/yang/data1/aws_data/carla_collect"
+mount_dataset_base="/shared/yang/data1/aws_data/carla_collect/"
 mount_dataset_id1="steer103_v5_way_v2_town02"
 # end of path specification
 
