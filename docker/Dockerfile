@@ -165,3 +165,4 @@ RUN /root/gdown.pl/gdown.pl https://drive.google.com/file/d/1HUV3eQXLpE5HkN7XPQk
 # now start the building of the training environment
 RUN mkdir -p /shared/yang/software
 RUN ln -s /root/aws/yolo/darknet /shared/yang/software/darknet
+
