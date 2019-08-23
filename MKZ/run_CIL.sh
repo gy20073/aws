@@ -108,8 +108,17 @@ output_base="/root/mount/home/bdd/intel/data"
 # mm45_v4_SqnoiseShoulder_exptownv8_notown0102_mergefollowstraight
 # mm45_v4_SqnoiseShoulder_exptownv8_mergefollowstraight
 
+# 2019-07-8
+# mm45_v4_SqnoiseShoulder_full_nopark_div2
+# mm45_v4_SqnoiseShoulder_full_nopark_div4
+# mm45_v4_SqnoiseShoulder_full_nopark_div8
+# mm45_v4_SqnoiseShoulder_nozebra
+# mm45_v4_SqnoiseShoulder_noshoulder
+# mm45_v4_SqnoiseShoulder_has_T_junction
+# mm45_v4_SqnoiseShoulder_no_T_junction
+
 roslaunch mkz_intel CIL.launch \
-    exp_id:="mm45_v4_SqnoiseShoulder_exptownv8_notown0102_mergefollowstraight" \
+    exp_id:="mm45_v4_SqnoiseShoulder_no_T_junction" \
     use_fake_image:="false" \
     fake_video_path:="/scratch/yang/aws_data/mkz/mkz2/inverted_compress.avi" \
     use_auto_traj:="false" \
