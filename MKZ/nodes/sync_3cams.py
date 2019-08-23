@@ -23,8 +23,8 @@ INPUT_IMAGE_TOPIC_RIGHT = "/camera_array/cam2/image_raw"
 
 global bridge, driving_model, vis_pub_full, vehicle_real_speed_kmh, direction, controller
 
-IM_WIDTH = 768*2
-IM_HEIGHT = 576*2
+IM_WIDTH = 768
+IM_HEIGHT = 576
 
 left_cache = None
 left_lock = threading.Lock()
@@ -56,11 +56,15 @@ def on_image_received_right(data):
 
 
 condition = "s"
+should_stop=False
 def on_key_received(data):
     key = data.data
-    global condition
+    global condition, should_stop
     condition = key
     print("received key in pid ", key)
+
+    if key.lower() == "k":
+        should_stop = True
 
 vehicle_real_speed_kmh = 0.0
 def on_speed_received(data):
@@ -74,10 +78,14 @@ def on_dbw_enable_changed(data):
     dbw_enable = data.data
 
 global pickle_path
+skip_initial_counter=0
 # this is the center image
 def on_image_received(data):
     # this would directly receive the raw image from the driver
-    global bridge, vis_pub_full
+    global bridge, vis_pub_full, should_stop
+    if should_stop:
+        #print("we should stop collecting data")
+        return
 
     img = bridge.imgmsg_to_cv2(data, "bgr8")
     img = cv2.resize(img, (IM_WIDTH, IM_HEIGHT))
@@ -86,6 +94,11 @@ def on_image_received(data):
 
     if left_cache is None or right_cache is None:
         return
+    global skip_initial_counter
+    skip_initial_counter+=1
+    if skip_initial_counter<20:
+        return
+
     left_lock.acquire()
     right_lock.acquire()
     sensors = [left_cache, img, right_cache]
@@ -98,7 +111,7 @@ def on_image_received(data):
     # hashed image value to (speed and command)
     global vehicle_real_speed_kmh, condition
 
-    infos.append([vehicle_real_speed_kmh/3.6, condition, vehicle_pos, vehicle_yaw, vehicle_pos_nmea])
+    infos.append([vehicle_real_speed_kmh/3.6, condition, vehicle_pos, vehicle_yaw, vehicle_pos_nmea, (nmea_GPGGA, nmea_BESTPOS, nmea_SOL)])
     # pickle this out to a file
     with open(pickle_path+ ".pkl", 'wb') as f:
         pickle.dump(infos, f, protocol=2)
@@ -107,7 +120,7 @@ def on_image_received(data):
     if dbw_enable:
         global vis_pub_full_enable
         vis_pub_full_enable.publish(img_msg)
-        infos_enable.append([vehicle_real_speed_kmh / 3.6, condition, vehicle_pos, vehicle_yaw, vehicle_pos_nmea])
+        infos_enable.append([vehicle_real_speed_kmh / 3.6, condition, vehicle_pos, vehicle_yaw, vehicle_pos_nmea, (nmea_GPGGA, nmea_BESTPOS, nmea_SOL)])
         # pickle this out to a file
         with open(pickle_path+"_enable.pkl", 'wb') as f:
             pickle.dump(infos_enable, f, protocol=2)
@@ -121,7 +134,20 @@ def on_gps_received(data):
     vehicle_pos = [lat, lng]
 
 vehicle_pos_nmea = [37.918355, -122.338461]
+nmea_GPGGA=None
+nmea_BESTPOS=None
+nmea_SOL=None
 def on_gps_received_nmea(data):
+    global nmea_GPGGA, nmea_BESTPOS, nmea_SOL
+    if "GPGGA" in data.sentence:
+        nmea_GPGGA = data.sentence
+    elif "BESTPOS" in data.sentence:
+        nmea_BESTPOS = data.sentence
+    elif "SOL" in data.sentence:
+        nmea_SOL = data.sentence
+    else:
+        print("unfamilar NMEA sentence", data.sentence)
+
     if data.sentence[:4] != "[USB":
         #print("throw awaw sentence ", data.sentence)
         return
@@ -146,6 +172,7 @@ def on_imu_received(data):
     global vehicle_yaw
     vehicle_yaw = quaternion_to_yaw(data)
 
+
 if __name__ == "__main__":
     rospy.init_node('sync_3cam')
 
@@ -157,26 +184,26 @@ if __name__ == "__main__":
     bridge = CvBridge()
 
     global vis_pub_full
-    vis_pub_full = rospy.Publisher('sync_3cam', sImage, queue_size=10)
+    vis_pub_full = rospy.Publisher('sync_3cam', sImage, queue_size=100)
 
     global vis_pub_full_enable
-    vis_pub_full_enable = rospy.Publisher('sync_3cam_enable', sImage, queue_size=10)
+    vis_pub_full_enable = rospy.Publisher('sync_3cam_enable', sImage, queue_size=100)
 
     # subscribe to many topics
-    rospy.Subscriber(INPUT_IMAGE_TOPIC, sImage, on_image_received, queue_size=1)
-    rospy.Subscriber(INPUT_IMAGE_TOPIC_LEFT, sImage, on_image_received_left, queue_size=1)
-    rospy.Subscriber(INPUT_IMAGE_TOPIC_RIGHT, sImage, on_image_received_right, queue_size=1)
+    rospy.Subscriber(INPUT_IMAGE_TOPIC, sImage, on_image_received, queue_size=100)
+    rospy.Subscriber(INPUT_IMAGE_TOPIC_LEFT, sImage, on_image_received_left, queue_size=100)
+    rospy.Subscriber(INPUT_IMAGE_TOPIC_RIGHT, sImage, on_image_received_right, queue_size=100)
 
     # add the commands and speed
-    rospy.Subscriber("/vehicle/mkz_key_command", String, on_key_received, queue_size=10)
-    rospy.Subscriber("/vehicle/steering_report", SteeringReport, on_speed_received, queue_size=1)
-    rospy.Subscriber("/vehicle/dbw_enabled", Bool, on_dbw_enable_changed, queue_size=1)
+    rospy.Subscriber("/vehicle/mkz_key_command", String, on_key_received, queue_size=100)
+    rospy.Subscriber("/vehicle/steering_report", SteeringReport, on_speed_received, queue_size=100)
+    rospy.Subscriber("/vehicle/dbw_enabled", Bool, on_dbw_enable_changed, queue_size=100)
 
     # the mapping related
     global vehicle_pos, vehicle_yaw
-    rospy.Subscriber("/vehicle/gps/fix", NavSatFix, on_gps_received, queue_size=10)
-    rospy.Subscriber("/xsens/imu/data", Imu, on_imu_received, queue_size=10)
+    rospy.Subscriber("/vehicle/gps/fix", NavSatFix, on_gps_received, queue_size=100)
+    rospy.Subscriber("/xsens/imu/data", Imu, on_imu_received, queue_size=100)
 
-    rospy.Subscriber("/nmea_sentence", Sentence, on_gps_received_nmea, queue_size=1)
+    rospy.Subscriber("/nmea_sentence", Sentence, on_gps_received_nmea, queue_size=100)
 
     rospy.spin()

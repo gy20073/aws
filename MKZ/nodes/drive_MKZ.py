@@ -315,7 +315,7 @@ if __name__ == "__main__":
     rospy.init_node('BDD_Driving_Model')
     exp_id = sys.argv[1]
 
-    use_auto_traj = sys.argv[2]
+    use_auto_traj = sys.argv[2] 
     if use_auto_traj.lower() == "true":
         use_auto_traj = True
         gps_traj_file = sys.argv[3]
