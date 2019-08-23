@@ -90,6 +90,7 @@ output_base="/root/mount/home/bdd/intel/data"
 # mm45_v4_SqnoiseShoulder_rfsv6_goodv2map
 # mm45_v4_SqnoiseShoulder_rfsv6_notown0102
 # mm45_v4_SqnoiseShoulder_rfsv6_withTL
+# those models rely too much on the map, and we know that is a problem
 
 # 2019-05-05
 # mm45_v4_SqnoiseShoulder_rfsv6_withTL_lessmap
