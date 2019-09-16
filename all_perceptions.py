@@ -517,6 +517,40 @@ class Perceptions:
                                "classid": cid})))
         return conn.recv()
 
+    def visualize_simple(self, logits_dict, ibatch, subplot_size=(312, 416)):
+        # visualize segmentation with or without traffic light detection module
+
+        imsz = lambda image: cv2.resize(image,
+                           dsize=(subplot_size[1], subplot_size[0]),
+                           interpolation=cv2.INTER_LINEAR)
+
+        mode = "seg"
+        assert mode in self.all_modes.keys()
+        conn = self.instances[mode]
+        conn.send(("visualize", (logits_dict[mode], ibatch)))
+        seg_viz = conn.recv()
+
+        # convert the segmentation color to a simpler subset
+        #color = np.array([[0, 0, 142], [128, 64, 128], [244, 35, 232], [70, 70, 70], [70, 130, 180], [230, 150, 140]],
+        #                 dtype=np.uint8)
+        # meaning: car, road, sidewalk, building, sky, rail track
+        seg_viz[seg_viz[:, :, 0] == 70, :] = np.array([[[244, 35, 232]]])  # building & sky -> sidewalk
+        seg_viz[seg_viz[:, :, 0] == 230, :] = np.array([[[244, 35, 232]]])  # rail track -> sidewalk
+
+        mode = "det_TL"
+        if mode in self.all_modes.keys():
+            conn = self.instances[mode]
+            conn.send(("visualize", (logits_dict[mode], ibatch)))
+            det_viz = conn.recv()
+            output = 0.6*imsz(det_viz) + 0.4*imsz(seg_viz)
+        else:
+            output = 0.6 * imsz(self.images[ibatch]) + 0.4 * imsz(seg_viz)
+
+        self.viz_nrow = 1
+        self.viz_ncol = 1
+
+        return output
+
     def visualize(self, logits_dict, ibatch, subplot_size=(312, 416)):
         out_viz = {"0_original": self.images[ibatch]}
         for mode in self.all_modes.keys():
