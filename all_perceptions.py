@@ -570,7 +570,8 @@ class Perceptions:
         for mode in self.all_modes.keys():
             conn = self.instances[mode]
             if "det" in mode:
-                conn.send(("visualize_low_thresh", (logits_dict[mode], ibatch)))
+                #conn.send(("visualize_low_thresh", (logits_dict[mode], ibatch)))
+                conn.send(("visualize", (logits_dict[mode], ibatch)))
 
         for mode in self.all_modes.keys():
             conn = self.instances[mode]

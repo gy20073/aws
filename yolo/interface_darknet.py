@@ -1,4 +1,5 @@
-import cv2, os, math
+import cv2, os, math, sys
+sys.path.append("../")
 import numpy as np
 from pydarknet import Detector, Image
 from common import resize_images
@@ -231,7 +232,10 @@ class YoloDetector:
         return self.visualize_logits_general(pred, ibatch, thresh=0.1)
 
 if __name__ == "__main__":
-    im = cv2.imread("/scratch/yang/aws_data/mapillary/validation/images/0daE8mWxlKFT8kLBE5f12w.jpg")
+    #im = cv2.imread("/scratch/yang/aws_data/mapillary/validation/images/0daE8mWxlKFT8kLBE5f12w.jpg")
+    im = cv2.imread("/shared/yang/data1/aws_data/bdd100k/yolo_format/images/val/video/b69173a4-d0c92583.jpg")
+    im = np.reshape(im, [1, im.shape[0], im.shape[1], im.shape[2]])
+
     if False:
         detector = YoloDetector(path_cfg="/data/yang/code/aws/coco_original/yolov3.cfg",
                                 path_weights="/data/yang/code/aws/data/yolov3.weights",
@@ -242,11 +246,16 @@ if __name__ == "__main__":
                                 path_weights="/scratch/yang/aws_data/bdd100k/yolo_format/backup/yolov3-TL.backup",
                                 path_meta="/data/yang/code/aws/traffic_light/TL.data")
 
-    if True:
+    if False:
         detector = YoloDetector(path_cfg="/data/yang/code/aws/traffic_sign/yolov3-CL.cfg.test",
                                 path_weights="/scratch/yang/aws_data/coco_lisa_v2/backup/yolov3-CL.backup",
                                 path_meta="/data/yang/code/aws/traffic_sign/CL.data")
 
+    if True:
+        detector = YoloDetector(path_cfg="/home/yang/code/aws/traffic_light/yolov3-TL.cfg.test",
+                                path_weights="/shared/yang/data1/aws_data/bdd100k/yolo_format/backup/yolov3-TL_10000.weights",
+                                path_meta="/home/yang/code/aws/traffic_light/TL.data")
+
     pred = detector.compute(im)
-    viz = detector.visualize_logits_general(pred, thresh=0.01)
+    viz = detector.visualize_logits_general(pred, 0, thresh=0.5)
     cv2.imwrite("output.png", viz)
