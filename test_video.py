@@ -327,8 +327,10 @@ if __name__ == "__main__":
         # test within the docker
         #video_path = "/scratch/yang/aws_data/mkz/mkz_large_fov/output_0.avi"
         video_path = "/data1/yang/aws_data/iphone/iphone5_undis.mp4"
-        video_path = "/shared/yang/data1/aws_data/bdd100k/yolo_format/images/val/video/video.mp4-cache-thres=0.5/seq.mp4"
-        batch_size = 4
+        #video_path = "/shared/yang/data1/aws_data/bdd100k/yolo_format/images/val/video/video.mp4-cache-thres=0.5/seq.mp4"
+        video_path = "/shared/yang/data1/aws_data/mkz/video_lowres.mkv"
+        # TODO: test the carla video
+        batch_size = 8
 
         from all_perceptions import Perceptions
 
