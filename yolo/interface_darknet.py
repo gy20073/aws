@@ -140,7 +140,8 @@ class YoloDetector:
         # BCHW format
         images = np.transpose(images, (0, 3, 1, 2))
         # RGB to BGR
-        images = images[:, ::-1, :, :]
+        #images = images[:, ::-1, :, :]
+        # I comment this out, because darknet expect RGB image
         # to float and to 0-1
         images = images / 255.0
         # as continuous memory
@@ -233,8 +234,11 @@ class YoloDetector:
 
 if __name__ == "__main__":
     #im = cv2.imread("/scratch/yang/aws_data/mapillary/validation/images/0daE8mWxlKFT8kLBE5f12w.jpg")
-    im = cv2.imread("/shared/yang/data1/aws_data/bdd100k/yolo_format/images/val/video/b69173a4-d0c92583.jpg")
+    #im = cv2.imread("/shared/yang/data1/aws_data/bdd100k/yolo_format/images/val/video/b69173a4-d0c92583.jpg")
+    im = cv2.imread("/shared/yang/data1/aws_data/bdd100k/yolo_format/images/val/video/video.mp4-cache-thres=0.5/seq.mp4-cache-thres=0.5/det_00000000.jpg")
     im = np.reshape(im, [1, im.shape[0], im.shape[1], im.shape[2]])
+    # BGR to RGB
+    im = im[:,:,:,::-1]
 
     if False:
         detector = YoloDetector(path_cfg="/data/yang/code/aws/coco_original/yolov3.cfg",

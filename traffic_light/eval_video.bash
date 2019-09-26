@@ -15,6 +15,9 @@ mkdir $CACHE_PATH
 current=$(pwd)
 cd $DarknetPath
 
+# this does not produce the correct result since, the output is different from this command, and I haven't figure out why
+# ~/code/aws/yolo/darknet
+# sudo ./darknet detect ../../traffic_light/yolov3-TL.cfg.test /shared/yang/data1/aws_data/bdd100k/yolo_format/backup/yolov3-TL_10000.weights /shared/yang/data1/aws_data/bdd100k/yolo_format/images/val/video/video.mp4-cache-thres=0.5/det_00000000.jpg
 $DarknetPath"/"darknet \
     detector demo \
     /data/yang/code/aws/traffic_light/TL.data \
@@ -26,4 +29,4 @@ $DarknetPath"/"darknet \
 
 cd $current
 
-ffmpeg -threads 16 -framerate 30 -pattern_type glob -i $CACHE_PATH"/*.jpg" -c:v libx264 -crf 40 -preset veryfast $VIDEO_PATH"-det-thres="$THRES".mp4"
+ffmpeg -threads 16 -framerate 30 -pattern_type glob -i $CACHE_PATH"/*.jpg" -c:v libx264 -crf 28 -preset veryfast $VIDEO_PATH"-det-thres="$THRES".mp4"

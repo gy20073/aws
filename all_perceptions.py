@@ -259,6 +259,8 @@ class Perceptions:
     def compute(self, images, intermediate_size=(576, 768)):
         # depth 256*512, seg: 576*768, yolo 312*416
         if intermediate_size is not None:
+            if intermediate_size[0] * images.shape[2] != images.shape[1] * intermediate_size[1]:
+                print("warning: the images aspect ratio is changed in all_perceptions")
             images = resize_images(images, intermediate_size)
 
         self.images = images
