@@ -536,19 +536,32 @@ class Perceptions:
         #color = np.array([[0, 0, 142], [128, 64, 128], [244, 35, 232], [70, 70, 70], [70, 130, 180], [230, 150, 140]],
         #                 dtype=np.uint8)
         # meaning: car, road, sidewalk, building, sky, rail track
-        seg_viz[seg_viz[:, :, 0] == 70, :] = np.array([[[244, 35, 232]]])  # building & sky -> sidewalk
-        seg_viz[seg_viz[:, :, 0] == 230, :] = np.array([[[244, 35, 232]]])  # rail track -> sidewalk
+        seg_viz[np.logical_and(seg_viz[:, :, 0] == 70, seg_viz[:, :, 1] == 70), :] = np.array([[[244, 35, 232]]])  # building -> sidewalk
+        #seg_viz[seg_viz[:, :, 0] == 230, :] = np.array([[[244, 35, 232]]])  # rail track -> sidewalk
 
+        seg_viz[seg_viz[:, :, 0] == 230, :] = np.array([[[255, 0, 0]]]) # change rail track, or lane marker color
+
+        seg_viz[seg_viz[:, :, 0] == 244, :] = np.array([[[0, 255, 0]]])  # change sidewalk color
         mode = "det_TL"
         if mode in self.all_modes.keys():
             conn = self.instances[mode]
             conn.send(("visualize", (logits_dict[mode], ibatch)))
             det_viz = conn.recv()
-            output = 0.6*imsz(det_viz) + 0.4*imsz(seg_viz)
-        else:
-            output = 0.6 * imsz(self.images[ibatch]) + 0.4 * imsz(seg_viz)
 
-        self.viz_nrow = 1
+            # extract the pure red and yellow place
+            isred = np.logical_and(det_viz[:,:,0]==255, np.logical_and(det_viz[:,:,1]==0, det_viz[:,:,2]==0))
+            isyel = np.logical_and(det_viz[:, :, 0] == 255,
+                                   np.logical_and(det_viz[:, :, 1] == 255, det_viz[:, :, 2] == 0))
+            to_black = np.logical_or(isred, isyel)
+
+            output = 0.4*imsz(det_viz) + 0.6*imsz(seg_viz)
+            output[to_black, :] = np.array([[[0, 0, 0]]])  # change sidewalk color
+            output = np.concatenate((imsz(self.images[ibatch]), output), axis=0)
+        else:
+            output = 0.4 * imsz(self.images[ibatch]) + 0.6 * imsz(seg_viz)
+            output = np.concatenate((imsz(self.images[ibatch]), output), axis=0)
+
+        self.viz_nrow = 2
         self.viz_ncol = 1
 
         return output
