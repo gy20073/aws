@@ -519,7 +519,7 @@ class Perceptions:
                                "classid": cid})))
         return conn.recv()
 
-    def visualize_simple(self, logits_dict, ibatch, subplot_size=(312, 416)):
+    def visualize(self, logits_dict, ibatch, subplot_size=(312, 416)):
         # visualize segmentation with or without traffic light detection module
 
         imsz = lambda image: cv2.resize(image,
@@ -553,7 +553,7 @@ class Perceptions:
 
         return output
 
-    def visualize(self, logits_dict, ibatch, subplot_size=(312, 416)):
+    def visualize_complex(self, logits_dict, ibatch, subplot_size=(312, 416)):
         out_viz = {"0_original": self.images[ibatch]}
         for mode in self.all_modes.keys():
             if "det" in mode:
