@@ -67,9 +67,18 @@ def cut(x):
 
 if __name__ == "__main__":
     os.environ["CUDA_VISIBLE_DEVICES"] = "0"
-    video_path = "/home/yang/data/aws_data/CIL_modular_data/_benchmarks_results/mm45_v4_SqnoiseShoulder_rfsv6_withTL_fixTL_14_YangExp3cam_Town01/_images/episode_14_3_132.27.mp4"
+    video_path13 = "/home/yang/data/aws_data/CIL_modular_data/_benchmarks_results/mm45_v4_SqnoiseShoulder_rfsv6_withTL_fixTL_13_YangExp3camMoreAgents_Town01/_images/episode_"
 
-    loop_over_video(video_path,
-                    cut,
-                    temp_down_factor=1,
-                    batch_size=1)
+    video_path14 = "/home/yang/data/aws_data/CIL_modular_data/_benchmarks_results/mm45_v4_SqnoiseShoulder_rfsv6_withTL_fixTL_14_YangExp3camMoreAgents_Town01/_images/episode_"
+
+    video_ids = ["13_3_105.29", "13_3_111.64", "13_3_30.41", "13_3_42.51", "14_3_132.27", "14_3_21.16"]
+
+    for item in video_ids:
+        if item.startswith("13"):
+            video_path = video_path13 + item + ".mp4"
+        else:
+            video_path = video_path14 + item + ".mp4"
+        loop_over_video(video_path,
+                        cut,
+                        temp_down_factor=1,
+                        batch_size=1)
